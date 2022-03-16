@@ -3,14 +3,6 @@ home: true
 heroImage: https://v1.vuepress.vuejs.org/hero.png
 tagline: Mixin Virtual Machine
 actionText: Quick Start →
-actionLink: /guide/
-features:
-- title: Feature 1 Title
-  details: Feature 1 Description
-- title: Feature 2 Title
-  details: Feature 2 Description
-- title: Feature 3 Title
-  details: Feature 3 Description
 footer: Made by mixin.dev with ❤️
 ---
 
@@ -19,10 +11,6 @@ footer: Made by mixin.dev with ❤️
 Mixin 的愿景是希望服务更多的用户跟开发者，由于 Mixin 采用的隐私程度相同, 但是更灵活 TIP 方案来存储私钥，使得像其它链（比如 evm, eos）的开发者不能方便的使用已经技术方案。MVM 的出现解决了这方面的问题。
 
 MVM 可以让其它网络上的开发者（几乎）不需要做任何修改部署应用，来服务 Mixin 用户，达到共赢。
-
-## MVM 的开源代码
-
-https://github.com/MixinNetwork/trusted-group/tree/master/mvm
 
 ## 基于 MVM 的开发完整流程, 以 Ethereum 为例
 
@@ -50,7 +38,7 @@ https://github.com/MixinNetwork/trusted-group/tree/master/mvm
 
 ## Mixin 主网与 MVM 的交互原理
 
-所有 Mixin 用户需要执行 MVM 的操作 (invoke), 都是一笔多签转帐 (基于 MTG), memo 里会包含具体的操作, 所有的结果返回都是通过监听 MixinTransaction 获取
+所有 Mixin 需要执行 MVM 的操作 (publish, invoke), 都是一笔多签转帐 (基于 MTG), memo 里会包含具体的操作, 所有的结果返回都是通过监听 MixinTransaction 获取
 
 1. Mixin 调用 MVM 
 
@@ -66,6 +54,13 @@ https://github.com/MixinNetwork/trusted-group/tree/master/mvm
 
 ## MVM 的结构分析
 
+MVM 开源代码地址：https://github.com/MixinNetwork/trusted-group/tree/master/mvm, 这里列出了主要的目录的实现功能:
+
+1. MVM 主要通过 ./quorum, 与 Mixin 部署的 evm 兼容网络交互
+2. ./eos 跟 1 类似, 与 eos 交互
+3. ./machine, 处理 Mixin 通过多签发送的数据，处理 MVM 返回的数据，并返回给 Mixin
+4. ./store，持久化用户, 资产信息，相关的调用事件
+
 ## registry.sol 是什么
 
 ## ABI 编码规范
@@ -76,21 +71,21 @@ https://docs.soliditylang.org/en/v0.8.12/abi-spec.html
 
 #### 发布合约命令
 
-  ```
+```
   mvm publish -m config/config.toml -k keystore.json \
     -a 0x2A4630550Ad909B90aAcD82b5f65E33afFA04323 \
     -e 0x1938e2332d7963eff041af4f67586572899c7c7d279c07ac29feb745f8d9b6d6
-  ```
+```
 
 #### 调用合约
 
-  ```
+```
   mvm invoke -m config/config.toml -k keystore.json \
       -p 60e17d47-fa70-3f3f-984d-716313fe838a \
       -asset c6d0c728-2624-429b-8e0d-d9d19b6592fa \
       -amount 0.00002 \
       -extra 7c15d0d2faa1b63862880bed982bd3020e1f1a9a5668870000000000000000000000000099cfc3d0c229d03c5a712b158a29ff186b294ab300000000000000000000000000000000000000000000000000000000000007d0
-  ```
+```
 
 #### Mixin 资产如何跟 MVM 资产对应
 

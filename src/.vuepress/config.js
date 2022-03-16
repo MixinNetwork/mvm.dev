@@ -52,32 +52,75 @@ module.exports = {
         link: 'https://v1.vuepress.vuejs.org'
       }
     ],
-     // Logo in the top left corner, file in .vuepress/public/
+    // Logo in the top left corner, file in .vuepress/public/
     //  logo: "/logo.svg",
-     // Configure the manual sidebar
-     header: {
-       img: {
-         // Image in ./vuepress/public/logo.svg
-         src: "/logo.svg",
-         // Image width relative to the sidebar
-         width: "75%",
-       },
-       title: "Documentation",
-     },
+    // Configure the manual sidebar
+    header: {
+      img: {
+        // Image in ./vuepress/public/logo.svg
+        src: "/logo.svg",
+        // Image width relative to the sidebar
+        width: "75%",
+      },
+      title: "Documentation",
+    },
     topbar: {
       banner: false
     },
     sidebar: {
-      '/guide/': [
+      auto: false,
+      nav: [
         {
-          title: 'Guide',
-          collapsable: false,
+          title: 'Reference',
           children: [
-            '',
-            'using-vue',
+            {
+              title: 'Introduction',
+              directory: false,
+              path: '/reference/intro'
+            },
+            {
+              title: 'Core Concepts',
+              directory: false,
+              path: '/reference/core'
+            }
           ]
-        }
-      ],
+        },
+        {
+          title: 'Guides',
+          children: [
+            {
+              title: 'Theory',
+              directory: false,
+              path: '/guide/'
+            },
+            {
+              title: 'Development',
+              directory: false,
+              path: '/guide/develop'
+            },
+          ]
+        },
+        {
+          title: 'MVM Structure',
+          children: [
+          ],
+        },
+        {
+          title: 'registry.sol',
+          children: [
+          ]
+        },
+        {
+          title: 'ABI Spec',
+          children: [
+          ]
+        },
+        {
+          title: 'Q/A',
+          children: [
+          ]
+        },
+      ]
     }
   },
 
