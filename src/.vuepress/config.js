@@ -26,6 +26,9 @@ module.exports = {
     ['meta', { name: 'apple-mobile-web-app-status-bar-style', content: 'black' }]
   ],
 
+  footer: {
+  },
+
   theme: "cosmos",
   /**
    * Theme configuration, here is the default theme configuration for VuePress.
@@ -34,9 +37,11 @@ module.exports = {
    */
   themeConfig: {
     repo: 'MixinNetwork/mvm.dev',
-    editLinks: true,
+    editLinks: false,
     docsDir: '',
+    docsBranch: 'main',
     editLinkText: '',
+    custom: true,
     lastUpdated: false,
     nav: [
       {
