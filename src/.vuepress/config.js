@@ -46,7 +46,9 @@ module.exports = {
     nav: [
     ],
     // Logo in the top left corner, file in .vuepress/public/
-    //  logo: "/logo.svg",
+    // logo: {
+    //   src: "/logo.svg",
+    // },
     // Configure the manual sidebar
     header: {
       img: {
@@ -99,24 +101,19 @@ module.exports = {
           ]
         },
         {
-          title: 'MVM Structure',
+          title: 'MVM Codes',
           children: [
             {
-              title: 'intro',
+              title: 'Structure',
               directory: false,
               path: '/structure/'
             },
-          ],
-        },
-        {
-          title: 'registry.sol',
-          children: [
             {
-              title: 'intro',
+              title: 'Registry',
               directory: false,
-              path: '/registry/'
+              path: '/structure/registry'
             },
-          ]
+          ],
         },
         {
           title: 'ABI Spec',
@@ -129,10 +126,10 @@ module.exports = {
           ]
         },
         {
-          title: 'Q/A',
+          title: 'Resources',
           children: [
             {
-              title: 'intro',
+              title: 'Q/A',
               directory: false,
               path: '/qa/'
             },
