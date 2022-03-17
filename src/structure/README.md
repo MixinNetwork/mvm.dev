@@ -1,4 +1,4 @@
-MVM 已经开源, 代码地址：https://github.com/MixinNetwork/trusted-group/tree/master/mvm
+MVM 开源代码地址：https://github.com/MixinNetwork/trusted-group/tree/master/mvm
 
 主要的目录的实现功能:
 

@@ -44,18 +44,6 @@ module.exports = {
     custom: true,
     lastUpdated: false,
     nav: [
-      {
-        text: 'Guide',
-        link: '/guide/',
-      },
-      {
-        text: 'Config',
-        link: '/config/'
-      },
-      {
-        text: 'VuePress',
-        link: 'https://v1.vuepress.vuejs.org'
-      }
     ],
     // Logo in the top left corner, file in .vuepress/public/
     //  logo: "/logo.svg",
@@ -94,35 +82,60 @@ module.exports = {
           title: 'Guides',
           children: [
             {
-              title: 'Theory',
+              title: 'Development',
               directory: false,
               path: '/guide/'
             },
             {
-              title: 'Development',
+              title: 'Publish',
               directory: false,
-              path: '/guide/develop'
+              path: '/guide/publish'
+            },
+            {
+              title: 'Invoke',
+              directory: false,
+              path: '/guide/invoke'
             },
           ]
         },
         {
           title: 'MVM Structure',
           children: [
+            {
+              title: 'intro',
+              directory: false,
+              path: '/structure/'
+            },
           ],
         },
         {
           title: 'registry.sol',
           children: [
+            {
+              title: 'intro',
+              directory: false,
+              path: '/registry/'
+            },
           ]
         },
         {
           title: 'ABI Spec',
           children: [
+            {
+              title: 'intro',
+              directory: false,
+              path: '/abi/'
+            },
           ]
         },
         {
           title: 'Q/A',
           children: [
+            {
+              title: 'intro',
+              directory: false,
+              path: '/qa/'
+            },
           ]
         },
       ]
