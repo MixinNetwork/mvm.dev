@@ -1,6 +1,6 @@
 # MVM 开发流程
 
-注意这里以 mixin 搭建的 evm 兼容的 Ethereum 为例
+注意这里以 Mixin 搭建的 EVM 兼容的 Ethereum 为例
 
 开发流程:
 

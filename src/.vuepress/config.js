@@ -74,6 +74,11 @@ module.exports = {
               path: '/reference/intro'
             },
             {
+              title: 'Basics',
+              directory: false,
+              path: '/reference/basic'
+            },
+            {
               title: 'Core Concepts',
               directory: false,
               path: '/reference/core'
