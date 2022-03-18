@@ -46,9 +46,9 @@ module.exports = {
     nav: [
     ],
     // Logo in the top left corner, file in .vuepress/public/
-    // logo: {
-    //   src: "/logo.svg",
-    // },
+    logo: {
+      src: "/mvm.svg",
+    },
     // Configure the manual sidebar
     header: {
       img: {
@@ -74,11 +74,6 @@ module.exports = {
               path: '/reference/intro'
             },
             {
-              title: 'Basics',
-              directory: false,
-              path: '/reference/basic'
-            },
-            {
               title: 'Core Concepts',
               directory: false,
               path: '/reference/core'
@@ -91,7 +86,7 @@ module.exports = {
             {
               title: 'Development',
               directory: false,
-              path: '/guide/'
+              path: '/guide/basic'
             },
             {
               title: 'Publish',
@@ -111,12 +106,12 @@ module.exports = {
             {
               title: 'Structure',
               directory: false,
-              path: '/structure/'
+              path: '/codes/structure'
             },
             {
               title: 'Registry',
               directory: false,
-              path: '/structure/registry'
+              path: '/codes/registry'
             },
           ],
         },
@@ -126,7 +121,7 @@ module.exports = {
             {
               title: 'intro',
               directory: false,
-              path: '/abi/'
+              path: '/abi/intro'
             },
           ]
         },
@@ -136,7 +131,7 @@ module.exports = {
             {
               title: 'Join',
               directory: false,
-              path: '/testnet/'
+              path: '/testnet/join'
             },
           ]
         },
@@ -146,7 +141,7 @@ module.exports = {
             {
               title: 'Q/A',
               directory: false,
-              path: '/qa/'
+              path: '/resources/qa'
             },
           ]
         },
