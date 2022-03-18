@@ -104,9 +104,14 @@ module.exports = {
           title: 'MVM Codes',
           children: [
             {
-              title: 'Structure',
+              title: 'Theory',
               directory: false,
-              path: '/codes/structure'
+              path: '/codes/theory'
+            },
+            {
+              title: 'Encoding',
+              directory: false,
+              path: '/codes/encoding'
             },
             {
               title: 'Registry',
