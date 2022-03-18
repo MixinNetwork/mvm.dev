@@ -131,6 +131,16 @@ module.exports = {
           ]
         },
         {
+          title: 'Testnet',
+          children: [
+            {
+              title: 'Join',
+              directory: false,
+              path: '/testnet/'
+            },
+          ]
+        },
+        {
           title: 'Resources',
           children: [
             {
