@@ -1,6 +1,5 @@
 ---
 home: true
-heroImage: https://v1.vuepress.vuejs.org/hero.png
 tagline: Mixin Virtual Machine
 actionText: Quick Start →
 footer: Made by mixin.dev with ❤️
