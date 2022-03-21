@@ -77,7 +77,17 @@ module.exports = {
               title: 'Core Concepts',
               directory: false,
               path: '/reference/core'
-            }
+            },
+            {
+              title: 'refund.sol',
+              directory: false,
+              path: '/reference/refund'
+            },
+            {
+              title: 'registry.sol',
+              directory: false,
+              path: '/reference/registry'
+            },
           ]
         },
         {
@@ -89,36 +99,11 @@ module.exports = {
               path: '/guide/basic'
             },
             {
-              title: 'Publish',
+              title: 'Usage',
               directory: false,
-              path: '/guide/publish'
-            },
-            {
-              title: 'Invoke',
-              directory: false,
-              path: '/guide/invoke'
+              path: '/guide/usage'
             },
           ]
-        },
-        {
-          title: 'MVM Codes',
-          children: [
-            {
-              title: 'Theory',
-              directory: false,
-              path: '/codes/theory'
-            },
-            {
-              title: 'Encoding',
-              directory: false,
-              path: '/codes/encoding'
-            },
-            {
-              title: 'Registry',
-              directory: false,
-              path: '/codes/registry'
-            },
-          ],
         },
         {
           title: 'ABI Spec',
