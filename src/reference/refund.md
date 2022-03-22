@@ -1,14 +1,15 @@
 # 完整的 MVM 合约开发示例 refund.sol
 
-基本流程
+MVM 开发流程
 
-1. 写一个 solidity 合约, 我们用 refund.sol 作用示例，其它的合约类似
-2.  发布 MVM 合约
-3.  使用合约
+1. 写 solidity 合约, 我们用 refund.sol 作用示例，其它的合约类似
+2. 在 quorum 上部署 solidity 合约，这部分跟 EVM 的合约部署一致
+2. 在 MVM 上发布合约
+3. Mixin 用户如何使用合约
 
-## solidity 合约实现
+## refund 合约实现
 
-`refund.sol` 实现了用户通过转帐调用 MVM 会自动退款的功能。
+`refund.sol` 实现了用户通过转帐调用 MVM 会自动退款的功能。基于 MVM 的智能合约开发需要实现 `function _pid()` 跟 `function _work(Event)` 两个函数
 
 1. `function _pid() internal pure override(MixinProcess) returns (uint128)`
 
@@ -20,9 +21,17 @@
 
     合约执行函数, 在这个函数中，会退会用户转给合约的 token。
 
-3. 在 quorum 上部署合约, 示例：https://github.com/MixinNetwork/mvmcontracts
+文章最后有源代码，及源码地址
 
-## 发布合约
+## 在 quorum 上部署合约
+
+开发者可以选择自己熟悉的部署方式，remix, hardhat 等。
+
+这里是 hardhat 的部署示例，https://github.com/MixinNetwork/mvmcontracts, 已经配置好 quorum 测试网，可以直接使用。
+
+## 在 MVM 发布合约
+
+智能合约在 quorum 部署完成后，需要在 MVM 与 mixin 机器人绑定 (发布合约), MVM 通过这一步来处理 Mixin 用户跟智能合约调用关系。
 
 发布合约是一个给 MTG 的多签转帐，在 memo 里会带有合约地址，PID 等信息。
 
@@ -63,9 +72,9 @@ members 是，mtg 里的多签节点的 id, 示例中的是真实的测试网的
 
 代码示例：https://github.com/MixinNetwork/trusted-group/blob/master/mvm/publish.go
 
-## 调用合约
+## 如何调用合约
 
-用户使用合约同样也是通过 MTG 的多签转帐。
+Mixin 用户使用合约同样也是通过 MTG 的多签转帐。需要开发者生成一个用户对多签转帐的链接。
 
 1. 开发者生成一个 https://mixin.one/codes/:id，
 	
@@ -73,6 +82,16 @@ members 是，mtg 里的多签节点的 id, 示例中的是真实的测试网的
    https://developers.mixin.one/zh-CN/docs/api/transfer/payment
 
 2. 用户支付，使用 mixin messenger 扫码（或者唤起）支付。
+
+Operation 结构
+
+```
+op := &encoding.Operation{
+	Purpose: encoding.OperationPurposeGroupEvent, // 固定值 1
+	Process: c.String("process"), // 机器人的 client_id
+	Extra:   extra, // 合约执行的内容，refund 合约为空
+}
+```
 
 以下是 MVM 的内部实现原理简述：
 
@@ -83,15 +102,6 @@ members 是，mtg 里的多签节点的 id, 示例中的是真实的测试网的
 5. MVM 获取到结果后，把钱返还给用户
 
 POST /transactions 接口，金额没有限制，币种需要是 Mixin 主网支持
-
-Operation 结构
-```
-op := &encoding.Operation{
-	Purpose: encoding.OperationPurposeGroupEvent, // 固定值 1
-	Process: c.String("process"), // 机器人的 client_id
-	Extra:   extra, // 合约执行的内容，refund 合约为空
-}
-```
 
 代码示例：https://github.com/MixinNetwork/trusted-group/blob/master/mvm/invoke.go
 
@@ -129,5 +139,6 @@ contract RefundWorker is MixinProcess {
 
 ## 总结
 
-refund 包含了通过 MVM 部署合约，及用户调用合约的整个流程，但是开发者不能直接使用，需要对原有的合约进行一些修改，为了方便开发者直接使用原有的合约，我们做了实现了 registry.sol ，通过 registry, 原有的合约可以直接使用，不需要任何的修改。
- 
+refund 包含了通过 MVM 部署合约，及用户调用合约的整个流程，但是开发者不能直接使用，需要对原有的合约进行一些修改。
+
+为了方便开发者直接使用原有的合约，我们做了实现了 registry.sol ，通过 registry, 原有的合约可以直接使用，不需要任何的修改, 接下来我们介绍一下 registry 实现功能及原理。
