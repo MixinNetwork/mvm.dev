@@ -79,12 +79,12 @@ module.exports = {
               path: '/reference/core'
             },
             {
-              title: 'refund.sol',
+              title: 'refund Contract',
               directory: false,
               path: '/reference/refund'
             },
             {
-              title: 'registry.sol',
+              title: 'registry Contract',
               directory: false,
               path: '/reference/registry'
             },

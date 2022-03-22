@@ -35,7 +35,7 @@ memo 是 Operation 的编码：
 ```
 op := &encoding.Operation{
   Purpose:  encoding.OperationPurposeAddProcess, // 发布合约固定值 11
-  Process:  key.ClientId, // 机器人 client_id
+  Process:  key.ClientId, // 机器人 client_id, 例如：27d0c319-a4e3-38b4-93ff-cb45da8adbe1 
   Platform: c.String("platform"), // 如果是 EVM 合约，值是 quorum
   Address:  c.String("address"), // EVM 合约地址
   Extra:    []byte(c.String("extra")), // 可选项，如果需要自动创建资产，值是 META

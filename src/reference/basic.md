@@ -2,7 +2,7 @@
 
 网络名称（Network Name）：Quorum Test
 
-新的 RPC URL（New RPC URL）：http://104.197.245.214:8545
+新的 RPC URL（New RPC URL）：https://quorum-testnet.mixin.zone/
 
 链 ID（ChainID）：83927
 
