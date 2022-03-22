@@ -95,3 +95,9 @@ mapping(uint => address) public contracts;
 ## 开源代码
 
 地址: https://github.com/MixinNetwork/trusted-group/tree/master/mvm/quorum/contracts
+
+## 总结
+
+相比于 refund.sol 合约开发者需要完成一些兼容工作，registry 帮助合作完成了，用户与帐号，mixin 资产与 EVM 资产的映射，合约调用，以及执行结果返回的工作。
+
+EVM 的合约也可以直接迁移不需要作修改。下一节，会基于 MVM 部署一个完整的 uniswap 的合约。
