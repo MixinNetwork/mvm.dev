@@ -103,6 +103,11 @@ module.exports = {
               directory: false,
               path: '/guide/usage'
             },
+            {
+              title: 'Encoding',
+              directory: false,
+              path: '/guide/encoding'
+            },
           ]
         },
         {
