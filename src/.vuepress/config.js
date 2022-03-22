@@ -134,9 +134,13 @@ module.exports = {
           title: 'Resources',
           children: [
             {
-              title: 'Q/A',
+              title: 'Q&A',
               directory: false,
               path: '/resources/qa'
+            },
+            {
+              title: 'ABI Specification',
+              path: 'https://docs.soliditylang.org/en/latest/abi-spec.html'
             },
           ]
         },
