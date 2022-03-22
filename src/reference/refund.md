@@ -13,9 +13,11 @@ MVM 开发流程
 
 1. `function _pid() internal pure override(MixinProcess) returns (uint128)`
 
-    pid 是一个 Mixin 机器人（或者机器人用户的）user_id, 示例：
+    pid 是一个 Mixin 机器人（或者机器人用户的）client_id, 示例：
     
     机器人用户的  id: 27d0c319-a4e3-38b4-93ff-cb45da8adbe1, PID 0x27d0c319a4e338b493ffcb45da8adbe1，把 user id, 去掉 `-` 前面加 `0x`    
+
+    注意：这个机器人的 client_id, 只能使用一次，也就是跟一个合约绑定。
     
 2. `function _work(Event memory evt) internal override(MixinProcess) returns (bool)`
 

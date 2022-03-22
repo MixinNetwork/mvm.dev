@@ -94,9 +94,9 @@ module.exports = {
           title: 'Guides',
           children: [
             {
-              title: 'Development',
+              title: 'Deploy uniswap',
               directory: false,
-              path: '/guide/basic'
+              path: '/guide/uniswap'
             },
             {
               title: 'Usage',
