@@ -1,21 +1,23 @@
 # 完整的 MVM 合约开发示例 refund.sol
 
-MVM 开发流程
+在上一部分，我们介绍了 MVM 实现的主要功能，这篇文章我们基于 MVM 开发一个完整的合约。分为以下几部分:
 
-1. 写 solidity 合约, 我们用 refund.sol 作用示例，其它的合约类似
-2. 在 quorum 上部署 solidity 合约，这部分跟 EVM 的合约部署一致
+1. 实现 solidity 合约, 这里我们用 refund.sol 作为示例，其它的合约类似, 开源代码在文章最后。
+2. 在 quorum 上部署 refund 合约，这部分跟 EVM 合约的部署一致。
 2. 在 MVM 上发布合约
-3. Mixin 用户如何使用合约
+3. Mixin 用户使用合约
 
 ## refund 合约实现
 
-`refund.sol` 实现了用户通过转帐调用 MVM 会自动退款的功能。基于 MVM 的智能合约开发需要实现 `function _pid()` 跟 `function _work(Event)` 两个函数
+`refund.sol` 实现了用户转帐并自动退款的智能合约。基于 MVM 的智能合约开发, 都需要实现 `function _pid()` 跟 `function _work(Event)` 两个函数:
 
 1. `function _pid() internal pure override(MixinProcess) returns (uint128)`
 
-    pid 是一个 Mixin 机器人（或者机器人用户的）client_id, 示例：
+    每个合约都需要有一个 PID, PID 是一个 Mixin 机器人（或者机器人用户的）client_id, 示例：
     
     机器人用户的  id: 27d0c319-a4e3-38b4-93ff-cb45da8adbe1, PID 0x27d0c319a4e338b493ffcb45da8adbe1，把 user id, 去掉 `-` 前面加 `0x`    
+
+    PID 是 MVM 里跟智能合约的合约地址进行绑定的。
 
     注意：这个机器人的 client_id, 只能使用一次，也就是跟一个合约绑定。
     
@@ -23,21 +25,23 @@ MVM 开发流程
 
     合约执行函数, 在这个函数中，会退会用户转给合约的 token。
 
-文章最后有源代码，及源码地址
+在文章最后有源代码，及开源地址
 
-## 在 quorum 上部署合约
+## 在 Quorum 上部署合约
 
 开发者可以选择自己熟悉的部署方式，remix, hardhat 等。
 
 这里是 hardhat 的部署示例，https://github.com/MixinNetwork/mvmcontracts, 已经配置好 quorum 测试网，可以直接使用。
 
+TODO: 补充 refund 部署命令。
+
 ## 在 MVM 发布合约
 
-智能合约在 quorum 部署完成后，需要在 MVM 与 mixin 机器人绑定 (发布合约), MVM 通过这一步来处理 Mixin 用户跟智能合约调用关系。
+智能合约在 Quorum 部署完成后，需要在 MVM 与 Mixin 机器人绑定 (发布合约), MVM 会基于 PID 来打包数据，并发送到 Quorum, 并把 Quorum 里的执行结果返回给 Mixin 用户。
 
-发布合约是一个给 MTG 的多签转帐，在 memo 里会带有合约地址，PID 等信息。
+发布合约是一个给 MTG 的多签转帐，在 memo 里会带有合约地址，PID, 合约地址等信息。
 
-1. 开发者给 MTG 转一笔金额 >= 1 的 CNB, memo 为 Operation 的编码
+1. 开发者需要给 MTG 转一笔金额 >= 1 的 CNB, memo 为 Operation 的编码
 2.  MVM 收到 output 后，会解析 memo, 验证合约地址等一些基本信息，符合要求后，把这 process 这些信息保存下来
 3.  合约执行工作，在下一步调用合约，详细描述
 
@@ -55,9 +59,30 @@ op := &encoding.Operation{
 
 POST /transactions 接口
 
-API 接口文档：https://developers.mixin.one/zh-CN/docs/api/transfer/raw-transfer
+请求参数：
 
-命令行示例：
+```
+{
+  "asset_id":     "965e5c6e-434c-3fa9-b780-c50f43cd955c",
+  "amount":       "1",
+  "opponent_multisig":  {
+    "receivers": [
+      "a15e0b6d-76ed-4443-b83f-ade9eca2681a",
+      "b9126674-b07d-49b6-bf4f-48d965b2242b",
+      "15141fe4-1cfd-40f8-9819-71e453054639",
+      "3e72ca0c-1bab-49ad-aa0a-4d8471d375e7"
+    ],
+    "threshold": 3
+  },
+  "trace_id":     "5a74b05c-55d3-4081-99d0-f98917079fdf",
+  "memo":         "AAuNz4I9nrNNooc08KrVDA2mAAZxdW9ydW0AKjB4MkE0NjMwNTUwQWQ5MDlCOTBhQWNEODJiNWY2NUUzM2FmRkEwNDMyMwAETUVUQQ",
+}
+```
+
+API 接口文档：https://developers.mixin.one/zh-CN/docs/api/transfer/raw-transfer#transfer-to-a-multi-signature-address
+
+
+也可以参考 Golang 代码示例：https://github.com/MixinNetwork/trusted-group/blob/master/mvm/publish.go
 
 ```
 mvm publish -m config/config.toml \
@@ -72,16 +97,16 @@ mvm publish -m config/config.toml \
 members 是，mtg 里的多签节点的 id, 示例中的是真实的测试网的 mtg 节点, 可以直接使用
 * -k: 合约需要跟一个 Mixin 的用户绑定, keystore.json 就是这个用户的私钥跟 pin 信息。
 
-代码示例：https://github.com/MixinNetwork/trusted-group/blob/master/mvm/publish.go
-
 ## 如何调用合约
 
-Mixin 用户使用合约同样也是通过 MTG 的多签转帐。需要开发者生成一个用户对多签转帐的链接。
+Mixin 用户使用合约同样也是通过 MTG 的多签转帐。需要开发者生成一个用户对 MTG 多签转帐的链接。
 
 1. 开发者生成一个 https://mixin.one/codes/:id，
 	
    把 Operation encode 之后做为 memo, 调用 POST /payments 接口, 相关文档：
    https://developers.mixin.one/zh-CN/docs/api/transfer/payment
+
+   金额没有限制, 最小 0.00000001，币种需要是 Mixin 主网支持
 
 2. 用户支付，使用 mixin messenger 扫码（或者唤起）支付。
 
@@ -101,15 +126,11 @@ op := &encoding.Operation{
 2. MVM 把 Event 按格式编码之后，发送给 refund 合约
 3. refund 反编码 Event, 只是做了简单的 timestamp， nonce 的验证
 4. 执行完成后，通过 ` event MixinTransaction(bytes);`  返回给 MVM 退款信息
-5. MVM 获取到结果后，把钱返还给用户
-
-POST /transactions 接口，金额没有限制，币种需要是 Mixin 主网支持
+5. MVM 接收到执行结果后，把 Token 返还给用户
 
 代码示例：https://github.com/MixinNetwork/trusted-group/blob/master/mvm/invoke.go
 
-## refund 源码 
-
-源代码地址：https://github.com/MixinNetwork/trusted-group/blob/master/mvm/quorum/contracts
+## refund.sol 源码 
 
 ```solidity
 // SPDX-License-Identifier: GPL-3.0
@@ -139,8 +160,10 @@ contract RefundWorker is MixinProcess {
 }
 ```
 
+源代码地址：https://github.com/MixinNetwork/trusted-group/blob/master/mvm/quorum/contracts
+
 ## 总结
 
-refund 包含了通过 MVM 部署合约，及用户调用合约的整个流程，但是开发者不能直接使用，需要对原有的合约进行一些修改。
+refund 包含了通过 MVM 部署合约，及用户调用合约的整个流程，但是开发者不能直接使用原有的智能合约，需要进行一些修改。
 
-为了方便开发者直接使用原有的合约，我们做了实现了 registry.sol ，通过 registry, 原有的合约可以直接使用，不需要任何的修改, 接下来我们介绍一下 registry 实现功能及原理。
+为了方便开发者直接使用原有的合约，我们实现了 registry.sol ，通过 registry, 原有的合约可以直接迁移，不需要任何的修改, 接下来我们介绍一下 registry 实现及原理。
