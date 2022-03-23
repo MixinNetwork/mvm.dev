@@ -15,9 +15,11 @@
 
 ## 部署 UniswapV2Factory
 
-首先将所有的 v2-core 合约代码导入到 Remix IDE，然后对代码里面的几处参数作一下修改。注意：这些修改不是因为要部署到 MVM 才修改的，这只是一些针对不同网络部署的配置文件性质的修改。
+首先将所有的 v2-core 合约代码导入到 Remix IDE，然后对代码里面的几处参数作一下修改。
 
-第一个是将 `contracts/UniswapV2ERC20.sol` 中的 chainId 修改成我们测试网的网络 ID，注意这里去掉了对 assembly 的调用，是因为 Uniswap 的代码非常古老，很多新的特性在新的网络上支持不好。
+注意：这些修改不是因为要部署到 MVM 才修改的，这只是一些针对不同网络部署的配置文件性质的修改。
+
+第一个是将 `contracts/UniswapV2ERC20.sol` 中的 chainId 修改成 Quorum 测试网的网络 ID，注意这里去掉了对 assembly 的调用，是因为 Uniswap 的代码非常古老，很多新的特性在新的网络上支持不好。
 
 ```solidity
      constructor() public {
@@ -41,7 +43,7 @@
      }
 ```
 
-然后直接通过 Remix 来部署 UniswapV2Factory 了，部署时只有一个参数，可以直接输入自己的测试网的地址即可，等部署成功后，会得到这个合约的地址。在 MVM 的 Quorum 测试网浏览器，搜索这个合约地址打开后，查看 logs 会得到我们添加的这个 InitCode 事件的输出结果。
+然后直接通过 Remix 来部署 UniswapV2Factory 了，部署时只有一个参数，可以直接输入自己的测试网的地址即可，部署成功后，会得到这个合约的地址。在 MVM 的 Quorum 测试网浏览器，搜索这个合约地址打开后，查看 logs 会得到我们添加的这个 InitCode 事件的输出结果。
 
 ![image](https://prsdigg.com/rails/active_storage/blobs/eyJfcmFpbHMiOnsibWVzc2FnZSI6IkJBaHBBcUFOIiwiZXhwIjpudWxsLCJwdXIiOiJibG9iX2lkIn19--ff2de56617bf6a8211019abd1bbe1d32d5131ca0/Screenshot%20from%202022-01-31%2008-35-56)
 
@@ -59,7 +61,7 @@
 
 ## UniswapMVMRouter 部署
 
-这个合约是我们基于 Uniswap 做了一个非常简单的封装，来让 MM 用户调用更方便，代码非常简单，直接放在 `v2-periphery` 项目的 contracts/UniswapMVMRouter.sol 文件里即可。
+这个合约是我们基于 Uniswap 做了一个简单的封装，来让 MM 用户调用更方便 （主要是添加，移除流动性)，代码非常简单，直接放在 `v2-periphery` 项目的 contracts/UniswapMVMRouter.sol 文件里即可。
 
 ```
 pragma solidity =0.6.6;
@@ -141,13 +143,13 @@ contract UniswapMVMRouter {
 
 ## 通过 registry 调用合约
 
-在上一步中，我们已经详细介绍了，registry 的部署及原理，我们来通过这个示例来演示如何调用 uniswap 的合约。
+在上一篇文章中，我们已经详细介绍了 registry 的部署及原理，接下来通过这个示例来演示如何通过调用 uniswap 的合约。
 
-第一步是添加流动性，在一段中，我们提到 UniswapMVMRouter，主要是因为在 mixin 中，一次只能操作一个资产，所以需要分两次添加流动性。
+第一步是添加流动性，在上一段中，我们提到 UniswapMVMRouter，主要是因为在 mixin 中，一次只能操作一个资产，所以需要分两次添加流动性。
 
 ### 添加 BTC 进流动池
 
-Mixin 用户添加流动性的操作，是通过一次给 mtg 的多签转帐完成的，分为两步：
+Mixin 用户添加流动性的操作，也是通过一次给 mtg 的多签转帐完成的，分为两步：
 
 1. 开发者(任意)生成一个 https://mixin.one/codes/:id
 
@@ -179,12 +181,13 @@ Mixin 用户添加流动性的操作，是通过一次给 mtg 的多签转帐完
 
   在上一步中，会获取到 https://mixin.one/codes/:id 的链接，用户可以通过扫码或者 messenger 中唤起支付。
 
+开发者需要做的是生成 `code_id`, 给用户提供支付链接 https://mixin.one/codes/:id, 用户使用合约，只需要通过该链接支付即可。
+
 ### 添加 XIN 进流动池
 
-跟上一步完全一样，生成新的 extra
+XIN 流动性的添加，跟 BTC 流动性添加方式一样，生成新的 extra
 
 ```
-  ```
   op := &encoding.Operation{
     Purpose: encoding.OperationPurposeGroupEvent, // 固定值 1
     Process: c.String("process"), // 官方维护的 registry 的 PID 60e17d47-fa70-3f3f-984d-716313fe838a TODO
@@ -194,15 +197,15 @@ Mixin 用户添加流动性的操作，是通过一次给 mtg 的多签转帐完
   extra: 7c15d0d2faa1b63862880bed982bd3020e1f1a9a56688700000000000000000000000000bd6efc2e2cb99aef928433209c0a3be09a34f11400000000000000000000000000000000000000000000000000000000000007d0
 ```
 
-生成链接 https://mixin.one/codes/:id 的链接，用户可以通过扫码或者 messenger 中唤起支付。
+开发者生成支付链接 https://mixin.one/codes/:id ，用户通过扫码或者 messenger 中唤起支付。
 
 到目前为止，在 MVM 上部署 Uniswap，给 Uniswap 添加流动性就完成了。通过 MVM 测试网浏览器（https://testnet.mvmscan.com/address/0x5aD700bd8B28C55a2Cac14DCc9FBc4b3bf37679B）可以方便的查看 Registry 进程相关的所有的操作结果。
 
 ## 部署示例
 
-我们实现了一个通过 hardhat 部署 uniswap 的整个示例，其中的 Quorum 测试网可以直接使用，可以方便的部署自己的合约
+我们实现了一个通过 hardhat 部署 uniswap 的完整示例，其中的 Quorum 测试网可以直接使用，通过 fork 可以方便的部署自己的合约。
 
-https://github.com/MixinNetwork/mvmcontracts/blob/main/scripts/uniswap.ts
+uniswap 部署脚本地址：https://github.com/MixinNetwork/mvmcontracts/blob/main/scripts/uniswap.ts
 
 ## 总结
 
