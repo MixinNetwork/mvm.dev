@@ -79,12 +79,12 @@ module.exports = {
               path: '/reference/core'
             },
             {
-              title: 'refund Contract',
+              title: 'Refund Contract',
               directory: false,
               path: '/reference/refund'
             },
             {
-              title: 'registry Contract',
+              title: 'Registry Contract',
               directory: false,
               path: '/reference/registry'
             },
@@ -114,7 +114,7 @@ module.exports = {
           title: 'ABI Spec',
           children: [
             {
-              title: 'intro',
+              title: 'Intro',
               directory: false,
               path: '/abi/intro'
             },
@@ -139,7 +139,7 @@ module.exports = {
               path: '/resources/qa'
             },
             {
-              title: 'ABI Specification',
+              title: 'EVM ABI Doc',
               path: 'https://docs.soliditylang.org/en/latest/abi-spec.html'
             },
           ]

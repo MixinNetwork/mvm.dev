@@ -57,45 +57,49 @@ op := &encoding.Operation{
 }
 ```
 
-POST /transactions 接口
+1. POST /transactions 接口
 
-请求参数：
+  请求参数：
 
-```
-{
-  "asset_id":     "965e5c6e-434c-3fa9-b780-c50f43cd955c",
-  "amount":       "1",
-  "opponent_multisig":  {
-    "receivers": [
-      "a15e0b6d-76ed-4443-b83f-ade9eca2681a",
-      "b9126674-b07d-49b6-bf4f-48d965b2242b",
-      "15141fe4-1cfd-40f8-9819-71e453054639",
-      "3e72ca0c-1bab-49ad-aa0a-4d8471d375e7"
-    ],
-    "threshold": 3
-  },
-  "trace_id":     "5a74b05c-55d3-4081-99d0-f98917079fdf",
-  "memo":         "AAuNz4I9nrNNooc08KrVDA2mAAZxdW9ydW0AKjB4MkE0NjMwNTUwQWQ5MDlCOTBhQWNEODJiNWY2NUUzM2FmRkEwNDMyMwAETUVUQQ",
-}
-```
+  ```
+  {
+    "asset_id":     "965e5c6e-434c-3fa9-b780-c50f43cd955c",
+    "amount":       "1",
+    "opponent_multisig":  {
+      "receivers": [
+        "a15e0b6d-76ed-4443-b83f-ade9eca2681a",
+        "b9126674-b07d-49b6-bf4f-48d965b2242b",
+        "15141fe4-1cfd-40f8-9819-71e453054639",
+        "3e72ca0c-1bab-49ad-aa0a-4d8471d375e7"
+      ],
+      "threshold": 3
+    },
+    "trace_id":     "5a74b05c-55d3-4081-99d0-f98917079fdf",
+    "memo":         "AAuNz4I9nrNNooc08KrVDA2mAAZxdW9ydW0AKjB4MkE0NjMwNTUwQWQ5MDlCOTBhQWNEODJiNWY2NUUzM2FmRkEwNDMyMwAETUVUQQ",
+  }
+  ```
 
-API 接口文档：https://developers.mixin.one/zh-CN/docs/api/transfer/raw-transfer#transfer-to-a-multi-signature-address
+  API 接口文档：https://developers.mixin.one/zh-CN/docs/api/transfer/raw-transfer#transfer-to-a-multi-signature-address
 
 
-也可以参考 Golang 代码示例：https://github.com/MixinNetwork/trusted-group/blob/master/mvm/publish.go
+2. 也可以参考 Golang 代码示例：https://github.com/MixinNetwork/trusted-group/blob/master/mvm/publish.go
 
-```
-mvm publish -m config/config.toml \
-  -k keystore.json \
-  -a 0x2A4630550Ad909B90aAcD82b5f65E33afFA04323 \
-  -e META
-```
+  ```
+  mvm publish -m config/config.toml \
+    -k keystore.json \
+    -a 0x2A4630550Ad909B90aAcD82b5f65E33afFA04323 \
+    -e META
+  ```
 
-* -a: 是指合约的地址，需要区分大小写
-* -e: 可选项 META, 是否带资产信息
-* -m: 配置文件，示例地址：https://github.com/MixinNetwork/trusted-group/blob/master/mvm/config/config.example.toml, 这里只用到了 mtg.genesis 里 members, threshold 两个配置
-members 是，mtg 里的多签节点的 id, 示例中的是真实的测试网的 mtg 节点, 可以直接使用
-* -k: 合约需要跟一个 Mixin 的用户绑定, keystore.json 就是这个用户的私钥跟 pin 信息。
+  * -a: 是指合约的地址，需要区分大小写
+  * -e: 可选项 META, 是否带资产信息
+  * -m: 配置文件，示例地址：https://github.com/MixinNetwork/trusted-group/blob/master/mvm/config/config.example.toml, 这里只用到了 mtg.genesis 里 members, threshold 两个配置
+  members 是，mtg 里的多签节点的 id, 示例中的是真实的测试网的 mtg 节点, 可以直接使用
+  * -k: 合约需要跟一个 Mixin 的用户绑定, keystore.json 就是这个用户的私钥跟 pin 信息。
+
+3. 推荐通过合约机器人 7000103716 来，发布合约
+
+以上三种方式, 都可以用来发布机器人，效果相同
 
 ## 如何调用合约
 
@@ -160,7 +164,7 @@ contract RefundWorker is MixinProcess {
 }
 ```
 
-源代码地址：https://github.com/MixinNetwork/trusted-group/blob/master/mvm/quorum/contracts
+开源地址：https://github.com/MixinNetwork/trusted-group/blob/master/mvm/quorum/contracts
 
 ## 总结
 

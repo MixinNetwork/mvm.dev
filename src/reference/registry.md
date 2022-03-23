@@ -10,7 +10,7 @@ registry 是 MVM 代理合约, 原有的智能合约不需要做修改，在 Quo
 
 2. 用户调用合约时，需要使用开发者生成的一个支付链接。支付链接通过 POST /payment 生成。
 
-	这个支付地址的生成没有限制，任何人只需知道合约地址都可以生成。
+	提示: 这个支付地址的生成没有限制，任何人只需知道合约地址都可以生成。
 
 	相关文档：https://developers.mixin.one/zh-CN/docs/api/transfer/payment
 
@@ -34,7 +34,7 @@ registry 是 MVM 代理合约, 原有的智能合约不需要做修改，在 Quo
 3. MVM 收到这个 output 后，解析 memo 成 Event
 4. MVM 把 Event 按格式编码之后，发送给 registry 合约
 5. registry 执行 `function mixin`, 并调用相关合约
-6. 执行完成后，通过 ` event MixinTransaction(bytes);`  返回给 MVM 相关 event 信息
+6. 执行完成后，通过 ` event MixinTransaction(bytes);`  返回给 MVM 相关 Event 信息
 7. MVM 获取到结果后，如果需要转帐给用户，不需要则跳过
 
 开发者，只需要在第 2 步，拿到 code_id, 生成 https://mixin.one/codes/:id 即可, 剩下的都是 MVM 的执行逻辑。 extra 的生成, 及 Event 的编码，会用单独的文章解释。

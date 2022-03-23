@@ -14,4 +14,4 @@ ChainID：83927
 
 ## 领取测试币
 
-可以通过这个链接领取测试币：https://faucet.mvmscan.com/
+可以通过这个链接领取测试币：[https://faucet.mvmscan.com/](https://faucet.mvmscan.com/)
