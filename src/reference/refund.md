@@ -130,6 +130,7 @@ op := &encoding.Operation{
 2. MVM 把 Event 按格式编码之后，发送给 refund 合约
 3. refund 反编码 Event, 只是做了简单的 timestamp， nonce 的验证
 4. 执行完成后，通过 ` event MixinTransaction(bytes);`  返回给 MVM 退款信息
+   注意: `event MixinTransaction(bytes)` 只能在注册 publish 的那一个合约里用，其他合约用不了
 5. MVM 接收到执行结果后，把 Token 返还给用户
 
 代码示例：https://github.com/MixinNetwork/trusted-group/blob/master/mvm/invoke.go
