@@ -66,7 +66,15 @@ op := &encoding.Operation{
 }
 ```
 
-1. POST /transactions 接口
+1. 推荐通过合约机器人 **7000103716** 来，发布合约。发送 `publish 机器人ID:合约地址`。
+
+    例子:
+
+    ```text
+    publish 72f3b2ba-775d-3b8a-a1a9-c407deab4df6:0x3EC07990be4d38b22a8910d0CB0d2bE1E9F573c3 
+    ```
+
+2. POST /transactions 接口
 
     请求参数：
 
@@ -90,7 +98,7 @@ op := &encoding.Operation{
 
     API 接口文档：<https://developers.mixin.one/zh-CN/docs/api/transfer/raw-transfer#transfer-to-a-multi-signature-address>
 
-2. 也可以参考 Golang 代码示例：<https://github.com/MixinNetwork/trusted-group/blob/master/mvm/publish.go>
+3. 也可以参考 Golang 代码示例：<https://github.com/MixinNetwork/trusted-group/blob/master/mvm/publish.go>
 
     ```shell
     mvm publish -m config/config.toml \
@@ -105,15 +113,13 @@ op := &encoding.Operation{
       members 是，mtg 里的多签节点的 id, 示例中的是真实的测试网的 mtg 节点, 可以直接使用
     * -k: 合约需要跟一个 Mixin 的用户绑定, keystore.json 就是这个用户的私钥跟 pin 信息。
 
-3. 推荐通过合约机器人 7000103716 来，发布合约
-
 以上三种方式, 都可以用来发布机器人，效果相同
 
 ## 如何调用合约
 
 Mixin 用户使用合约同样也是通过 MTG 的多签转帐。需要开发者生成一个用户对 MTG 多签转帐的链接。
 
-1. 开发者生成一个 <https://mixin.one/codes/:id>，
+1. 开发者生成一个多签转账 code，例子：<https://mixin.one/codes/:id>，
 
    把 Operation encode 之后做为 memo, 调用 POST /payments 接口, 相关文档：
    <https://developers.mixin.one/zh-CN/docs/api/transfer/payment>
