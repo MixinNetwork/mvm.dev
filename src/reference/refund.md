@@ -4,8 +4,8 @@
 
 1. 实现 solidity 合约, 这里我们用 refund.sol 作为示例，其它的合约类似, 开源代码在文章最后。
 2. 在 quorum 上部署 refund 合约，这部分跟 EVM 合约的部署一致。
-2. 在 MVM 上发布合约
-3. Mixin 用户使用合约
+3. 在 MVM 上发布合约
+4. Mixin 用户使用合约
 
 ## refund 合约实现
 
@@ -14,13 +14,13 @@
 1. `function _pid() internal pure override(MixinProcess) returns (uint128)`
 
     每个合约都需要有一个 PID, PID 是一个 Mixin 机器人（或者机器人用户的）client_id, 示例：
-    
-    机器人用户的  id: 27d0c319-a4e3-38b4-93ff-cb45da8adbe1, PID 0x27d0c319a4e338b493ffcb45da8adbe1，把 user id, 去掉 `-` 前面加 `0x`    
+
+    机器人用户的  id: 27d0c319-a4e3-38b4-93ff-cb45da8adbe1, PID 0x27d0c319a4e338b493ffcb45da8adbe1，把 user id, 去掉 `-` 前面加 `0x`
 
     PID 是 MVM 里跟智能合约的合约地址进行绑定的。
 
     注意：这个机器人的 client_id, 只能使用一次，也就是跟一个合约绑定。
-    
+
 2. `function _work(Event memory evt) internal override(MixinProcess) returns (bool)`
 
     合约执行函数, 在这个函数中，会退会用户转给合约的 token。
@@ -31,7 +31,7 @@
 
 开发者可以选择自己熟悉的部署方式，remix, hardhat 等。
 
-这里是 hardhat 的部署示例，https://github.com/MixinNetwork/mvmcontracts, 已经配置好 quorum 测试网，可以直接使用。
+这里是 hardhat 的部署示例，<https://github.com/MixinNetwork/mvmcontracts>, 已经配置好 quorum 测试网，可以直接使用。
 
 TODO: 补充 refund 部署命令。
 
@@ -42,12 +42,12 @@ TODO: 补充 refund 部署命令。
 发布合约是一个给 MTG 的多签转帐，在 memo 里会带有合约地址，PID, 合约地址等信息。
 
 1. 开发者需要给 MTG 转一笔金额 >= 1 的 CNB, memo 为 Operation 的编码
-2.  MVM 收到 output 后，会解析 memo, 验证合约地址等一些基本信息，符合要求后，把这 process 这些信息保存下来
-3.  合约执行工作，在下一步调用合约，详细描述
+2. MVM 收到 output 后，会解析 memo, 验证合约地址等一些基本信息，符合要求后，把这 process 这些信息保存下来
+3. 合约执行工作，在下一步调用合约，详细描述
 
 memo 是 Operation 的编码：
 
-```
+```golang
 op := &encoding.Operation{
   Purpose:  encoding.OperationPurposeAddProcess, // 发布合约固定值 11
   Process:  key.ClientId, // 机器人 client_id, 例如：27d0c319-a4e3-38b4-93ff-cb45da8adbe1 
@@ -59,43 +59,42 @@ op := &encoding.Operation{
 
 1. POST /transactions 接口
 
-  请求参数：
+    请求参数：
 
-  ```
-  {
-    "asset_id":     "965e5c6e-434c-3fa9-b780-c50f43cd955c",
-    "amount":       "1",
-    "opponent_multisig":  {
-      "receivers": [
-        "a15e0b6d-76ed-4443-b83f-ade9eca2681a",
-        "b9126674-b07d-49b6-bf4f-48d965b2242b",
-        "15141fe4-1cfd-40f8-9819-71e453054639",
-        "3e72ca0c-1bab-49ad-aa0a-4d8471d375e7"
-      ],
-      "threshold": 3
-    },
-    "trace_id":     "5a74b05c-55d3-4081-99d0-f98917079fdf",
-    "memo":         "AAuNz4I9nrNNooc08KrVDA2mAAZxdW9ydW0AKjB4MkE0NjMwNTUwQWQ5MDlCOTBhQWNEODJiNWY2NUUzM2FmRkEwNDMyMwAETUVUQQ",
-  }
-  ```
+    ```json
+    {
+      "asset_id":     "965e5c6e-434c-3fa9-b780-c50f43cd955c",
+      "amount":       "1",
+      "opponent_multisig":  {
+        "receivers": [
+          "a15e0b6d-76ed-4443-b83f-ade9eca2681a",
+          "b9126674-b07d-49b6-bf4f-48d965b2242b",
+          "15141fe4-1cfd-40f8-9819-71e453054639",
+          "3e72ca0c-1bab-49ad-aa0a-4d8471d375e7"
+        ],
+        "threshold": 3
+      },
+      "trace_id":     "5a74b05c-55d3-4081-99d0-f98917079fdf",
+      "memo":         "AAuNz4I9nrNNooc08KrVDA2mAAZxdW9ydW0AKjB4MkE0NjMwNTUwQWQ5MDlCOTBhQWNEODJiNWY2NUUzM2FmRkEwNDMyMwAETUVUQQ",
+    }
+    ```
 
-  API 接口文档：https://developers.mixin.one/zh-CN/docs/api/transfer/raw-transfer#transfer-to-a-multi-signature-address
+    API 接口文档：<https://developers.mixin.one/zh-CN/docs/api/transfer/raw-transfer#transfer-to-a-multi-signature-address>
 
+2. 也可以参考 Golang 代码示例：<https://github.com/MixinNetwork/trusted-group/blob/master/mvm/publish.go>
 
-2. 也可以参考 Golang 代码示例：https://github.com/MixinNetwork/trusted-group/blob/master/mvm/publish.go
-
-  ```
-  mvm publish -m config/config.toml \
+    ```shell
+    mvm publish -m config/config.toml \
     -k keystore.json \
     -a 0x2A4630550Ad909B90aAcD82b5f65E33afFA04323 \
     -e META
-  ```
+    ```
 
-  * -a: 是指合约的地址，需要区分大小写
-  * -e: 可选项 META, 是否带资产信息
-  * -m: 配置文件，示例地址：https://github.com/MixinNetwork/trusted-group/blob/master/mvm/config/config.example.toml, 这里只用到了 mtg.genesis 里 members, threshold 两个配置
-  members 是，mtg 里的多签节点的 id, 示例中的是真实的测试网的 mtg 节点, 可以直接使用
-  * -k: 合约需要跟一个 Mixin 的用户绑定, keystore.json 就是这个用户的私钥跟 pin 信息。
+    * -a: 是指合约的地址，需要区分大小写
+    * -e: 可选项 META, 是否带资产信息
+    * -m: 配置文件，示例地址：<https://github.com/MixinNetwork/trusted-group/blob/master/mvm/config/config.example.toml>, 这里只用到了 mtg.genesis 里 members, threshold 两个配置
+      members 是，mtg 里的多签节点的 id, 示例中的是真实的测试网的 mtg 节点, 可以直接使用
+    * -k: 合约需要跟一个 Mixin 的用户绑定, keystore.json 就是这个用户的私钥跟 pin 信息。
 
 3. 推荐通过合约机器人 7000103716 来，发布合约
 
@@ -105,10 +104,10 @@ op := &encoding.Operation{
 
 Mixin 用户使用合约同样也是通过 MTG 的多签转帐。需要开发者生成一个用户对 MTG 多签转帐的链接。
 
-1. 开发者生成一个 https://mixin.one/codes/:id，
-	
+1. 开发者生成一个 <https://mixin.one/codes/:id>，
+
    把 Operation encode 之后做为 memo, 调用 POST /payments 接口, 相关文档：
-   https://developers.mixin.one/zh-CN/docs/api/transfer/payment
+   <https://developers.mixin.one/zh-CN/docs/api/transfer/payment>
 
    金额没有限制, 最小 0.00000001，币种需要是 Mixin 主网支持
 
@@ -116,11 +115,11 @@ Mixin 用户使用合约同样也是通过 MTG 的多签转帐。需要开发者
 
 Operation 结构
 
-```
+```golang
 op := &encoding.Operation{
-	Purpose: encoding.OperationPurposeGroupEvent, // 固定值 1
-	Process: c.String("process"), // 机器人的 client_id
-	Extra:   extra, // 合约执行的内容，refund 合约为空
+ Purpose: encoding.OperationPurposeGroupEvent, // 固定值 1
+ Process: c.String("process"), // 机器人的 client_id
+ Extra:   extra, // 合约执行的内容，refund 合约为空
 }
 ```
 
@@ -129,13 +128,13 @@ op := &encoding.Operation{
 1. 用户完成支付后，MVM 会收到 output，通过解析 output 的 memo, 拿到资产，金额，执行合约地址等相关信息，保存为 Event
 2. MVM 把 Event 按格式编码之后，发送给 refund 合约
 3. refund 反编码 Event, 只是做了简单的 timestamp， nonce 的验证
-4. 执行完成后，通过 ` event MixinTransaction(bytes);`  返回给 MVM 退款信息
+4. 执行完成后，通过 `event MixinTransaction(bytes);`  返回给 MVM 退款信息
    注意: `event MixinTransaction(bytes)` 只能在注册 publish 的那一个合约里用，其他合约用不了
 5. MVM 接收到执行结果后，把 Token 返还给用户
 
-代码示例：https://github.com/MixinNetwork/trusted-group/blob/master/mvm/invoke.go
+代码示例：<https://github.com/MixinNetwork/trusted-group/blob/master/mvm/invoke.go>
 
-## refund.sol 源码 
+## refund.sol 源码
 
 ```solidity
 // SPDX-License-Identifier: GPL-3.0
@@ -165,7 +164,7 @@ contract RefundWorker is MixinProcess {
 }
 ```
 
-开源地址：https://github.com/MixinNetwork/trusted-group/blob/master/mvm/quorum/contracts
+开源地址：<https://github.com/MixinNetwork/trusted-group/blob/master/mvm/quorum/contracts>
 
 ## 总结
 

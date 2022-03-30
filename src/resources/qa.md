@@ -4,7 +4,7 @@
 
 在 registry.sol 里有两个公开的 map
 
-```
+```solidity
 mapping(address => bytes) public users;
 mapping(uint => address) public contracts;
 ```
@@ -13,7 +13,7 @@ mapping(uint => address) public contracts;
 
 同样在 registry.sol 里有两个公开的 map
 
-```
+```solidity
 mapping(address => uint128) public assets;
 mapping(uint => address) public contracts;
 ```

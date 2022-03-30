@@ -2,7 +2,7 @@
 
 Mixin 用户想要使用智能合约比较复杂，MVM 实现了大量的工作让这部分工作，让开发者开发或者用户使用变得简单。
 
-### MVM 流程
+## MVM 流程
 
 开发流程可以参照，使用指南，开发者部分, 这里主要是针对用户使用过程。
 
@@ -15,18 +15,18 @@ Mixin 用户想要使用智能合约比较复杂，MVM 实现了大量的工作�
 
 MVM 里 Event 的结构
 
-```
+```golang
 type Event struct {
-	Process   string
-	Asset     string
-	Members   []string // need to do user mask per process
-	Threshold int
-	Amount    common.Integer
-	Extra     []byte
-	Timestamp uint64
-	Nonce     uint64
-	Signature []byte
+ Process   string
+ Asset     string
+ Members   []string // need to do user mask per process
+ Threshold int
+ Amount    common.Integer
+ Extra     []byte
+ Timestamp uint64
+ Nonce     uint64
+ Signature []byte
 }
 ```
 
-开源代码地址：https://github.com/MixinNetwork/trusted-group/tree/master/mvm
+开源代码地址：<https://github.com/MixinNetwork/trusted-group/tree/master/mvm>

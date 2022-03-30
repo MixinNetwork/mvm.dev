@@ -2,7 +2,7 @@
 
 registry 是 MVM 代理, 其它合约都可以通过给它的 `function mixin(bytes memory raw)` 发送一定格式的数据来执行相关的合约。
 
-开源代码地址: https://github.com/MixinNetwork/trusted-group/tree/master/mvm/quorum/contracts
+开源代码地址: <https://github.com/MixinNetwork/trusted-group/tree/master/mvm/quorum/contracts>
 
 主要包含:
 
@@ -12,17 +12,18 @@ registry 是 MVM 代理, 其它合约都可以通过给它的 `function mixin(by
 
 如果需要获取对应关系可以从，这以下三个公开的 map 里获取:
 
-```
+```solidity
 mapping(address => bytes) public users;
 mapping(address => uint128) public assets;
 mapping(uint => address) public contracts;
 ```
 
-### function mixin 解析
+## function mixin 解析
 
 `function mixin()` 是 MVM 调用智能合约的唯一路口，所有后续的合约操作都需要通过这个函数
 
 当 MVM 调用合约时, 调用 mixin 这个函数，raw 会解析成相关的参数
+
 1. process, uuid 验证部署的 process 跟调用的 process 是否一致
 2. nonce, EVM 需要每次调用需要 nonce + 1
 3. asset id, mixin 里资产的 id

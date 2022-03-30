@@ -6,38 +6,39 @@ registry 是 MVM 代理合约, 原有的智能合约不需要做修改，在 Quo
 
 ## 如何使用 registry
 
-1.  合约开发者部署 EVM 智能合约(过程与 refund.sol 等其它合约部署类似)，部署完成后，拿到合约地址。
+1. 合约开发者部署 EVM 智能合约(过程与 refund.sol 等其它合约部署类似)，部署完成后，拿到合约地址。
 
 2. 用户调用合约时，需要使用开发者生成的一个支付链接。支付链接通过 POST /payment 生成。
 
-	提示: 这个支付地址的生成没有限制，任何人只需知道合约地址都可以生成。
+    提示: 这个支付地址的生成没有限制，任何人只需知道合约地址都可以生成。
+    相关文档：<https://developers.mixin.one/zh-CN/docs/api/transfer/payment>
 
-	相关文档：https://developers.mixin.one/zh-CN/docs/api/transfer/payment
-
-  ```
-  op := &encoding.Operation{
-    Purpose: encoding.OperationPurposeGroupEvent, // 固定值 1
-    Process: c.String("process"), // registry 合约的机器人的 client_id，TODO
-    Extra:   extra, // 合约执行的内容
-  }
-  
-  extra 示例：7c15d0d2faa1b63862880bed982bd3020e1f1a9a56688700000000000000000000000000bd6efc2e2cb99aef928433209c0a3be09a34f11400000000000000000000000000000000000000000000000000000000000007d0
-  
-  extra 分成两部分:
-  a. 0x7c15d0D2faA1b63862880Bed982bd3020e1f1A9A 去掉 0x 后全部小写, 是需要执行合约的地址
-  b. 从 566887 开始则是 addLiquidity(address,uint256) 方法加详细参数的 ABI 值, 
-     上面的例子中是 c6d0c728-2624-429b-8e0d-d9d19b6592fa 是 BTC 在 Mixin 网络里的资产 ID
-     amount 0.00002 的 ABI 编码, 这个我们会单独的介绍
-     编码格式参照：https://docs.soliditylang.org/en/v0.8.12/abi-spec.html
-  ```
+    ```golang
+    op := &encoding.Operation{
+      Purpose: encoding.OperationPurposeGroupEvent, // 固定值 1
+      Process: c.String("process"), // registry 合约的机器人的 client_id，TODO
+      Extra:   extra, // 合约执行的内容
+    }
+    
+    /* 
+    extra 示例：7c15d0d2faa1b63862880bed982bd3020e1f1a9a56688700000000000000000000000000bd6efc2e2cb99aef928433209c0a3be09a34f11400000000000000000000000000000000000000000000000000000000000007d0
+    
+    extra 分成两部分:
+    a. 0x7c15d0D2faA1b63862880Bed982bd3020e1f1A9A 去掉 0x 后全部小写, 是需要执行合约的地址
+    b. 从 566887 开始则是 addLiquidity(address,uint256) 方法加详细参数的 ABI 值, 
+      上面的例子中是 c6d0c728-2624-429b-8e0d-d9d19b6592fa 是 BTC 在 Mixin 网络里的资产 ID
+      amount 0.00002 的 ABI 编码, 这个我们会单独的介绍
+      编码格式参照：https://docs.soliditylang.org/en/v0.8.12/abi-spec.html
+    */
+    ```
 
 3. MVM 收到这个 output 后，解析 memo 成 Event
 4. MVM 把 Event 按格式编码之后，发送给 registry 合约
 5. registry 执行 `function mixin`, 并调用相关合约
-6. 执行完成后，通过 ` event MixinTransaction(bytes);`  返回给 MVM 相关 Event 信息
+6. 执行完成后，通过 `event MixinTransaction(bytes);`  返回给 MVM 相关 Event 信息
 7. MVM 获取到结果后，如果需要转帐给用户，不需要则跳过
 
-开发者，只需要在第 2 步，拿到 code_id, 生成 https://mixin.one/codes/:id 即可, 剩下的都是 MVM 的执行逻辑。 extra 的生成, 及 Event 的编码，会用单独的文章解释。
+开发者，只需要在第 2 步，拿到 code_id, 生成 <https://mixin.one/codes/:id> 即可, 剩下的都是 MVM 的执行逻辑。 extra 的生成, 及 Event 的编码，会用单独的文章解释。
 
 ## function mixin 实现
 
@@ -99,7 +100,7 @@ function mixin(bytes memory raw) public returns (bool) {
 
 Messenger 用户，资产都需要跟 MVM 里的帐号跟资产对应，对应方式都在以下三个公开的 map 里获取:
 
-```
+```solidity
 mapping(address => bytes) public users;
 mapping(address => uint128) public assets;
 mapping(uint => address) public contracts;
@@ -107,7 +108,7 @@ mapping(uint => address) public contracts;
 
 ## 开源代码
 
-registry.sol 开源地址: https://github.com/MixinNetwork/trusted-group/tree/master/mvm/quorum/contracts
+registry.sol 开源地址: <https://github.com/MixinNetwork/trusted-group/tree/master/mvm/quorum/contracts>
 
 ## 总结
 
