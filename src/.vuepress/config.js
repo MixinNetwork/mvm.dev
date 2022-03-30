@@ -4,7 +4,7 @@ module.exports = {
   /**
    * Ref：https://v1.vuepress.vuejs.org/config/#title
    */
-  title: 'Mixin Virtual Machine',
+  title: 'MVM 开发文档',
   /**
    * Ref：https://v1.vuepress.vuejs.org/config/#description
    */
@@ -66,80 +66,80 @@ module.exports = {
       auto: false,
       nav: [
         {
-          title: 'Reference',
+          title: '参考',
           children: [
             {
-              title: 'Introduction',
+              title: '简介',
               directory: false,
               path: '/reference/intro'
             },
             {
-              title: 'Core Concepts',
+              title: '术语介绍',
               directory: false,
               path: '/reference/core'
             },
             {
-              title: 'Refund Contract',
+              title: 'Refund 合约',
               directory: false,
               path: '/reference/refund'
             },
             {
-              title: 'Registry Contract',
+              title: 'Registry 合约',
               directory: false,
               path: '/reference/registry'
             },
           ]
         },
         {
-          title: 'Guides',
+          title: '开发及部署',
           children: [
             {
-              title: 'Deploy uniswap',
+              title: '部署 uniswap',
               directory: false,
               path: '/guide/uniswap'
             },
             {
-              title: 'Usage',
+              title: '调用合约',
               directory: false,
               path: '/guide/usage'
             },
             {
-              title: 'Encoding',
+              title: 'MVM 编码',
               directory: false,
               path: '/guide/encoding'
             },
           ]
         },
         {
-          title: 'ABI Spec',
+          title: 'ABI 规范',
           children: [
             {
-              title: 'Intro',
+              title: '介绍',
               directory: false,
               path: '/abi/intro'
             },
           ]
         },
         {
-          title: 'Testnet',
+          title: '测试网',
           children: [
             {
-              title: 'Join',
+              title: '如何加入',
               directory: false,
               path: '/testnet/join'
             },
           ]
         },
         {
-          title: 'Resources',
+          title: '资源',
           children: [
             {
-              title: 'Q&A',
+              title: '问答',
               directory: false,
               path: '/resources/qa'
             },
             {
-              title: 'EVM ABI Doc',
+              title: 'EVM ABI 文档',
               path: 'https://docs.soliditylang.org/en/latest/abi-spec.html'
             },
           ]
