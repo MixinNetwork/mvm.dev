@@ -15,17 +15,20 @@
 
     每个合约都需要有一个 PID, PID 是一个 Mixin 机器人（或者机器人用户的）client_id, 示例：
 
-    机器人用户的  id: 27d0c319-a4e3-38b4-93ff-cb45da8adbe1, PID 0x27d0c319a4e338b493ffcb45da8adbe1，把 user id, 去掉 `-` 前面加 `0x`
+    ```text
+    机器人用户的 ID: 27d0c319-a4e3-38b4-93ff-cb45da8adbe1
+    // 把 user id, 去掉 `-` 前面加 `0x`
+    PID: 0x27d0c319a4e338b493ffcb45da8adbe1
+
+    ```
 
     PID 是 MVM 里跟智能合约的合约地址进行绑定的。
 
-    注意：这个机器人的 client_id, 只能使用一次，也就是跟一个合约绑定。
+    > 注意：这个机器人的 client_id, 只能使用一次，也就是跟一个合约绑定。
 
 2. `function _work(Event memory evt) internal override(MixinProcess) returns (bool)`
 
     合约执行函数, 在这个函数中，会退会用户转给合约的 token。
-
-在文章最后有源代码，及开源地址
 
 ## 在 Quorum 上部署合约
 
@@ -33,7 +36,13 @@
 
 这里是 hardhat 的部署示例，<https://github.com/MixinNetwork/mvmcontracts>, 已经配置好 quorum 测试网，可以直接使用。
 
-TODO: 补充 refund 部署命令。
+配置命令:
+
+```shell
+PRIVATE_KEY=privateKey yarn hardhat run --network quorum scripts/refund.ts
+```
+
+> 你可以在 [https://faucet.mvmscan.com/](https://faucet.mvmscan.com/) 领取测试币
 
 ## 在 MVM 发布合约
 
