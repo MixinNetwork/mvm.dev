@@ -122,7 +122,7 @@ op := &encoding.Operation{
 
 Mixin 用户使用合约同样也是通过 MTG 的多签转帐。需要开发者生成一个用户对 MTG 多签转帐的链接。
 
-1. 开发者生成一个多签转账 code，例如：<https://mixin.one/codes/:id>，
+1. 开发者生成一个多签转账 code，例如：`https://mixin.one/codes/:id`，
 
    把 Operation base64 encode 之后做为 memo, 调用 POST /payments 接口, 相关文档：
    <https://developers.mixin.one/zh-CN/docs/api/transfer/payment>
