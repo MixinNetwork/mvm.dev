@@ -1,11 +1,11 @@
 # 加入测试网
 
-JSON RPC list
+JSON RPC 列表:
 
 * https://quorum-testnet.mixin.zone
 * https://quorum-mayfly-testnet.mixin.zone
 
-Websocket Endpoints:
+Websocket 列表:
 
 * wss://quorum-ws-testnet.mixin.zone
 
