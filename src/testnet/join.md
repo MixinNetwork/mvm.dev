@@ -6,7 +6,8 @@ JSON RPC list
 * https://quorum-mayfly-testnet.mixin.zone
 
 Websocket Endpoints:
-wss://quorum-ws-testnet.mixin.zone
+
+* wss://quorum-ws-testnet.mixin.zone
 
 ## MetaMask 配置
 
