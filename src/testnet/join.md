@@ -1,8 +1,18 @@
 # 加入测试网
 
+JSON RPC list
+
+* https://quorum-testnet.mixin.zone
+* https://quorum-mayfly-testnet.mixin.zone
+
+Websocket Endpoints:
+wss://quorum-ws-testnet.mixin.zone
+
+## MetaMask 配置
+
 网络名：Quorum Test
 
-RPC 链接：<http://104.197.245.214:8545>
+RPC 链接：<https://quorum-testnet.mixin.zone>
 
 ChainID：83927
 
