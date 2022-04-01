@@ -6,6 +6,7 @@ module.exports = {
     // As a special case, the default locale can use '/' as its path.
     '/': {
       lang: 'en', // this will be set as the lang attribute on <html>
+      name: 'Mixin Virtual Machine',
       /**
        * Ref：https://v1.vuepress.vuejs.org/config/#title
        */
@@ -13,6 +14,7 @@ module.exports = {
     },
     '/zh/': {
       lang: 'zh',
+      name: 'MVM 开发文档',
       title: 'MVM 开发文档',
     }
   },
@@ -58,7 +60,7 @@ module.exports = {
     ],
     // Logo in the top left corner, file in .vuepress/public/
     logo: {
-      src: "/mvm.svg",
+      src: "/logo.svg",
     },
     // Configure the manual sidebar
     header: {
