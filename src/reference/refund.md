@@ -2,14 +2,14 @@
 
 在上一部分，我们介绍了 MVM 实现的主要功能，这篇文章我们基于 MVM 开发一个完整的合约。分为以下几部分:
 
-1. 实现 solidity 合约, 这里我们用 refund.sol 作为示例，其它的合约类似, 开源代码在文章最后。
-2. 在 quorum 上部署 refund 合约，这部分跟 EVM 合约的部署一致。
+1. 实现 [solidity](https://docs.soliditylang.org/en/v0.8.13/) 合约, 这里我们用 [refund.sol](#refund-sol-源码) 作为示例，其它的合约类似。
+2. 在 [Quorum](/testnet/join) 上部署 [refund](#refund-sol-源码) 合约，这部分跟 EVM 合约的部署一致。
 3. 在 MVM 上发布合约
 4. Mixin 用户使用合约
 
 ## refund 合约实现
 
-`refund.sol` 实现了用户转帐并自动退款的智能合约。基于 MVM 的智能合约开发, 都需要实现 `function _pid()` 跟 `function _work(Event)` 两个函数:
+[refund.sol](#refund-sol-源码) 实现了用户转帐并自动退款的智能合约。基于 MVM 的智能合约开发, 都需要实现 `function _pid()` 跟 `function _work(Event)` 两个函数:
 
 1. `function _pid() internal pure override(MixinProcess) returns (uint128)`
 
@@ -32,23 +32,26 @@
 
 ## 在 Quorum 上部署合约
 
-开发者可以选择自己熟悉的部署方式，remix, hardhat 等。
+开发者可以选择自己熟悉的部署方式，[remix](https://remix-project.org/), [hardhat](https://hardhat.org/) 等。
 
-这里是 hardhat 的部署示例，<https://github.com/MixinNetwork/mvmcontracts>, 已经配置好 quorum 测试网，可以直接使用。
+这里是 [hardhat](https://hardhat.org/) 的部署示例，<https://github.com/MixinNetwork/mvmcontracts>, 已经配置好 [Quorum](/testnet/join) 测试网，可以直接使用。
 
-配置命令:
+配置步骤:
 
-```shell
-PRIVATE_KEY=privateKey yarn hardhat run --network quorum scripts/refund.ts
-```
+1. 修改 [refund.sol](#refund-sol-源码) 中的 [PID](#refund-合约实现)
 
-> 你可以在 [https://faucet.mvmscan.com/](https://faucet.mvmscan.com/) 领取测试币
+2. 执行以下命令：
+
+    ```shell
+    PRIVATE_KEY=privateKey yarn hardhat run --network quorum scripts/refund.ts
+    ```
+
+    > 你可以在 [https://faucet.mvmscan.com/](https://faucet.mvmscan.com/) 领取测试币
 
 ## 在 MVM 发布合约
 
-智能合约在 Quorum 部署完成后，需要在 MVM 与 Mixin 机器人绑定 (发布合约), MVM 会基于 PID 来打包数据，并发送到 Quorum, 并把 Quorum 里的执行结果返回给 Mixin 用户。
-
-发布合约是一个给 MTG 的多签转帐，在 memo 里会带有合约地址，PID, 合约地址等信息。
+智能合约在 [Quorum](/testnet/join) 部署完成后，需要在 MVM 与 Mixin 机器人绑定 (发布合约), MVM 会基于 [PID](#refund-合约实现) 来打包数据，并发送到 [Quorum](/testnet/join), 并把 [Quorum](/testnet/join)
+发布合约是一个给 MTG 的多签转帐，在 memo [PID](#refund-合约实现), 合约地址等信息。
 
 1. 开发者需要给 MTG 转一笔金额 >= 1 的 CNB, memo 为 Operation 的编码
 2. MVM 收到 output 后，会解析 memo, 验证合约地址等一些基本信息，符合要求后，把这 process 这些信息保存下来
@@ -119,9 +122,9 @@ op := &encoding.Operation{
 
 Mixin 用户使用合约同样也是通过 MTG 的多签转帐。需要开发者生成一个用户对 MTG 多签转帐的链接。
 
-1. 开发者生成一个多签转账 code，例子：<https://mixin.one/codes/:id>，
+1. 开发者生成一个多签转账 code，例如：`https://mixin.one/codes/:id`，
 
-   把 Operation encode 之后做为 memo, 调用 POST /payments 接口, 相关文档：
+   把 Operation base64 encode 之后做为 memo, 调用 POST /payments 接口, 相关文档：
    <https://developers.mixin.one/zh-CN/docs/api/transfer/payment>
 
    金额没有限制, 最小 0.00000001，币种需要是 Mixin 主网支持
@@ -179,10 +182,10 @@ contract RefundWorker is MixinProcess {
 }
 ```
 
-开源地址：<https://github.com/MixinNetwork/trusted-group/blob/master/mvm/quorum/contracts>
+开源地址：<https://github.com/MixinNetwork/trusted-group/blob/master/mvm/quorum/contracts/refund.sol>
 
 ## 总结
 
-refund 包含了通过 MVM 部署合约，及用户调用合约的整个流程，但是开发者不能直接使用原有的智能合约，需要进行一些修改。
+[refund](#refund-sol-源码) 包含了通过 MVM 部署合约，及用户调用合约的整个流程，但是开发者不能直接使用原有的智能合约，需要进行一些修改。
 
-为了方便开发者直接使用原有的合约，我们实现了 registry.sol ，通过 registry, 原有的合约可以直接迁移，不需要任何的修改, 接下来我们介绍一下 registry 实现及原理。
+为了方便开发者直接使用原有的合约，我们实现了 [registry.sol](./registry) ，通过 [registry](./registry), 原有的合约可以直接迁移，不需要任何的修改, 接下来我们介绍一下 [registry](./registry) 实现及原理。

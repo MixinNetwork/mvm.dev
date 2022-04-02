@@ -151,7 +151,7 @@ contract UniswapMVMRouter {
 
 Mixin 用户添加流动性的操作，也是通过一次给 mtg 的多签转帐完成的，分为两步：
 
-1. 开发者(任意)生成一个 <https://mixin.one/codes/:id>
+1. 开发者(任意)生成一个 `https://mixin.one/codes/:id`
 
     把 Operation encode 之后做为 memo, 调用 POST /payments 接口, 相关文档：
     <https://developers.mixin.one/zh-CN/docs/api/transfer/payment>
@@ -179,9 +179,9 @@ Mixin 用户添加流动性的操作，也是通过一次给 mtg 的多签转帐
 
 2. 用户支付，使用 mixin messenger 扫码（或者唤起）支付。
 
-  在上一步中，会获取到 <https://mixin.one/codes/:id> 的链接，用户可以通过扫码或者 messenger 中唤起支付。
+  在上一步中，会获取到 `https://mixin.one/codes/:id` 的链接，用户可以通过扫码或者 messenger 中唤起支付。
 
-开发者需要做的是生成 `code_id`, 给用户提供支付链接 <https://mixin.one/codes/:id>, 用户使用合约，只需要通过该链接支付即可。
+开发者需要做的是生成 `code_id`, 给用户提供支付链接 `https://mixin.one/codes/:id`, 用户使用合约，只需要通过该链接支付即可。
 
 ### 添加 XIN 进流动池
 
@@ -197,7 +197,7 @@ XIN 流动性的添加，跟 BTC 流动性添加方式一样，生成新的 extr
   extra: 7c15d0d2faa1b63862880bed982bd3020e1f1a9a56688700000000000000000000000000bd6efc2e2cb99aef928433209c0a3be09a34f11400000000000000000000000000000000000000000000000000000000000007d0
 ```
 
-开发者生成支付链接 <https://mixin.one/codes/:id> ，用户通过扫码或者 messenger 中唤起支付。
+开发者生成支付链接 `https://mixin.one/codes/:id` ，用户通过扫码或者 messenger 中唤起支付。
 
 到目前为止，在 MVM 上部署 Uniswap，给 Uniswap 添加流动性就完成了。通过 MVM 测试网浏览器（<https://testnet.mvmscan.com/address/0x5aD700bd8B28C55a2Cac14DCc9FBc4b3bf37679B>）可以方便的查看 Registry 进程相关的所有的操作结果。
 

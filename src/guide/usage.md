@@ -52,7 +52,7 @@
 
 ## 用户支付
 
-生成的链接格式 <https://mixin.one/codes/:id>，用户可以通过扫码或者 messenger 中唤起支付。
+生成的链接格式 `https://mixin.one/codes/:id`，用户可以通过扫码或者 messenger 中唤起支付。
 
 ## MVM 内部调用
 
