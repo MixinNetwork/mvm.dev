@@ -15,7 +15,7 @@ module.exports = {
    *
    * ref：https://v1.vuepress.vuejs.org/config/#head
    */
-  markdown: {
+   markdown: {
     extendMarkdown: (md) => {
       md.use(require("markdown-it-katex"));
     },
@@ -65,23 +65,6 @@ module.exports = {
     sidebar: {
       auto: false,
       nav: [
-        {
-          title: '快速开始',
-          children: [
-            {
-              title: '快速开始',
-              path: '/start/1.guide',
-            },
-            {
-              title: '计数器合约',
-              path: '/start/2.counter'
-            },
-            {
-              title: '转账合约',
-              path: '/start/3.transfer'
-            }
-          ]
-        },
         {
           title: '参考',
           children: [
