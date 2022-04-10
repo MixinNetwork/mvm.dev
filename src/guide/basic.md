@@ -1,12 +1,12 @@
-# MVM 开发流程
+# MVM development procedure
 
-注意这里以 Mixin 搭建的 EVM 兼容的 Ethereum 为例
+Note that the EVM-compatible Ethereum built by Mixin is used here as an example.
 
-开发流程:
+Development Procedure:
 
-1. 部署 evm 兼容的智能合约, 完整的 uniswap 的部署示例可以参考： https://github.com/MixinNetwork/mvmcontracts , 这一过程跟 evm 上部署智能合约的步骤完全一致。
+1. To deploy EVM-compatible smart contracts, you can refer to the complete uniswap deployment example：https://github.com/MixinNetwork/mvmcontracts. This process is exactly the same as the steps for deploying smart contracts on EVM. 
 
-2. 从上面拿到相关的合约地址跟交易哈希之后, 就可以发布合约.
+2. The contract can be released, after getting the relevant contract address and transaction hash from the above.
 
 ```
 mvm publish -m config/config.toml -k keystore.json \
@@ -14,7 +14,7 @@ mvm publish -m config/config.toml -k keystore.json \
   -e 0x1938e2332d7963eff041af4f67586572899c7c7d279c07ac29feb745f8d9b6d6
 ```
 
-3. 上面两步，已经完成了整个应用的部署, 这一步是用户使用上面应用，用命令相对复杂，也需要开发者做一些辅助使用工作
+3. The above two steps has been completed the entire deployment of the application. This step is for the users to use the above application. The command lines are relatively complicated, and need the developer to do some auxiliary work to help with.
 
 ```
 mvm invoke -m config/config.toml -k keystore.json \
@@ -24,4 +24,4 @@ mvm invoke -m config/config.toml -k keystore.json \
   -extra 7c15d0d2faa1b63862880bed982bd3020e1f1a9a56688700000000000000000000000000bd6efc2e2cb99aef928433209c0a3be09a34f11400000000000000000000000000000000000000000000000000000000000007d0
 ```
 
-接下来我们会具体解释每一步及参数都是做了什么
+Next, we will specify in details what each step and parameter is.
