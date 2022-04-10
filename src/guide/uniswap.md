@@ -170,43 +170,43 @@ The operation of adding liquidity by Mixin users is completed through a multi-si
     extra contains two parts:
   a. 0x7c15d0D2faA1b63862880Bed982bd3020e1f1A9A is all lowercase after removing 0x, which is the address of the contract execution 
   b. starting from 566887, it is the ABI value with detailed parameters through way of the addLiquidity(address,uint256), 
-     上面的例子中是 c6d0c728-2624-429b-8e0d-d9d19b6592fa 是 BTC 在 Mixin 网络里的资产 ID
-     amount 0.00002 的 ABI 编码, 这个我们会单独的介绍
-     编码格式参照：https://docs.soliditylang.org/en/v0.8.12/abi-spec.html
+     In the above example, c6d0c728-2624-429b-8e0d-d9d19b6592fa is the asset ID of BTC in the Mixin network.
+     ABI code of amount 0.00002, which will be introduced separately. 
+     Code format reference：https://docs.soliditylang.org/en/v0.8.12/abi-spec.html
   ```
   
-  获取资产对应关系的方式，可以在 Q&A 里找到。
+  The way to obtain the correspondence of assets can be found in the Q&A part. 
 
-2. 用户支付，使用 mixin messenger 扫码（或者唤起）支付。
+2. For the user payment, the mixin messenger can be used to scan the code (or evoke) to pay. 
 
-  在上一步中，会获取到 https://mixin.one/codes/:id 的链接，用户可以通过扫码或者 messenger 中唤起支付。
+  In the previous step, the link to https://mixin.one/codes/:id will be obtained, and the user can evoke payment by scanning the code or through messenger.
 
-开发者需要做的是生成 `code_id`, 给用户提供支付链接 https://mixin.one/codes/:id, 用户使用合约，只需要通过该链接支付即可。
+What the developer needs to do is to generate a `code_id`, and provide the user with a payment link https://mixin.one/codes/:id. Thus, the user only needs to pay through the link to use the contract. 
 
-### 添加 XIN 进流动池
+### Add XIN to the Liquidity Pool
 
-XIN 流动性的添加，跟 BTC 流动性添加方式一样，生成新的 extra
+The same way as the addition of BTC liquidity can be used for the addition of XIN liquidity. A new extra generation is needed. 
 
 ```
   op := &encoding.Operation{
-    Purpose: encoding.OperationPurposeGroupEvent, // 固定值 1
-    Process: c.String("process"), // 官方维护的 registry 的 PID 60e17d47-fa70-3f3f-984d-716313fe838a TODO
-    Extra:   extra, // 合约执行的内容
+    Purpose: encoding.OperationPurposeGroupEvent, // fixed value 1
+    Process: c.String("process"), // officially maintained registry PID 60e17d47-fa70-3f3f-984d-716313fe838a TODO
+    Extra:   extra, // the content of the contract execution
   }
   
   extra: 7c15d0d2faa1b63862880bed982bd3020e1f1a9a56688700000000000000000000000000bd6efc2e2cb99aef928433209c0a3be09a34f11400000000000000000000000000000000000000000000000000000000000007d0
 ```
 
-开发者生成支付链接 https://mixin.one/codes/:id ，用户通过扫码或者 messenger 中唤起支付。
+The developer generates the payment link https://mixin.one/codes/:id, and the user invokes the payment by scanning the code or through the messenger.
 
-到目前为止，在 MVM 上部署 Uniswap，给 Uniswap 添加流动性就完成了。通过 MVM 测试网浏览器（https://testnet.mvmscan.com/address/0x5aD700bd8B28C55a2Cac14DCc9FBc4b3bf37679B）可以方便的查看 Registry 进程相关的所有的操作结果。
+So far, deploying Uniswap on MVM and adding liquidity to Uniswap is completed. Through the MVM testnet browser (https://testnet.mvmscan.com/address/0x5aD700bd8B28C55a2Cac14DCc9FBc4b3bf37679B), you can easily view all the operation results related to the Registry process.  
 
-## 部署示例
+## Deployment Example
 
-我们实现了一个通过 hardhat 部署 uniswap 的完整示例，其中的 Quorum 测试网可以直接使用，通过 fork 可以方便的部署自己的合约。
+We have implemented a complete example of deploying uniswap through hardhat, in which the Quorum testnet can be used directly. Smart contracts can be easily deployed through fork.
 
-uniswap 部署脚本地址：https://github.com/MixinNetwork/mvmcontracts/blob/main/scripts/uniswap.ts
+uniswap deployment script address：https://github.com/MixinNetwork/mvmcontracts/blob/main/scripts/uniswap.ts
 
 ## Conclusion
 
-Deploying Uniswap on MVM is very simple. There is no need to modify the codes, just the modification of a few necessary configuration parameters. 
+Deploying Uniswap on MVM is very simple. There is no need to modify the codes, but only the modification of a few necessary configuration parameters. 
