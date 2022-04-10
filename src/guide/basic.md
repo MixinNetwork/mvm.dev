@@ -1,4 +1,4 @@
-# MVM development procedure
+# MVM Development Procedure
 
 Note that the EVM-compatible Ethereum built by Mixin is used here as an example.
 
