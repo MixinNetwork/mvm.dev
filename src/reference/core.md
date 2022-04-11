@@ -6,7 +6,7 @@ MTG 多重签名托管节点，是一个开源协议, 所有者可以选择一�
 
 ## Quorum 网络
 
-由 MMV 部署的，多个节点管理的 EVM 兼容的 POS 网络。[加入测试网络](/testnet/join.html)
+由 MVM 部署的，多个节点管理的 EVM 兼容的 POS 网络。[加入测试网络](/testnet/join.html)
 
 ## PID
 
