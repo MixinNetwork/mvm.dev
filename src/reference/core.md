@@ -21,11 +21,11 @@ PID is the abbreviation of process id. The bot ID (or bot user ID) in Mixin is m
 
 Registry is a proxy contract for MVM to help EVM contract developers migrate contracts. 
 
-## Function Mixin(bytes memory raw)
+## Function Mixin (bytes memory raw)
 
 The mixin function is the only entry point for smart contracts in MVM, that all the contracts need to implement. Since the Registry has implemented this function, if other contracts are called through the Registry, then there will be no need to implement this function again.  
 
-## Event MixinTransaction(bytes)
+## Event MixinTransaction (bytes)
 
 The only return data export of the smart contracts in MVM. We also implemented this function in the Registry. Thus, other smart contracts do not need to implement this function again if they are called through the Registry. 
 
