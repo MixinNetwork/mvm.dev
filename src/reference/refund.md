@@ -135,7 +135,7 @@ The following is a brief description of the internal implementation principle of
 
 Code example: https://github.com/MixinNetwork/trusted-group/blob/master/mvm/invoke.go
 
-## refund.sol Source Code
+## refund.sol source code
 
 ```solidity
 // SPDX-License-Identifier: GPL-3.0
