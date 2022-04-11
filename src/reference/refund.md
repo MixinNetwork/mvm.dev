@@ -112,30 +112,30 @@ Mixin users use the contract through MTG's multi-signature transfer. Thus, the d
 
    There is no limit on the amount but minimum 0.00000001, and the tokens should be the ones Mixin mainnet supported. 
 
-2. 用户支付，使用 mixin messenger 扫码（或者唤起）支付。
+2. For the user payment, users can use the mixin messenger to scan the code (or evoke) to pay. 
 
-Operation 结构
+Operation structure
 
 ```
 op := &encoding.Operation{
-	Purpose: encoding.OperationPurposeGroupEvent, // 固定值 1
-	Process: c.String("process"), // 机器人的 client_id
-	Extra:   extra, // 合约执行的内容，refund 合约为空
+	Purpose: encoding.OperationPurposeGroupEvent, // fixed value 1
+	Process: c.String("process"), // client_id of bot
+	Extra:   extra, // the content of the contract execution，empty for the refund contract 
 }
 ```
 
-以下是 MVM 的内部实现原理简述：
+The following is a brief description of the internal implementation principle of MVM:
 
-1. 用户完成支付后，MVM 会收到 output，通过解析 output 的 memo, 拿到资产，金额，执行合约地址等相关信息，保存为 Event
-2. MVM 把 Event 按格式编码之后，发送给 refund 合约
-3. refund 反编码 Event, 只是做了简单的 timestamp， nonce 的验证
-4. 执行完成后，通过 ` event MixinTransaction(bytes);`  返回给 MVM 退款信息
-   注意: `event MixinTransaction(bytes)` 只能在注册 publish 的那一个合约里用，其他合约用不了
-5. MVM 接收到执行结果后，把 Token 返还给用户
+1. After the user completes the payment, MVM will receive the output, and by parsing the memo of the output, it will get the asset, amount, executed contract address and other related information, and then save them as an Event 
+2. MVM encodes the Event according to the required format and then sends it to the refund contract 
+3. Refund de-encode Event, with simple verification of the timestamp and nonce 
+4. After the execution is completed, return the refund information to MVM through ` event MixinTransaction(bytes);`  
+   Note: `event MixinTransaction(bytes)` can only be used in the contract registered with publish, while other contracts cannot use it  
+5. Once MVM receives the execution result, it returns the Token to the user   
 
-代码示例：https://github.com/MixinNetwork/trusted-group/blob/master/mvm/invoke.go
+Code example: https://github.com/MixinNetwork/trusted-group/blob/master/mvm/invoke.go
 
-## refund.sol 源码 
+## refund.sol Source Code
 
 ```solidity
 // SPDX-License-Identifier: GPL-3.0
@@ -165,10 +165,10 @@ contract RefundWorker is MixinProcess {
 }
 ```
 
-开源地址：https://github.com/MixinNetwork/trusted-group/blob/master/mvm/quorum/contracts
+Open source address: https://github.com/MixinNetwork/trusted-group/blob/master/mvm/quorum/contracts
 
-## 总结
+## Conclusion
 
-refund 包含了通过 MVM 部署合约，及用户调用合约的整个流程，但是开发者不能直接使用原有的智能合约，需要进行一些修改。
+The refund includes the entire process of deploying the contract through MVM and calling the contract by the user, but the developer cannot directly migrate the original smart contract, because some modifications are needed. 
 
-为了方便开发者直接使用原有的合约，我们实现了 registry.sol ，通过 registry, 原有的合约可以直接迁移，不需要任何的修改, 接下来我们介绍一下 registry 实现及原理。
+In order to facilitate developers to use the original contract directly, we implemented registry.sol. Through the registry, the original contract can be migrated directly without any modification. Next, we will introduce the implementation and principle of the registry.
