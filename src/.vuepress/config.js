@@ -79,6 +79,10 @@ module.exports = {
             {
               title: '转账合约',
               path: '/start/3.transfer'
+            },
+            {
+              title: '错误定位',
+              path: '/start/4.trycatch'
             }
           ]
         },
