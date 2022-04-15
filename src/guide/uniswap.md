@@ -63,7 +63,7 @@ So far, all the code of Uniswap V2 has been successfully deployed on MVM's Quoru
 
 This contract is a simple encapsulation we made based on Uniswap to make it more convenient for MM users to call (mainly for adding and removing liquidity). The code is very simple and can be directly placed in the file of contracts/UniswapMVVMRouter.sol under the `v2-periphery` project.
 
-```
+```solidity
 pragma solidity =0.6.6;
 
 import '@uniswap/v2-core/contracts/interfaces/IUniswapV2Factory.sol';
@@ -187,7 +187,7 @@ What the developer needs to do is to generate a `code_id`, and provide the user 
 
 The same way as the addition of BTC liquidity can be used for the addition of XIN liquidity. A new extra generation is needed. 
 
-```
+```golang
   op := &encoding.Operation{
     Purpose: encoding.OperationPurposeGroupEvent, // fixed value 1
     Process: c.String("process"), // officially maintained registry PID 60e17d47-fa70-3f3f-984d-716313fe838a TODO

@@ -1,8 +1,19 @@
 # Join the Testnet
 
+JSON RPC list:
+
+* https://quorum-testnet.mixin.zone
+* https://quorum-mayfly-testnet.mixin.zone
+
+Websocket list:
+
+* wss://quorum-ws-testnet.mixin.zone
+
+## MetaMask configuration
+
 Network name：Quorum Test
 
-RPC link：http://104.197.245.214:8545
+RPC link：<https://quorum-testnet.mixin.zone>
 
 ChainID：83927
 

@@ -21,4 +21,4 @@ hex.EncodeToString(b)
 
 More detailed specifications:
 
-https://docs.soliditylang.org/en/latest/abi-spec.html
+<https://docs.soliditylang.org/en/latest/abi-spec.html>

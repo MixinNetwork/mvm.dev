@@ -8,7 +8,7 @@ First of all, please note that the process of invoking the contract through MVM 
 
 API Interface POST /payments, and take the BTC in the previous steps as an example: 
 
-```
+```json
 {
   "asset_id":     "c6d0c728-2624-429b-8e0d-d9d19b6592fa",
   "amount":       "0.00002",
@@ -39,7 +39,7 @@ Specific API Documentation: https://developers.mixin.one/zh-CN/docs/api/transfer
 
 Let's take the uniswap contract as an example:
 
-```
+```text
 7c15d0d2faa1b63862880bed982bd3020e1f1a9a5668870000000000000000000000000099cfc3d0c229d03c5a712b158a29ff186b294ab300000000000000000000000000000000000000000000000000000000000007d0
 ```
 
@@ -61,4 +61,4 @@ The generated link format is https://mixin.one/codes/:id. Users can evoke paymen
 3. Registry decodes Event, and then creates account and asset information as per need
 4. After verification information is passed, execute the addLiquidity method of uniswap 
 5. After the call is completed, return the relevant information to MVM through ` event MixinTransaction(bytes);`  
-5. MVM will process after obtaining the results. Since adding liquidity does not require the return of results, this will be the end of the process. Users do not receive information such as refunds.
+6. MVM will process after obtaining the results. Since adding liquidity does not require the return of results, this will be the end of the process. Users do not receive information such as refunds.

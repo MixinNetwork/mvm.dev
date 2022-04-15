@@ -9,23 +9,23 @@
 
 ## 多签里 memo 的生成
 
-```
+```golang
 type Operation struct {
-	Purpose  int
-	Process  string
-	Platform string
-	Address  string
-	Extra    []byte
+ Purpose  int
+ Process  string
+ Platform string
+ Address  string
+ Extra    []byte
 }
 
 func (o *Operation) Encode() []byte {
-	enc := common.NewEncoder()
-	enc.WriteInt(o.Purpose)
-	writeUUID(enc, o.Process)
-	writeBytes(enc, []byte(o.Platform))
-	writeBytes(enc, []byte(o.Address))
-	writeBytes(enc, o.Extra)
-	return enc.Bytes()
+ enc := common.NewEncoder()
+ enc.WriteInt(o.Purpose)
+ writeUUID(enc, o.Process)
+ writeBytes(enc, []byte(o.Platform))
+ writeBytes(enc, []byte(o.Address))
+ writeBytes(enc, o.Extra)
+ return enc.Bytes()
 }
 ```
 
@@ -39,7 +39,7 @@ func (o *Operation) Encode() []byte {
 
    b. 必选项：执行合约内容, 例如:
 
-   ```
+   ```comment
     extra: 7c15d0d2faa1b63862880bed982bd3020e1f1a9a5668870000000000000000000000000099cfc3d0c229d03c5a712b158a29ff186b294ab300000000000000000000000000000000000000000000000000000000000007d0
   
     extra 分成两部分:
@@ -50,40 +50,40 @@ func (o *Operation) Encode() []byte {
      编码格式参照：https://docs.soliditylang.org/en/v0.8.12/abi-spec.html
    ```
 
-## Memo 解析成 Operation
+## Memo 反编成 Operation
 
 MVM 收到一个 output, 会解析 memo 成 Operation
 
-```
+```golang
 func DecodeOperation(b []byte) (*Operation, error) {
-	dec := common.NewDecoder(b)
-	purpose, err := dec.ReadInt()
-	if err != nil {
-		return nil, err
-	}
-	process, err := readUUID(dec)
-	if err != nil {
-		return nil, err
-	}
-	platform, err := dec.ReadBytes()
-	if err != nil {
-		return nil, err
-	}
-	address, err := dec.ReadBytes()
-	if err != nil {
-		return nil, err
-	}
-	extra, err := dec.ReadBytes()
-	if err != nil {
-		return nil, err
-	}
-	return &Operation{
-		Purpose:  purpose,
-		Process:  process,
-		Platform: string(platform),
-		Address:  string(address),
-		Extra:    extra,
-	}, nil
+ dec := common.NewDecoder(b)
+ purpose, err := dec.ReadInt()
+ if err != nil {
+  return nil, err
+ }
+ process, err := readUUID(dec)
+ if err != nil {
+  return nil, err
+ }
+ platform, err := dec.ReadBytes()
+ if err != nil {
+  return nil, err
+ }
+ address, err := dec.ReadBytes()
+ if err != nil {
+  return nil, err
+ }
+ extra, err := dec.ReadBytes()
+ if err != nil {
+  return nil, err
+ }
+ return &Operation{
+  Purpose:  purpose,
+  Process:  process,
+  Platform: string(platform),
+  Address:  string(address),
+  Extra:    extra,
+ }, nil
 }
 ```
 
@@ -95,64 +95,64 @@ func DecodeOperation(b []byte) (*Operation, error) {
 
 ```golang
 func DecodeEvent(b []byte) (*Event, error) {
-	dec := common.NewDecoder(b)
-	process, err := readUUID(dec)
-	if err != nil {
-		return nil, err
-	}
-	nonce, err := dec.ReadUint64()
-	if err != nil {
-		return nil, err
-	}
-	asset, err := readUUID(dec)
-	if err != nil {
-		return nil, err
-	}
-	amount, err := dec.ReadInteger()
-	if err != nil {
-		return nil, err
-	}
-	extra, err := dec.ReadBytes()
-	if err != nil {
-		return nil, err
-	}
-	timestamp, err := dec.ReadUint64()
-	if err != nil {
-		return nil, err
-	}
+ dec := common.NewDecoder(b)
+ process, err := readUUID(dec)
+ if err != nil {
+  return nil, err
+ }
+ nonce, err := dec.ReadUint64()
+ if err != nil {
+  return nil, err
+ }
+ asset, err := readUUID(dec)
+ if err != nil {
+  return nil, err
+ }
+ amount, err := dec.ReadInteger()
+ if err != nil {
+  return nil, err
+ }
+ extra, err := dec.ReadBytes()
+ if err != nil {
+  return nil, err
+ }
+ timestamp, err := dec.ReadUint64()
+ if err != nil {
+  return nil, err
+ }
 
-	ml, err := dec.ReadInt()
-	if err != nil {
-		return nil, err
-	}
-	members := make([]string, ml)
-	for i := 0; i < ml; i++ {
-		m, err := readUUID(dec)
-		if err != nil {
-			return nil, err
-		}
-		members[i] = m
-	}
-	threshold, err := dec.ReadInt()
-	if err != nil {
-		return nil, err
-	}
-	sig, err := dec.ReadBytes()
-	if err != nil {
-		return nil, err
-	}
+ ml, err := dec.ReadInt()
+ if err != nil {
+  return nil, err
+ }
+ members := make([]string, ml)
+ for i := 0; i < ml; i++ {
+  m, err := readUUID(dec)
+  if err != nil {
+   return nil, err
+  }
+  members[i] = m
+ }
+ threshold, err := dec.ReadInt()
+ if err != nil {
+  return nil, err
+ }
+ sig, err := dec.ReadBytes()
+ if err != nil {
+  return nil, err
+ }
 
-	return &Event{
-		Process:   process,
-		Asset:     asset,
-		Members:   members,
-		Threshold: threshold,
-		Amount:    amount,
-		Extra:     extra,
-		Timestamp: timestamp,
-		Nonce:     nonce,
-		Signature: sig,
-	}, nil
+ return &Event{
+  Process:   process,
+  Asset:     asset,
+  Members:   members,
+  Threshold: threshold,
+  Amount:    amount,
+  Extra:     extra,
+  Timestamp: timestamp,
+  Nonce:     nonce,
+  Signature: sig,
+ }, nil
 }
 ```
 
@@ -162,30 +162,30 @@ func DecodeEvent(b []byte) (*Event, error) {
 
 代码示例
 
-```
+```golang
 func (e *Event) Encode() []byte {
-	enc := common.NewEncoder()
-	writeUUID(enc, e.Process)
-	enc.WriteUint64(e.Nonce)
-	writeUUID(enc, e.Asset)
-	enc.WriteInteger(e.Amount)
-	writeBytes(enc, e.Extra)
-	enc.WriteUint64(e.Timestamp)
+ enc := common.NewEncoder()
+ writeUUID(enc, e.Process)
+ enc.WriteUint64(e.Nonce)
+ writeUUID(enc, e.Asset)
+ enc.WriteInteger(e.Amount)
+ writeBytes(enc, e.Extra)
+ enc.WriteUint64(e.Timestamp)
 
-	if len(e.Members) > 64 {
-		panic(len(e.Members))
-	}
-	enc.WriteInt(len(e.Members))
-	for _, m := range e.Members {
-		writeUUID(enc, m)
-	}
-	if e.Threshold > len(e.Members) {
-		panic(e.Threshold)
-	}
-	enc.WriteInt(e.Threshold)
-	writeBytes(enc, e.Signature)
+ if len(e.Members) > 64 {
+  panic(len(e.Members))
+ }
+ enc.WriteInt(len(e.Members))
+ for _, m := range e.Members {
+  writeUUID(enc, m)
+ }
+ if e.Threshold > len(e.Members) {
+  panic(e.Threshold)
+ }
+ enc.WriteInt(e.Threshold)
+ writeBytes(enc, e.Signature)
 
-	return enc.Bytes()
+ return enc.Bytes()
 }
 ```
 

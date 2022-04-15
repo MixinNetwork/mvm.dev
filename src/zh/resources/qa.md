@@ -4,7 +4,7 @@
 
 在 registry.sol 里有两个公开的 map
 
-```
+```solidity
 mapping(address => bytes) public users;
 mapping(uint => address) public contracts;
 ```
@@ -13,7 +13,7 @@ mapping(uint => address) public contracts;
 
 同样在 registry.sol 里有两个公开的 map
 
-```
+```solidity
 mapping(address => uint128) public assets;
 mapping(uint => address) public contracts;
 ```
@@ -34,4 +34,4 @@ mapping(uint => address) public contracts;
 
 我们推荐用 Registry 调用, 这样合约也不用实现这结果返回这部分
 
-注意: `event MixinTransaction(bytes)` 只能在注册 publish 的那一个合约里用，其他合约用不了，也就是如果是用 Registry，就不能在自己的合约里写这个。
+> 注意: `event MixinTransaction(bytes)` 只能在注册 publish 的那一个合约里用，其他合约用不了，也就是如果是用 Registry，就不能在自己的合约里写这个。

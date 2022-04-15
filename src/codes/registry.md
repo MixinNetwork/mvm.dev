@@ -12,7 +12,7 @@ Mainly include:
 
 Get the correspondence from the following three public maps if needed:
 
-```
+```solidity
 mapping(address => bytes) public users;
 mapping(address => uint128) public assets;
 mapping(uint => address) public contracts;

@@ -17,7 +17,7 @@
 
 首先将所有的 v2-core 合约代码导入到 Remix IDE，然后对代码里面的几处参数作一下修改。
 
-注意：这些修改不是因为要部署到 MVM 才修改的，这只是一些针对不同网络部署的配置文件性质的修改。
+> 注意：这些修改不是因为要部署到 MVM 才修改的，这只是一些针对不同网络部署的配置文件性质的修改。
 
 第一个是将 `contracts/UniswapV2ERC20.sol` 中的 chainId 修改成 Quorum 测试网的网络 ID，注意这里去掉了对 assembly 的调用，是因为 Uniswap 的代码非常古老，很多新的特性在新的网络上支持不好。
 
@@ -47,7 +47,7 @@
 
 ![image](https://prsdigg.com/rails/active_storage/blobs/eyJfcmFpbHMiOnsibWVzc2FnZSI6IkJBaHBBcUFOIiwiZXhwIjpudWxsLCJwdXIiOiJibG9iX2lkIn19--ff2de56617bf6a8211019abd1bbe1d32d5131ca0/Screenshot%20from%202022-01-31%2008-35-56)
 
-如图上所示，这里我们需要的是 `0x649f` 开头的字符串，在后面部署中需要用到。
+如图上所示，这里我们需要的是 `0x649f` 开头的那串数字，在后面部署中需要用到。
 
 ## UniswapV2Router02 部署
 
@@ -63,7 +63,7 @@
 
 这个合约是我们基于 Uniswap 做了一个简单的封装，来让 MM 用户调用更方便 （主要是添加，移除流动性)，代码非常简单，直接放在 `v2-periphery` 项目的 contracts/UniswapMVMRouter.sol 文件里即可。
 
-```
+```solidity
 pragma solidity =0.6.6;
 
 import '@uniswap/v2-core/contracts/interfaces/IUniswapV2Factory.sol';
@@ -151,43 +151,43 @@ contract UniswapMVMRouter {
 
 Mixin 用户添加流动性的操作，也是通过一次给 mtg 的多签转帐完成的，分为两步：
 
-1. 开发者(任意)生成一个 https://mixin.one/codes/:id
+1. 开发者(任意)生成一个 `https://mixin.one/codes/:id`
 
-   把 Operation encode 之后做为 memo, 调用 POST /payments 接口, 相关文档：
-   https://developers.mixin.one/zh-CN/docs/api/transfer/payment
+    把 Operation encode 之后做为 memo, 调用 POST /payments 接口, 相关文档：
+    <https://developers.mixin.one/zh-CN/docs/api/transfer/payment>
 
-  Operation 结构
-  
-  ```
-  op := &encoding.Operation{
+    Operation 结构
+
+    ```golang
+    op := &encoding.Operation{
     Purpose: encoding.OperationPurposeGroupEvent, // 固定值 1
     Process: c.String("process"), // 官方维护的 registry 的 PID 60e17d47-fa70-3f3f-984d-716313fe838a TODO
     Extra:   extra, // 合约执行的内容
-  }
-  
-  extra: 7c15d0d2faa1b63862880bed982bd3020e1f1a9a5668870000000000000000000000000099cfc3d0c229d03c5a712b158a29ff186b294ab300000000000000000000000000000000000000000000000000000000000007d0
-  
+    }
+
+    extra: 7c15d0d2faa1b63862880bed982bd3020e1f1a9a5668870000000000000000000000000099cfc3d0c229d03c5a712b158a29ff186b294ab300000000000000000000000000000000000000000000000000000000000007d0
+
     extra 分成两部分:
-  a. 0x7c15d0D2faA1b63862880Bed982bd3020e1f1A9A 去掉 0x 后全部小写, 是需要执行合约的地址
-  b. 从 566887 开始则是 addLiquidity(address,uint256) 方法加详细参数的 ABI 值, 
-     上面的例子中是 c6d0c728-2624-429b-8e0d-d9d19b6592fa 是 BTC 在 Mixin 网络里的资产 ID
-     amount 0.00002 的 ABI 编码, 这个我们会单独的介绍
-     编码格式参照：https://docs.soliditylang.org/en/v0.8.12/abi-spec.html
-  ```
-  
-  获取资产对应关系的方式，可以在 Q&A 里找到。
+    a. 0x7c15d0D2faA1b63862880Bed982bd3020e1f1A9A 去掉 0x 后全部小写, 是需要执行合约的地址
+    b. 从 566887 开始则是 addLiquidity(address,uint256) 方法加详细参数的 ABI 值, 
+        上面的例子中是 c6d0c728-2624-429b-8e0d-d9d19b6592fa 是 BTC 在 Mixin 网络里的资产 ID
+        amount 0.00002 的 ABI 编码, 这个我们会单独的介绍
+        编码格式参照：https://docs.soliditylang.org/en/v0.8.12/abi-spec.html
+    ```
+
+    获取资产对应关系的方式，可以在 Q&A 里找到。
 
 2. 用户支付，使用 mixin messenger 扫码（或者唤起）支付。
 
-  在上一步中，会获取到 https://mixin.one/codes/:id 的链接，用户可以通过扫码或者 messenger 中唤起支付。
+  在上一步中，会获取到 `https://mixin.one/codes/:id` 的链接，用户可以通过扫码或者 messenger 中唤起支付。
 
-开发者需要做的是生成 `code_id`, 给用户提供支付链接 https://mixin.one/codes/:id, 用户使用合约，只需要通过该链接支付即可。
+开发者需要做的是生成 `code_id`, 给用户提供支付链接 `https://mixin.one/codes/:id`, 用户使用合约，只需要通过该链接支付即可。
 
 ### 添加 XIN 进流动池
 
 XIN 流动性的添加，跟 BTC 流动性添加方式一样，生成新的 extra
 
-```
+```golang
   op := &encoding.Operation{
     Purpose: encoding.OperationPurposeGroupEvent, // 固定值 1
     Process: c.String("process"), // 官方维护的 registry 的 PID 60e17d47-fa70-3f3f-984d-716313fe838a TODO
@@ -197,15 +197,15 @@ XIN 流动性的添加，跟 BTC 流动性添加方式一样，生成新的 extr
   extra: 7c15d0d2faa1b63862880bed982bd3020e1f1a9a56688700000000000000000000000000bd6efc2e2cb99aef928433209c0a3be09a34f11400000000000000000000000000000000000000000000000000000000000007d0
 ```
 
-开发者生成支付链接 https://mixin.one/codes/:id ，用户通过扫码或者 messenger 中唤起支付。
+开发者生成支付链接 `https://mixin.one/codes/:id` ，用户通过扫码或者 messenger 中唤起支付。
 
-到目前为止，在 MVM 上部署 Uniswap，给 Uniswap 添加流动性就完成了。通过 MVM 测试网浏览器（https://testnet.mvmscan.com/address/0x5aD700bd8B28C55a2Cac14DCc9FBc4b3bf37679B）可以方便的查看 Registry 进程相关的所有的操作结果。
+到目前为止，在 MVM 上部署 Uniswap，给 Uniswap 添加流动性就完成了。通过 MVM 测试网浏览器（<https://testnet.mvmscan.com/address/0x5aD700bd8B28C55a2Cac14DCc9FBc4b3bf37679B>）可以方便的查看 Registry 进程相关的所有的操作结果。
 
 ## 部署示例
 
 我们实现了一个通过 hardhat 部署 uniswap 的完整示例，其中的 Quorum 测试网可以直接使用，通过 fork 可以方便的部署自己的合约。
 
-uniswap 部署脚本地址：https://github.com/MixinNetwork/mvmcontracts/blob/main/scripts/uniswap.ts
+uniswap 部署脚本地址：<https://github.com/MixinNetwork/mvmcontracts/blob/main/scripts/uniswap.ts>
 
 ## 总结
 

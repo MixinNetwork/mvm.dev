@@ -4,7 +4,7 @@
 
 There are two public maps in registry.sol 
 
-```
+```solidity
 mapping(address => bytes) public users;
 mapping(uint => address) public contracts;
 ```
@@ -13,7 +13,7 @@ mapping(uint => address) public contracts;
 
 Similarly in registry.sol there are two public maps
 
-```
+```solidity
 mapping(address => uint128) public assets;
 mapping(uint => address) public contracts;
 ```

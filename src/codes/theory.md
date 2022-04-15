@@ -15,17 +15,17 @@ You can refer to the developer part in the user guide for the development proces
 
 The structure of Event in MVM, 
 
-```
+```golang
 type Event struct {
-	Process   string
-	Asset     string
-	Members   []string // need to do user mask per process
-	Threshold int
-	Amount    common.Integer
-	Extra     []byte
-	Timestamp uint64
-	Nonce     uint64
-	Signature []byte
+ Process   string
+ Asset     string
+ Members   []string // need to do user mask per process
+ Threshold int
+ Amount    common.Integer
+ Extra     []byte
+ Timestamp uint64
+ Nonce     uint64
+ Signature []byte
 }
 ```
 

@@ -47,7 +47,7 @@ Publishing a contract is a multi-signature transfer to MTG, which will contain c
 
 memo is the encoding of Operation:
 
-```
+```golang
 op := &encoding.Operation{
   Purpose:  encoding.OperationPurposeAddProcess, // fixed value of contract publish 11
   Process:  key.ClientId, // bot client_id, for example：27d0c319-a4e3-38b4-93ff-cb45da8adbe1 
@@ -81,11 +81,30 @@ op := &encoding.Operation{
 
   API interface documentation: https://developers.mixin.one/zh-CN/docs/api/transfer/raw-transfer#transfer-to-a-multi-signature-address
 
+    ```json
+    {
+      "asset_id":     "965e5c6e-434c-3fa9-b780-c50f43cd955c",
+      "amount":       "1",
+      "opponent_multisig":  {
+        "receivers": [
+          "a15e0b6d-76ed-4443-b83f-ade9eca2681a",
+          "b9126674-b07d-49b6-bf4f-48d965b2242b",
+          "15141fe4-1cfd-40f8-9819-71e453054639",
+          "3e72ca0c-1bab-49ad-aa0a-4d8471d375e7"
+        ],
+        "threshold": 3
+      },
+      "trace_id":     "5a74b05c-55d3-4081-99d0-f98917079fdf",
+      "memo":         "AAuNz4I9nrNNooc08KrVDA2mAAZxdW9ydW0AKjB4MkE0NjMwNTUwQWQ5MDlCOTBhQWNEODJiNWY2NUUzM2FmRkEwNDMyMwAETUVUQQ",
+    }
+    ```
 
 2. You can also refer to the Golang code example: https://github.com/MixinNetwork/trusted-group/blob/master/mvm/publish.go
 
-  ```
-  mvm publish -m config/config.toml \
+3. 也可以参考 Golang 代码示例：<https://github.com/MixinNetwork/trusted-group/blob/master/mvm/publish.go>
+
+    ```shell
+    mvm publish -m config/config.toml \
     -k keystore.json \
     -a 0x2A4630550Ad909B90aAcD82b5f65E33afFA04323 \
     -e META
@@ -116,7 +135,7 @@ Mixin users use the contract through MTG's multi-signature transfer. Thus, the d
 
 Operation structure
 
-```
+```golang
 op := &encoding.Operation{
 	Purpose: encoding.OperationPurposeGroupEvent, // fixed value 1
 	Process: c.String("process"), // client_id of bot

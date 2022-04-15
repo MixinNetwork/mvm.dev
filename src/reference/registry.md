@@ -99,7 +99,7 @@ function mixin(bytes memory raw) public returns (bool) {
 
 Users and assets of Messenger need to correspond to the accounts and assets in MVM, and the corresponding methods can be obtained in the following three public maps:   
 
-```
+```solidity
 mapping(address => bytes) public users;
 mapping(address => uint128) public assets;
 mapping(uint => address) public contracts;

@@ -9,6 +9,6 @@ footer: Made by mixin.dev with ❤️
 
 MVM 是基于 MTG 技术, 让合约开发人员无需修改, 即可部署智能合约。MTG 是由多个可信任节点共同运行。
 
-# 开源代码
+## 开源代码
 
-开源地址：https://github.com/MixinNetwork/trusted-group
+开源地址：<https://github.com/MixinNetwork/trusted-group>
