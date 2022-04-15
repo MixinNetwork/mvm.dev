@@ -21,11 +21,11 @@ PID 是 process id 的缩写，MVM 把 Mixin 里的机器人 ID (或者机器人
 
 Registry 是 MVM 的代理合约，来帮助 EVM 合约开发者迁移合约。
 
-## function mixin(bytes memory raw)
+## `function mixin(bytes memory raw)`
 
 mixin 函数是 MVM 里智能合约的唯一入口, 所有的合约都需要实现这个函数, Registry 也实现了这个函数，如果是通过 Registry 来调用其它合约, 那么其它合约不需要再实现这个函数。
 
-## event MixinTransaction(bytes)
+## `event MixinTransaction(bytes)`
 
 MVM 里智能合约的，唯一返回数据出口, 同样我们在 Registry 里实现了这个函数，其它智能合约如果通过 Registry 调用也不需要实现这个函数。
 
