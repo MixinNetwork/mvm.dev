@@ -1,6 +1,6 @@
 # registry.sol resolution
 
-The registry is the proxy of MVM. Other contracts can execute related contracts by sending data in a certain format through `function mixin(bytes memory raw)`.
+The registry is the proxy of MVM. Other contracts can execute by sending data in a certain format through `function mixin(bytes memory raw)`.
 
 Address of open source code: https://github.com/MixinNetwork/trusted-group/tree/master/mvm/quorum/contracts
 
@@ -24,7 +24,7 @@ mapping(uint => address) public contracts;
 
 When MVM calls the contract, calling the function of mixin, relevant parameters will be parsed via raw 
 
-1. process, uuid verifies whether the deployed process is the same as the called process
+1. process, is a UUID verifies whether the deployed process is the same as the called process
 2. nonce, EVM requires nonce + 1 per call
 3. asset id, the id of the asset in the mixin
 4. amount, the amount of assets that need to be manipulated

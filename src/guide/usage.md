@@ -1,4 +1,4 @@
-# How Messenger Users Call Contracts 
+# How Messenger Users Use Contracts 
 
 In the previous steps, we completely deployed a uniswap contract, and showed how to call the uniswap contract through the registry to add liquidity. In this article, we will explain in more detail what developers need to do, and what MVM does in this process.  
 
@@ -6,7 +6,7 @@ First of all, please note that the process of invoking the contract through MVM 
 
 ## User Payment Link Generation
 
-Interface POST /payments, and take the BTC in the previous steps as an example: 
+API Interface POST /payments, and take the BTC in the previous steps as an example: 
 
 ```
 {

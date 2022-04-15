@@ -50,7 +50,7 @@ func (o *Operation) Encode() []byte {
      Coding format reference：https://docs.soliditylang.org/en/v0.8.12/abi-spec.html
    ```
 
-## Memo decompiled into Operation 
+## Memo decoding into Operation 
 
 MVM receives an output and then will parse memo into Operation 
 

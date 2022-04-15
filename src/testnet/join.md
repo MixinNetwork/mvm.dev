@@ -12,6 +12,6 @@ Blockchain Explorer：https://testnet.mvmscan.com/
 
 You can also add to MetaMask via the link: [https://chainlist.info/?search==rum](https://chainlist.info/?search==rum)
 
-## Obtain Test Tokens
+## Claim Test Tokens
 
 Get test tokens through this link: [https://faucet.mvmscan.com/](https://faucet.mvmscan.com/)

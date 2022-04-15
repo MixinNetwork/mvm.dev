@@ -1,10 +1,10 @@
-# registry.sol 解析
+# registry.sol 合约，以及用法
 
 registry 是 MVM 代理, 其它合约都可以通过给它的 `function mixin(bytes memory raw)` 发送一定格式的数据来执行相关的合约。
 
 开源代码地址: https://github.com/MixinNetwork/trusted-group/tree/master/mvm/quorum/contracts
 
-主要包含:
+开发者需要关注的主要包含:
 
 1. 执行入口，`function mixin(bytes memory raw)
 2. MixinUser, 将 mixin 里的用户跟 EVM 里的帐户进行关联
