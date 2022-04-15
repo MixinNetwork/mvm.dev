@@ -1,16 +1,16 @@
-# registry.sol 解析
+# registry.sol resolution
 
-registry 是 MVM 代理, 其它合约都可以通过给它的 `function mixin(bytes memory raw)` 发送一定格式的数据来执行相关的合约。
+The registry is the proxy of MVM. Other contracts can execute by sending data in a certain format through `function mixin(bytes memory raw)`.
 
-开源代码地址: https://github.com/MixinNetwork/trusted-group/tree/master/mvm/quorum/contracts
+Address of open source code: https://github.com/MixinNetwork/trusted-group/tree/master/mvm/quorum/contracts
 
-主要包含:
+Mainly include:
 
-1. 执行入口，`function mixin(bytes memory raw)
-2. MixinUser, 将 mixin 里的用户跟 EVM 里的帐户进行关联
-3. MixinAsset, mixin 里的资产跟 EVM 里的资产进行关联
+1. Execute entry, `function mixin(bytes memory raw)
+2. MixinUser, associate users in Mixin with related accounts in EVM 
+3. MixinAsset, associate the assets in Mixin with the assets in EVM 
 
-如果需要获取对应关系可以从，这以下三个公开的 map 里获取:
+Get the correspondence from the following three public maps if needed:
 
 ```
 mapping(address => bytes) public users;
@@ -18,23 +18,24 @@ mapping(address => uint128) public assets;
 mapping(uint => address) public contracts;
 ```
 
-### function mixin 解析
+### function mixin resolution
 
-`function mixin()` 是 MVM 调用智能合约的唯一路口，所有后续的合约操作都需要通过这个函数
+`function mixin()` is the only way for MVM to call smart contracts, and all subsequent contract operations need to go through this function. 
 
-当 MVM 调用合约时, 调用 mixin 这个函数，raw 会解析成相关的参数
-1. process, uuid 验证部署的 process 跟调用的 process 是否一致
-2. nonce, EVM 需要每次调用需要 nonce + 1
-3. asset id, mixin 里资产的 id
-4. amount, 需要操作的资产数量
-5. extra, 包含着资产, 合约的一些信息
+When MVM calls the contract, calling the function of mixin, relevant parameters will be parsed via raw 
+
+1. process, is a UUID verifies whether the deployed process is the same as the called process
+2. nonce, EVM requires nonce + 1 per call
+3. asset id, the id of the asset in the mixin
+4. amount, the amount of assets that need to be manipulated
+5. extra, some information about assets and contracts
 6. timestamp
-7. user, mixin 里的用户，可能是多签帐号, 如果用户不存在会创建用户
-8. 解析 5 里面的 extra 值, 如果资产不存在会创建资产
-9. 验证签名
-10. 给 mixin 用户，对应的 mvm 帐号转入相应的资产
-11. 调用合约, 执行完成后，销毁 mvm 帐号的资产
-12. 返回调用结果 `emit MixinTransaction`
+7. user, the user in the mixin, which may be a multi-signature account. New user will be created, if the user does not exist.
+8. Parse the value of extra in 5. Asset will be created, if the asset does not exist.
+9. signature verification
+10. transfer the corresponding assets to the corresponding mvm account of mixin users
+11.call the contract, and after the execution is completed, destroy the assets in the mvm account 
+12. return the call result `emit MixinTransaction`
 
 ```solidity
 function mixin(bytes memory raw) public returns (bool) {

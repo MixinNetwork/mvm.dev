@@ -1,65 +1,65 @@
-# 完整的 MVM 合约开发示例 refund.sol
+# Complete MVM Contract Development Example refund.sol
 
-在上一部分，我们介绍了 MVM 实现的主要功能，这篇文章我们基于 MVM 开发一个完整的合约。分为以下几部分:
+In the previous part, we introduced the main functions implemented by MVM. In this article, we will show how to develop a complete contract based on MVM.  Including the following parts:
 
-1. 实现 solidity 合约, 这里我们用 refund.sol 作为示例，其它的合约类似, 开源代码在文章最后。
-2. 在 quorum 上部署 refund 合约，这部分跟 EVM 合约的部署一致。
-2. 在 MVM 上发布合约
-3. Mixin 用户使用合约
+1. Implement the solidity contract. Here we use refund.sol as an example, while other contracts are in similar process. The open source code is at the end of the article. 
+2. Deploy the refund contract on the quorum, with the same operation as the deployment of the EVM contract. 
+3. Publish contracts on MVM
+4. Mixin users use the contracts 
 
-## refund 合约实现
+## Refund Contract Implementation
 
-`refund.sol` 实现了用户转帐并自动退款的智能合约。基于 MVM 的智能合约开发, 都需要实现 `function _pid()` 跟 `function _work(Event)` 两个函数:
+`refund.sol` implements a smart contract for user transfers and automatic refunds. For the development of smart contracts based on MVM, two functions `function _pid()` and `function _work(Event)` need to be implemented:   
 
 1. `function _pid() internal pure override(MixinProcess) returns (uint128)`
 
-    每个合约都需要有一个 PID, PID 是一个 Mixin 机器人（或者机器人用户的）client_id, 示例：
+    PID is needed for each contract, which is the client_id of Mixin bot (or bot user), for example:  
     
-    机器人用户的  id: 27d0c319-a4e3-38b4-93ff-cb45da8adbe1, PID 0x27d0c319a4e338b493ffcb45da8adbe1，把 user id, 去掉 `-` 前面加 `0x`    
+    Bot user id: 27d0c319-a4e3-38b4-93ff-cb45da8adbe1, by removing `-` and adding `0x` in front of user id, you can get PID: 0x27d0c319a4e338b493ffcb45da8adbe1
 
-    PID 是 MVM 里跟智能合约的合约地址进行绑定的。
+    The PID is bound to the contract address of the smart contract in MVM. 
 
-    注意：这个机器人的 client_id, 只能使用一次，也就是跟一个合约绑定。
+    Note: The client_id of the bot can only be used once, that is to say, it can only be bound to one contract. 
     
 2. `function _work(Event memory evt) internal override(MixinProcess) returns (bool)`
 
-    合约执行函数, 在这个函数中，会退会用户转给合约的 token。
+    This is contract execution function. By this function, the token that the user transfers to the contract will be returned. 
 
-在文章最后有源代码，及开源地址
+There is source code and open source address at the end of the article for this.
 
-## 在 Quorum 上部署合约
+## Deploy the Contract on Quorum
 
-开发者可以选择自己熟悉的部署方式，remix, hardhat 等。
+Developers can choose the deployment method they are familiar with, such as remix, hardhat, etc.
 
-这里是 hardhat 的部署示例，https://github.com/MixinNetwork/mvmcontracts, 已经配置好 quorum 测试网，可以直接使用。
+Here is a deployment example for hardhat, https://github.com/MixinNetwork/mvmcontracts, which can be used directly if the quorum testnet has been configured.
 
-TODO: 补充 refund 部署命令。
+TODO: To add refund deployment commands.
 
-## 在 MVM 发布合约
+## Publish the Contract on MVM
 
-智能合约在 Quorum 部署完成后，需要在 MVM 与 Mixin 机器人绑定 (发布合约), MVM 会基于 PID 来打包数据，并发送到 Quorum, 并把 Quorum 里的执行结果返回给 Mixin 用户。
+After the smart contract is deployed on Quorum, it needs to be bound to the Mixin bot on the MVM (publish the contract). MVM will package the data based on the PID, send it to Quorum, and return the execution result in the Quorum to the Mixin user. 
 
-发布合约是一个给 MTG 的多签转帐，在 memo 里会带有合约地址，PID, 合约地址等信息。
+Publishing a contract is a multi-signature transfer to MTG, which will contain contract address, PID, contract address and other information in the memo. 
 
-1. 开发者需要给 MTG 转一笔金额 >= 1 的 CNB, memo 为 Operation 的编码
-2.  MVM 收到 output 后，会解析 memo, 验证合约地址等一些基本信息，符合要求后，把这 process 这些信息保存下来
-3.  合约执行工作，在下一步调用合约，详细描述
+1. The developer needs to transfer CNB with the amount >= 1 to MTG, with the code of Operation as the memo
+2. After the MVM receives the output, it will parse the memo, verify some basic information such as the contract address etc., and save this process information if requirements are met.   
+3. The contract execution work will be described in detail in the next step of calling the contract.  
 
-memo 是 Operation 的编码：
+memo is the encoding of Operation:
 
 ```
 op := &encoding.Operation{
-  Purpose:  encoding.OperationPurposeAddProcess, // 发布合约固定值 11
-  Process:  key.ClientId, // 机器人 client_id, 例如：27d0c319-a4e3-38b4-93ff-cb45da8adbe1 
-  Platform: c.String("platform"), // 如果是 EVM 合约，值是 quorum
-  Address:  c.String("address"), // EVM 合约地址
-  Extra:    []byte(c.String("extra")), // 可选项，如果需要自动创建资产，值是 META
+  Purpose:  encoding.OperationPurposeAddProcess, // fixed value of contract publish 11
+  Process:  key.ClientId, // bot client_id, for example：27d0c319-a4e3-38b4-93ff-cb45da8adbe1 
+  Platform: c.String("platform"), // if it is an EVM contract, the value is quorum
+  Address:  c.String("address"), // EVM contract address
+  Extra:    []byte(c.String("extra")), // optional, value is META if automatically create assets is needed 
 }
 ```
 
-1. POST /transactions 接口
+1. POST /transactions interface
 
-  请求参数：
+  Request parameters:
 
   ```
   {
@@ -79,10 +79,10 @@ op := &encoding.Operation{
   }
   ```
 
-  API 接口文档：https://developers.mixin.one/zh-CN/docs/api/transfer/raw-transfer#transfer-to-a-multi-signature-address
+  API interface documentation: https://developers.mixin.one/zh-CN/docs/api/transfer/raw-transfer#transfer-to-a-multi-signature-address
 
 
-2. 也可以参考 Golang 代码示例：https://github.com/MixinNetwork/trusted-group/blob/master/mvm/publish.go
+2. You can also refer to the Golang code example: https://github.com/MixinNetwork/trusted-group/blob/master/mvm/publish.go
 
   ```
   mvm publish -m config/config.toml \
@@ -91,51 +91,51 @@ op := &encoding.Operation{
     -e META
   ```
 
-  * -a: 是指合约的地址，需要区分大小写
-  * -e: 可选项 META, 是否带资产信息
-  * -m: 配置文件，示例地址：https://github.com/MixinNetwork/trusted-group/blob/master/mvm/config/config.example.toml, 这里只用到了 mtg.genesis 里 members, threshold 两个配置
-  members 是，mtg 里的多签节点的 id, 示例中的是真实的测试网的 mtg 节点, 可以直接使用
-  * -k: 合约需要跟一个 Mixin 的用户绑定, keystore.json 就是这个用户的私钥跟 pin 信息。
+  * -a: refers to the address of the contract, which needs to be case sensitive
+  * -e: optional META, with or without asset information
+  * -m: configuration file, example address: https://github.com/MixinNetwork/trusted-group/blob/master/mvm/config/config.example.toml, only the two configurations of members and threshold in mtg.genesis are used here
+  members is the id of the multi-signature node in MTG. The MTG nodes in the example are the real nodes in the testnet, which can be used directly  
+  * -k: the contract needs to be bound to a Mixin user, and keystore.json is the user's private key and pin information 
 
-3. 推荐通过合约机器人 7000103716 来，发布合约
+3. It is recommended to use the contract bot 7000103716 to publish the contract.
 
-以上三种方式, 都可以用来发布机器人，效果相同
+All of the above three methods can be used to publish the bot with the same effect.
 
-## 如何调用合约
+## How to Call the Contract
 
-Mixin 用户使用合约同样也是通过 MTG 的多签转帐。需要开发者生成一个用户对 MTG 多签转帐的链接。
+Mixin users use the contract through MTG's multi-signature transfer. Thus, the developer needs to generate a link for the user to do MTG multi-signature transaction. 
 
-1. 开发者生成一个 https://mixin.one/codes/:id，
+1. The developer generates a https://mixin.one/codes/:id，
 	
-   把 Operation encode 之后做为 memo, 调用 POST /payments 接口, 相关文档：
+   encode Operation and use it as memo, call POST /payments interface, here is related documentation:
    https://developers.mixin.one/zh-CN/docs/api/transfer/payment
 
-   金额没有限制, 最小 0.00000001，币种需要是 Mixin 主网支持
+   There is no limit on the amount but minimum 0.00000001, and the tokens should be the ones Mixin mainnet supported. 
 
-2. 用户支付，使用 mixin messenger 扫码（或者唤起）支付。
+2. For the user payment, users can use the mixin messenger to scan the code (or evoke) to pay. 
 
-Operation 结构
+Operation structure
 
 ```
 op := &encoding.Operation{
-	Purpose: encoding.OperationPurposeGroupEvent, // 固定值 1
-	Process: c.String("process"), // 机器人的 client_id
-	Extra:   extra, // 合约执行的内容，refund 合约为空
+	Purpose: encoding.OperationPurposeGroupEvent, // fixed value 1
+	Process: c.String("process"), // client_id of bot
+	Extra:   extra, // the content of the contract execution，empty for the refund contract 
 }
 ```
 
-以下是 MVM 的内部实现原理简述：
+The following is a brief description of the internal implementation principle of MVM:
 
-1. 用户完成支付后，MVM 会收到 output，通过解析 output 的 memo, 拿到资产，金额，执行合约地址等相关信息，保存为 Event
-2. MVM 把 Event 按格式编码之后，发送给 refund 合约
-3. refund 反编码 Event, 只是做了简单的 timestamp， nonce 的验证
-4. 执行完成后，通过 ` event MixinTransaction(bytes);`  返回给 MVM 退款信息
-   注意: `event MixinTransaction(bytes)` 只能在注册 publish 的那一个合约里用，其他合约用不了
-5. MVM 接收到执行结果后，把 Token 返还给用户
+1. After the user completes the payment, MVM will receive the output, and by parsing the memo of the output, it will get the asset, amount, executed contract address and other related information, and then save them as an Event 
+2. MVM encodes the Event according to the required format and then sends it to the refund contract 
+3. Refund de-encode Event, with simple verification of the timestamp and nonce 
+4. After the execution is completed, return the refund information to MVM through ` event MixinTransaction(bytes);`  
+   Note: `event MixinTransaction(bytes)` can only be used in the contract registered with publish, while other contracts cannot use it  
+5. Once MVM receives the execution result, it returns the Token to the user   
 
-代码示例：https://github.com/MixinNetwork/trusted-group/blob/master/mvm/invoke.go
+Code example: https://github.com/MixinNetwork/trusted-group/blob/master/mvm/invoke.go
 
-## refund.sol 源码 
+## refund.sol source code
 
 ```solidity
 // SPDX-License-Identifier: GPL-3.0
@@ -165,10 +165,10 @@ contract RefundWorker is MixinProcess {
 }
 ```
 
-开源地址：https://github.com/MixinNetwork/trusted-group/blob/master/mvm/quorum/contracts
+Open source address: https://github.com/MixinNetwork/trusted-group/blob/master/mvm/quorum/contracts
 
-## 总结
+## Conclusion
 
-refund 包含了通过 MVM 部署合约，及用户调用合约的整个流程，但是开发者不能直接使用原有的智能合约，需要进行一些修改。
+The refund includes the entire process of deploying the contract through MVM and calling the contract by the user, but the developer cannot directly migrate the original smart contract, because some modifications are needed. 
 
-为了方便开发者直接使用原有的合约，我们实现了 registry.sol ，通过 registry, 原有的合约可以直接迁移，不需要任何的修改, 接下来我们介绍一下 registry 实现及原理。
+In order to facilitate developers to use the original contract directly, we implemented registry.sol. Through the registry, the original contract can be migrated directly without any modification. Next, we will introduce the implementation and principle of the registry.

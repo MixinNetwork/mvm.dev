@@ -1,13 +1,13 @@
-# MVM 数据编码规范
+# MVM Data Encoding Specification
 
-上一篇我们介绍了如何使用 MVM 的合约，开发者或者用户想要使用智能合约，中间传输的数据需要一些规范, 这里介绍数据编码部分。总共有两部分：
+In the previous article, we introduced how to use MVM contracts. The data transmitted needs some specifications when developers or users want to use the smart contracts. Hereby we introduce the data encoding part. There are two parts in total: 
 
-1. 开发者需要把 `Operation` 编码成多签的 memo
-2. MVM 在调用合约时，会把 memo 及用户，资产信息，编码成 Event
+1. Developers need to encode `Operation` into a multi-signature memo 
+2. When MVM calls the contract, it will encode the memo, user, and asset information into Event 
 
-开发者只需要关注第 1 部分的编码, 在 Operation 里放入合适的值，第 2 部分我们做介绍，方便开发者了解
+Developers only need to pay attention to the coding in the first part, and put the appropriate value in the Operation. We will introduce the second part to make it easier for developers to understand.
 
-## 多签里 memo 的生成
+## Generation of memo in multi-signature environment 
 
 ```
 type Operation struct {
@@ -29,30 +29,30 @@ func (o *Operation) Encode() []byte {
 }
 ```
 
-1. Purpose: 这笔转帐的用处, `11` 发布合约，`1` 执行合约, 大部分情况下，开发者只需要关注 `1` 就行。
-2. Process: PID 大部分情况下是 registry 的 PID。
-3. Platform: `quorum` 或 `eos`, 目前只支持 `quorum`。
-4. Address: 只有 发布合约的时候需要用到，大部分开发者不需要。
-5. Extra: 执行合约最重要的值
+1. Purpose: the use of this transaction, `11` is to publish the contract, `1` is to execute the contract, in most cases, developers only need to pay attention to `1`.
+2. Process: the PID is mostly the PID of the registry.
+3. Platform: `quorum` or `eos`; currently only `quorum` is supported.
+4. Address: it is only needed when publishing contracts, which most developers don't need pay attention to.
+5. Extra: the most important value for excuting the contract
 
-   a. 可选项: 只有发布合约可用 `META` 参数，执行合约是否需要资产信息
-
-   b. 必选项：执行合约内容, 例如:
+   a. optional: the `META` parameter is only available for publishing contracts, whether asset information is required for executing contracts
+   
+   b. required: the content of contract execution, for example:
 
    ```
     extra: 7c15d0d2faa1b63862880bed982bd3020e1f1a9a5668870000000000000000000000000099cfc3d0c229d03c5a712b158a29ff186b294ab300000000000000000000000000000000000000000000000000000000000007d0
   
-    extra 分成两部分:
-    a. 0x7c15d0D2faA1b63862880Bed982bd3020e1f1A9A 去掉 0x 后全部小写, 是需要执行合约的地址
-    b. 从 566887 开始则是 addLiquidity(address,uint256) 方法加详细参数的 ABI 值, 
-     上面的例子中是 c6d0c728-2624-429b-8e0d-d9d19b6592fa 是 BTC 在 Mixin 网络里的资产 ID
-     amount 0.00002 的 ABI 编码, 这个我们会单独的介绍
-     编码格式参照：https://docs.soliditylang.org/en/v0.8.12/abi-spec.html
+    extra is divided into two parts:
+    a. 0x7c15d0D2faA1b63862880Bed982bd3020e1f1A9A removing 0x, then all the characters lowercase,you can get the address where the contract executed 
+    b. starting from 566887, it is addLiquidity(address,uint256) method and the ABI value with detailed parameters, 
+     In the above example, c6d0c728-2624-429b-8e0d-d9d19b6592fa is the asset ID of BTC in the Mixin network 
+     We will introduce separately for the ABI code of amount 0.00002
+     Coding format reference：https://docs.soliditylang.org/en/v0.8.12/abi-spec.html
    ```
 
-## Memo 反编成 Operation
+## Memo decoding into Operation 
 
-MVM 收到一个 output, 会解析 memo 成 Operation
+MVM receives an output and then will parse memo into Operation 
 
 ```
 func DecodeOperation(b []byte) (*Operation, error) {
@@ -87,11 +87,11 @@ func DecodeOperation(b []byte) (*Operation, error) {
 }
 ```
 
-## MTG 到 MVM 的编码格式
+## Encoding Format of MTG to MVM 
 
-在第三步中 Event 会按 process || nonce || asset || amount || extra || timestamp || members || threshold || sig 顺序进行编码
+In the third step, the Event will be encoded in the order of process || nonce || asset || amount || extra || timestamp || members || threshold || sig 
 
-代码示例
+Codes example:
 
 ```golang
 func DecodeEvent(b []byte) (*Event, error) {
@@ -156,11 +156,11 @@ func DecodeEvent(b []byte) (*Event, error) {
 }
 ```
 
-## MVM 到 MTG 的编码格式
+## Encoding Format of MVM to MTG 
 
-在第四步中，MVM 将收到的结果按 process || nonce || asset || amount || extra || timestamp || members || threshold 顺序解码
+In the fourth step, MVM will decode the received results in the order of process || nonce || asset || amount || extra || timestamp || members || threshold 
 
-代码示例
+Codes example:
 
 ```
 func (e *Event) Encode() []byte {
@@ -189,6 +189,6 @@ func (e *Event) Encode() []byte {
 }
 ```
 
-## 总结
+## Conclusion
 
-在编码中 MVM 完成了，大部分的工作，开发者只需要关注, 执行合约部署 memo 的生成，也就是 Operation 的生成即可。
+MVM completes most of the work in coding. Developers only need to pay attention to the generation of memo when contract is excuted and deployed, that is to say, the generation of Operation.

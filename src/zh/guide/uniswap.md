@@ -47,7 +47,7 @@
 
 ![image](https://prsdigg.com/rails/active_storage/blobs/eyJfcmFpbHMiOnsibWVzc2FnZSI6IkJBaHBBcUFOIiwiZXhwIjpudWxsLCJwdXIiOiJibG9iX2lkIn19--ff2de56617bf6a8211019abd1bbe1d32d5131ca0/Screenshot%20from%202022-01-31%2008-35-56)
 
-如图上所示，这里我们需要的是 `0x649f` 开头的那串数字，在后面部署中需要用到。
+如图上所示，这里我们需要的是 `0x649f` 开头的字符串，在后面部署中需要用到。
 
 ## UniswapV2Router02 部署
 

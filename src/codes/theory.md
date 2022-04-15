@@ -1,19 +1,19 @@
-# MVM 实现原理
+# MVM Implementation Principle
 
-Mixin 用户想要使用智能合约比较复杂，MVM 实现了大量的工作让这部分工作，让开发者开发或者用户使用变得简单。
+It is complicated for Mixin users to use smart contracts. MVM has implemented a lot of work to make this more easily for developers and users to use. 
 
-### MVM 流程
+### MVM Procedure
 
-开发流程可以参照，使用指南，开发者部分, 这里主要是针对用户使用过程。
+You can refer to the developer part in the user guide for the development process. Here is mainly use process for the users. 
 
-1. 用户把调用的合约方法，参数放到多签转帐的 memo 里, 发送给 MTG, 具体代码可以参照 ./invoke.go 文件
-2. MVM 收到多签转帐后, 解析 memo, 及相关的其它信息，生成 Event
-3. MVM 把 Event 编码之后，发送到 registry 的 mixin 函数
-4. mixin 收到后 raw ，会解析，然后调用相关的合约, 并返回执行结果 event
-5. MVM 拿到执行结果之后, 解析成新的 event, 并重新编码之后，返回给 MTG
-6. MTG 拿到执行结果，然后转帐给用户
+1. The user puts the method of calling the contract and parameters into the memo of the multi-signature transfer, and sends it to MTG. For the specific code, please refer to the file: ./invoke.go 
+2. MVM will parse the memo, and other related information after it receives the multi-signature transfer, and then generate Event
+3. MVM encodes the Event, and then send it to the registry's mixin function
+4. After Mixin receives raw, it will be parsed, and then the related contract will be called, and the execution result event will be returned 
+5. After MVM gets the execution result, a new event will be parsed and re-encoded, and then returns it to MTG  
+6. MTG gets the execution result and transfers the asset to the user accordingly   
 
-MVM 里 Event 的结构
+The structure of Event in MVM, 
 
 ```
 type Event struct {
@@ -29,4 +29,4 @@ type Event struct {
 }
 ```
 
-开源代码地址：https://github.com/MixinNetwork/trusted-group/tree/master/mvm
+Open source code address：https://github.com/MixinNetwork/trusted-group/tree/master/mvm

@@ -1,12 +1,12 @@
-# Messenger 用户如何调用合约
+# How Messenger Users Use Contracts 
 
-在上一步我们完整的部署了一个 uniswap 的合约，以及如何通过 registry 来调用这个 uniswap 的合约，添加流动性，在这一篇中我们将更详细解释一下，这个流程中，开发者需要做什么，MVM 做了什么工作。
+In the previous steps, we completely deployed a uniswap contract, and showed how to call the uniswap contract through the registry to add liquidity. In this article, we will explain in more detail what developers need to do, and what MVM does in this process.  
 
-首先需要理解，在用户通过 MVM 调用合约的过程，就是向 MTG 转帐，通过特定的 memo 来完成。
+First of all, please note that the process of invoking the contract through MVM is actually the process of the user making transactions to MTG through a specific memo. 
 
-## 生成用户支付的链接
+## User Payment Link Generation
 
-接口 POST /payments , 以上一步的 BTC 为例：
+API Interface POST /payments, and take the BTC in the previous steps as an example: 
 
 ```
 {
@@ -26,39 +26,39 @@
 }
 ```
 
-1. asset_id 就是资产的 id
-2. amount 是转帐资产的数量
-3. 'opponent_multisig.receivers' 是 MTG 里的可信任节点的 id
-4. 'opponent_multisig.receivers' 是 3/4 签名里的 3
-5. trace_id 是转帐的唯一 id, 每次都要重新生成
-6. memo 调用合约的核心部分，我们单独解释一下
+1. asset_id is the id of the asset
+2. amount is the amount of the transferred asset
+3. 'opponent_multisig.receivers' is the id of the trusted node in MTG
+4. 'opponent_multisig.receivers' is the 3 part in 3/4 signature requirement
+5. trace_id is the unique id of the transfer, which needs to be regenerated every time 
+6. memo is the core part of calling contract, which will be specified separately
 
-具体 API 文档： https://developers.mixin.one/zh-CN/docs/api/transfer/payment#post-payments
+Specific API Documentation: https://developers.mixin.one/zh-CN/docs/api/transfer/payment#post-payments
 
-### memo 的编码格式
+### Encoding Format of Memo
 
-我们以 uniswap 的合约为例：
+Let's take the uniswap contract as an example:
 
 ```
 7c15d0d2faa1b63862880bed982bd3020e1f1a9a5668870000000000000000000000000099cfc3d0c229d03c5a712b158a29ff186b294ab300000000000000000000000000000000000000000000000000000000000007d0
 ```
 
-`0x7c15d0D2faA1b63862880Bed982bd3020e1f1A9A` 去掉 0x 后全部小写, 是 UniswapMVMRouter 的地址。
+`0x7c15d0D2faA1b63862880Bed982bd3020e1f1A9A` after removing 0x and making all lowercase, we can get the address of UniswapMVVMRouter.
 
-`566887` 是 addLiquidity(address,uint256) abi 编码。
+`566887` is the addLiquidity(address,uint256) abi encoding.
 
-`0000000000000000000000000099cfc3d0c229d03c5a712b158a29ff186b294ab3` 是 mixin BTC 对应 registry 里的资产合约地址。
-`00000000000000000000000000000000000000000000000000000000000007d0` 是转帐数量的 abi 编码，也就是 "0.00002" 的编码。
+`0000000000000000000000000099cfc3d0c229d03c5a712b158a29ff186b294ab3` is the asset contract address in the registry corresponding to mixin BTC.
+`00000000000000000000000000000000000000000000000000000000000007d0` is the abi code of the transfer amount, i.e. the code of "0.00002".
 
-## 用户支付
+## User Payment
 
-生成的链接格式 https://mixin.one/codes/:id，用户可以通过扫码或者 messenger 中唤起支付。
+The generated link format is https://mixin.one/codes/:id. Users can evoke payment by scanning the code or through the messenger. 
 
-## MVM 内部调用
+## MVM Internal Call
 
-1. 用户完成支付后，MVM 会收到 output，通过解析 output 的 memo, 拿到资产，金额，执行合约地址等相关信息，保存为 Event
-2. MVM 把 Event 按格式编码之后，发送给 registry 合约
-3. registry 反编码 Event, 然后按需要创建帐号及资产信息
-4. 验证信息通过后，执行 uniswap 的 addLiquidity 方法
-5. 调用完成后，通过 ` event MixinTransaction(bytes);`  返回给 MVM 相关信息
-5. MVM 获取到结果后处理，由于添加流动性不需要有结果的返回，所以就到此结束，用户不会收到退款之类的信息
+1. After the user completes the payment, MVM will receive the output, and by parsing the memo of the output, the asset type, amount, execution contract address and other related information can be got and be saved as Event   
+2. MVM encodes the Event according to the format, then send it to the registry contract 
+3. Registry decodes Event, and then creates account and asset information as per need
+4. After verification information is passed, execute the addLiquidity method of uniswap 
+5. After the call is completed, return the relevant information to MVM through ` event MixinTransaction(bytes);`  
+5. MVM will process after obtaining the results. Since adding liquidity does not require the return of results, this will be the end of the process. Users do not receive information such as refunds.

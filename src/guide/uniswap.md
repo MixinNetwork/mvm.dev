@@ -1,25 +1,25 @@
-# MVM 上部署 Uniswap
+# Deploy Uniswap on MVM
 
-在上一篇文章中，我们提到通过 registry, 可以不用做任何修改来迁移 EVM 上的合约，这一章我们就来详细介绍一下，如何部署一个 uniswap 的合约。
+In the previous article, we mentioned that through the registry, the contract on the EVM can be migrated without any modification. In this chapter, we will introduce in detail how to deploy a uniswap smart contract.
 
-我们会用 Uniswap V2 版本来部署。在部署之前需要先用 metamask 配置到 Quorum 的测试网，具体的配置方式可以参考，如何加入测试网那一章节内容。
+We will deploy with Uniswap V2. Before deployment, we need to configure the Quorum testnet with metamask. For the specific configuration method, please refer to the chapter on how to join the testnet. 
 
-核心的 uniswap 代码主要包含 [v2-core](https://github.com/Uniswap/v2-core) 跟 [v2-periphery](https://github.com/Uniswap/v2-periphery) 两部分。 v2-core 是 Uniswap 最核心的功能，v2-periphery 是在核心功能之上的一层简单的封装，给开发者提供更易用的接口。
+The core uniswap code mainly includes [v2-core](https://github.com/Uniswap/v2-core) and [v2-periphery](https://github.com/Uniswap/v2-periphery). v2-core is the core function of Uniswap, and v2-periphery is a simple encapsulation on top of the core function, providing developers with an easier-to-use interface.   
 
-## 部署及使用流程
+## Deployment and Usage Process
 
-1. 部署 UniswapV2Factory
-2. 部署 UniswapV2Router02
-3. 部署UniswapMVMRouter
-4. 通过 registry 调用合约
+1. Deploy UniswapV2Factory
+2. Deploy UniswapV2Router02
+3. Deploy UniswapMVMRouter
+4. Call the contract through the registry 
 
-## 部署 UniswapV2Factory
+## Deploy UniswapV2Factory
 
-首先将所有的 v2-core 合约代码导入到 Remix IDE，然后对代码里面的几处参数作一下修改。
+First, import all the v2-core contract code into Remix IDE, and then modify several parameters in the code. 
 
-注意：这些修改不是因为要部署到 MVM 才修改的，这只是一些针对不同网络部署的配置文件性质的修改。
+Note: These modifications are not made for deployment to MVM, these are just some modifications according to the configuration requirements for different network deployments. 
 
-第一个是将 `contracts/UniswapV2ERC20.sol` 中的 chainId 修改成 Quorum 测试网的网络 ID，注意这里去掉了对 assembly 的调用，是因为 Uniswap 的代码非常古老，很多新的特性在新的网络上支持不好。
+The first is to change the chainId in `contracts/UniswapV2ERC20.sol` to the network ID of the Quorum testnet. Note that the call to assembly is removed here, because the Uniswap code is very old, and many new features on the new network are not easy to support.  
 
 ```solidity
      constructor() public {
@@ -31,7 +31,7 @@
          DOMAIN_SEPARATOR = keccak256(
 ```
 
-第二处修改是在 `contracts/UniswapV2Factory.sol` 的 constructor 中添加一个简单的 event 来方便知道 UniswapV2Pair 这个合约字节码的 keccak256 值，方便对后续的文件修改做准备。
+The second modification is to add a simple event to the constructor of `contracts/UniswapV2Factory.sol` to facilitate getting the keccak256 value of the UniswapV2Pair contract bytecode, so as to prepare for subsequent file modifications.  
 
 ```solidity
 +    event InitCode(bytes32 indexed hash);
@@ -43,25 +43,25 @@
      }
 ```
 
-然后直接通过 Remix 来部署 UniswapV2Factory 了，部署时只有一个参数，可以直接输入自己的测试网的地址即可，部署成功后，会得到这个合约的地址。在 MVM 的 Quorum 测试网浏览器，搜索这个合约地址打开后，查看 logs 会得到我们添加的这个 InitCode 事件的输出结果。
+Then deploy UniswapV2Factory directly through Remix. There is only one parameter when deploying, and you can directly enter the address of your own testnet. After successful deployment, you will get the address of the contract. In MVM's Quorum testnet browser, you can get the output of the InitCode event added through viewing logs by searching for the contract address and opening it.
 
 ![image](https://prsdigg.com/rails/active_storage/blobs/eyJfcmFpbHMiOnsibWVzc2FnZSI6IkJBaHBBcUFOIiwiZXhwIjpudWxsLCJwdXIiOiJibG9iX2lkIn19--ff2de56617bf6a8211019abd1bbe1d32d5131ca0/Screenshot%20from%202022-01-31%2008-35-56)
 
-如图上所示，这里我们需要的是 `0x649f` 开头的那串数字，在后面部署中需要用到。
+As shown in the above screenshot, what we need here is the string of numbers starting with `0x649f`, which will be used in the subsequent deployments. 
 
-## UniswapV2Router02 部署
+## Deploy UniswapV2Router02 
 
-这个合约是辅助合约，不需要它 Uniswap 就可以运行，但是有这个合约会让操作变得更简单。这个合约在 v2-periphery 项目中，同样的在 Remix IDE 中新建立一个项目，并把所有的合约文件导入，然后修改 `contracts/libraries/UniswapV2Libary.sol` 的 `pairFor` 方法。
+This contract is an auxiliary contract, and Uniswap can run without it, but this contract can make the operation easier. This contract is in the v2-periphery project. Similarly, create a new project in the Remix IDE, import all the contract files, and then modify the `pairFor` way of `contracts/libraries/UniswapV2Libary.sol`. 
 
-就是把那一串数字换成我们上一个步骤部署 UniswapV2Factory 时得到的那个 `0x649f` 开头的数字，去掉 0x。
+To replace the string of numbers with the number starting with `0x649f` obtained when we deployed UniswapV2Factory in the previous step, and then remove 0x.
 
-然后部署 UniswapV2Router02 这个合约，需要两个参数，factory 就是上一个步骤部署后的合约地址，另一个 WETH 参数可以随便使用一个 ETH 地址即可，因为我们 MVM 中并不需要 ETH 相关的操作。
+Then to deploy the UniswapV2Router02 contract with two parameters required. The factory is the contract address deployed in the previous step, and for the other WETH parameter, we can use any ETH address, because we do not need ETH related operations in MVM. 
 
-至此 Uniswap V2 的所有代码都已经成功部署在了 MVM 的 Quorum 测试网
+So far, all the code of Uniswap V2 has been successfully deployed on MVM's Quorum testnet.
 
-## UniswapMVMRouter 部署
+## Deploy UniswapMVMRouter 
 
-这个合约是我们基于 Uniswap 做了一个简单的封装，来让 MM 用户调用更方便 （主要是添加，移除流动性)，代码非常简单，直接放在 `v2-periphery` 项目的 contracts/UniswapMVMRouter.sol 文件里即可。
+This contract is a simple encapsulation we made based on Uniswap to make it more convenient for MM users to call (mainly for adding and removing liquidity). The code is very simple and can be directly placed in the file of contracts/UniswapMVVMRouter.sol under the `v2-periphery` project.
 
 ```
 pragma solidity =0.6.6;
@@ -139,74 +139,74 @@ contract UniswapMVMRouter {
 }
 ```
 
-这个合约部署，参数只有一个，就是上一步骤中我们部署的 `UniswapV2Router02` 的合约地址。在部署成功之后，我们会得到一个新的合约地址，有了这个地址我们就可以通过 MVM 命令发起最简单的 Registry 指令了。
+This contract deployment has only one parameter, which is the contract address of the `UniswapV2Router02` we deployed in the previous step. After it is deployed successfully, we will get a new contract address, and with this address we can initiate the simplest Registry command through the MVM command. 
 
-## 通过 registry 调用合约
+## Call the Contract Through the Registry
 
-在上一篇文章中，我们已经详细介绍了 registry 的部署及原理，接下来通过这个示例来演示如何通过调用 uniswap 的合约。
+In the previous article, we have introduced the deployment and principle of registry in detail. Next, we will use this example to demonstrate how to call the uniswap contract through the registry. 
 
-第一步是添加流动性，在上一段中，我们提到 UniswapMVMRouter，主要是因为在 mixin 中，一次只能操作一个资产，所以需要分两次添加流动性。
+The first step is to add liquidity. In the previous paragraph, we mentioned UniswapMVVMRouter, mainly because in the mixin, you can only operate one asset at a time, so you need to add liquidity twice.
 
-### 添加 BTC 进流动池
+### Add BTC to the Liquidity Pool
 
-Mixin 用户添加流动性的操作，也是通过一次给 mtg 的多签转帐完成的，分为两步：
+The operation of adding liquidity by Mixin users is completed through a multi-signature transfer to mtg, as the following two steps:
 
-1. 开发者(任意)生成一个 https://mixin.one/codes/:id
+1. The developer (arbitrarily) generates a https://mixin.one/codes/:id
 
-   把 Operation encode 之后做为 memo, 调用 POST /payments 接口, 相关文档：
+   Use Operation encode as memo, and call POST /payments interface, related documentation: 
    https://developers.mixin.one/zh-CN/docs/api/transfer/payment
 
-  Operation 结构
+  Operation structure,
   
   ```
   op := &encoding.Operation{
-    Purpose: encoding.OperationPurposeGroupEvent, // 固定值 1
-    Process: c.String("process"), // 官方维护的 registry 的 PID 60e17d47-fa70-3f3f-984d-716313fe838a TODO
-    Extra:   extra, // 合约执行的内容
+    Purpose: encoding.OperationPurposeGroupEvent, // fixed value 1
+    Process: c.String("process"), // officially maintained registry PID 60e17d47-fa70-3f3f-984d-716313fe838a TODO
+    Extra:   extra, // the content of the contract execution
   }
   
   extra: 7c15d0d2faa1b63862880bed982bd3020e1f1a9a5668870000000000000000000000000099cfc3d0c229d03c5a712b158a29ff186b294ab300000000000000000000000000000000000000000000000000000000000007d0
   
-    extra 分成两部分:
-  a. 0x7c15d0D2faA1b63862880Bed982bd3020e1f1A9A 去掉 0x 后全部小写, 是需要执行合约的地址
-  b. 从 566887 开始则是 addLiquidity(address,uint256) 方法加详细参数的 ABI 值, 
-     上面的例子中是 c6d0c728-2624-429b-8e0d-d9d19b6592fa 是 BTC 在 Mixin 网络里的资产 ID
-     amount 0.00002 的 ABI 编码, 这个我们会单独的介绍
-     编码格式参照：https://docs.soliditylang.org/en/v0.8.12/abi-spec.html
+    extra contains two parts:
+  a. 0x7c15d0D2faA1b63862880Bed982bd3020e1f1A9A is all lowercase after removing 0x, which is the address of the contract execution 
+  b. starting from 566887, it is the ABI value with detailed parameters through way of the addLiquidity(address,uint256), 
+     In the above example, c6d0c728-2624-429b-8e0d-d9d19b6592fa is the asset ID of BTC in the Mixin network.
+     ABI code of amount 0.00002, which will be introduced separately. 
+     Code format reference：https://docs.soliditylang.org/en/v0.8.12/abi-spec.html
   ```
   
-  获取资产对应关系的方式，可以在 Q&A 里找到。
+  The way to obtain the correspondence of assets can be found in the Q&A part. 
 
-2. 用户支付，使用 mixin messenger 扫码（或者唤起）支付。
+2. For the user payment, the mixin messenger can be used to scan the code (or evoke) to pay. 
 
-  在上一步中，会获取到 https://mixin.one/codes/:id 的链接，用户可以通过扫码或者 messenger 中唤起支付。
+  In the previous step, the link to https://mixin.one/codes/:id will be obtained, and the user can evoke payment by scanning the code or through messenger.
 
-开发者需要做的是生成 `code_id`, 给用户提供支付链接 https://mixin.one/codes/:id, 用户使用合约，只需要通过该链接支付即可。
+What the developer needs to do is to generate a `code_id`, and provide the user with a payment link https://mixin.one/codes/:id. Thus, the user only needs to pay through the link to use the contract. 
 
-### 添加 XIN 进流动池
+### Add XIN to the Liquidity Pool
 
-XIN 流动性的添加，跟 BTC 流动性添加方式一样，生成新的 extra
+The same way as the addition of BTC liquidity can be used for the addition of XIN liquidity. A new extra generation is needed. 
 
 ```
   op := &encoding.Operation{
-    Purpose: encoding.OperationPurposeGroupEvent, // 固定值 1
-    Process: c.String("process"), // 官方维护的 registry 的 PID 60e17d47-fa70-3f3f-984d-716313fe838a TODO
-    Extra:   extra, // 合约执行的内容
+    Purpose: encoding.OperationPurposeGroupEvent, // fixed value 1
+    Process: c.String("process"), // officially maintained registry PID 60e17d47-fa70-3f3f-984d-716313fe838a TODO
+    Extra:   extra, // the content of the contract execution
   }
   
   extra: 7c15d0d2faa1b63862880bed982bd3020e1f1a9a56688700000000000000000000000000bd6efc2e2cb99aef928433209c0a3be09a34f11400000000000000000000000000000000000000000000000000000000000007d0
 ```
 
-开发者生成支付链接 https://mixin.one/codes/:id ，用户通过扫码或者 messenger 中唤起支付。
+The developer generates the payment link https://mixin.one/codes/:id, and the user invokes the payment by scanning the code or through the messenger.
 
-到目前为止，在 MVM 上部署 Uniswap，给 Uniswap 添加流动性就完成了。通过 MVM 测试网浏览器（https://testnet.mvmscan.com/address/0x5aD700bd8B28C55a2Cac14DCc9FBc4b3bf37679B）可以方便的查看 Registry 进程相关的所有的操作结果。
+So far, deploying Uniswap on MVM and adding liquidity to Uniswap is completed. Through the MVM testnet browser (https://testnet.mvmscan.com/address/0x5aD700bd8B28C55a2Cac14DCc9FBc4b3bf37679B), you can easily view all the operation results related to the Registry process.  
 
-## 部署示例
+## Deployment Example
 
-我们实现了一个通过 hardhat 部署 uniswap 的完整示例，其中的 Quorum 测试网可以直接使用，通过 fork 可以方便的部署自己的合约。
+We have implemented a complete example of deploying uniswap through hardhat, in which the Quorum testnet can be used directly. Smart contracts can be easily deployed through fork.
 
-uniswap 部署脚本地址：https://github.com/MixinNetwork/mvmcontracts/blob/main/scripts/uniswap.ts
+uniswap deployment script address：https://github.com/MixinNetwork/mvmcontracts/blob/main/scripts/uniswap.ts
 
-## 总结
+## Conclusion
 
-在 MVM 上部署 Uniswap 非常简单，完全不需要修改代码，只是几个必须的配置参数的修改。
+Deploying Uniswap on MVM is very simple. There is no need to modify the codes, but only the modification of a few necessary configuration parameters. 

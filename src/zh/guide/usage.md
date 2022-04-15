@@ -6,7 +6,7 @@
 
 ## 生成用户支付的链接
 
-接口 POST /payments , 以上一步的 BTC 为例：
+API 接口 POST /payments , 以上一步的 BTC 为例：
 
 ```
 {

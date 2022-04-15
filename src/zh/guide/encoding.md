@@ -50,7 +50,7 @@ func (o *Operation) Encode() []byte {
      编码格式参照：https://docs.soliditylang.org/en/v0.8.12/abi-spec.html
    ```
 
-## Memo 反编成 Operation
+## Memo 解析成 Operation
 
 MVM 收到一个 output, 会解析 memo 成 Operation
 

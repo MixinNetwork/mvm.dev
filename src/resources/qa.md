@@ -1,37 +1,37 @@
-# MVM 问题汇总
+# FAQ of MVM 
 
-## 如何获取到 Mixin User 跟 MVM 帐户的对应?
+## How to get the correspondence between Mixin user and MVM account?
 
-在 registry.sol 里有两个公开的 map
+There are two public maps in registry.sol 
 
 ```
 mapping(address => bytes) public users;
 mapping(uint => address) public contracts;
 ```
 
-## 如何获取到 Mixin Asset 跟 MVM 资产的对应关系?
+## How to get the correspondence between Mixin asset and MVM asset? 
 
-同样在 registry.sol 里有两个公开的 map
+Similarly in registry.sol there are two public maps
 
 ```
 mapping(address => uint128) public assets;
 mapping(uint => address) public contracts;
 ```
 
-## 用户调用合约后，没有正在执行，资产会在哪里?
+##  Where is the asset in the case of the user calls the contract, but it is not being executed? 
 
-用户调用合约后，MVM 会把资产转给相关的合约，只有合约有使用权。比如一笔 usdt, 转给一个合约，只能通过合约来退款。如果这个合约没有退款功能，那么这笔钱相当于进了黑洞地址。
+After the user invokes the contract, MVM will transfer the asset to the relevant contract, and only the contract has the right to use it. For example, some amount of usdt is transferred to a contract, then the refund can only be done through the contract. If this contract does not have a refund function, then the asset is equivalent to entering a black hole address.  
 
-## 基于 MVM 的合约是否只有一个入口?
+## Do MVM-based contracts have only one entry? 
 
-是, 所有的智能合约都需要通过 Registry 来调用，或者实现  `function mixin(bytes memory raw) public returns (bool)` 函数。
+Yes. All smart contracts need to be called through the Registry, or implement the `function mixin(bytes memory raw) public returns (bool)` function.
 
-我们推荐用 Registry 调用, 这个会由官方维护
+Calling with Registry is recommended, since this is maintained by the official.
 
-## 基于 MVM 的合约是否只有一个出口?
+## Do MVM based contracts have only one exit?
 
-是, Registry 已经实现了结果的返回, 其实所有的合约都需要实现 `event MixinTransaction(bytes)` 来返回结果。
+Yes. The Registry has implemented the return of the result. In fact, all the contracts need to implement `event MixinTransaction(bytes)` to return the result.
 
-我们推荐用 Registry 调用, 这样合约也不用实现这结果返回这部分
+The Registry call is recommended to be used, so that the contract does not need to implement this part of the result return.
 
-注意: `event MixinTransaction(bytes)` 只能在注册 publish 的那一个合约里用，其他合约用不了，也就是如果是用 Registry，就不能在自己的合约里写这个。
+Note: `event MixinTransaction(bytes)` can only be used in the contract registered with publish, other contracts cannot use it, that is to say, if you use Registry, you cannot write this in your contract.   

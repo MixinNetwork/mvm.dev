@@ -1,11 +1,13 @@
-# 什么是 MVM 
+# Introduction of MVM 
 
-Mixin 的愿景是保护用户的消息和数字资产的隐私和安全，由于 Mixin 采用的隐私程度相同但是更灵活 TIP 方案来存储私钥，使得像其它链（比如 ethereum, eos）的开发者不能方便的使用已有技术方案。MVM 就是为了方便合约开发者基于 Mixin 开发。
+Mixin Network is an open-source, lightning-fast, and decentralized W3 platform to bring speed and scalability to the blockchain. The vision of Mixin is to provide users with a decentralized blockchain infrastructure that always puts security, privacy, and decentralization first.
 
-MVM 可以让其它网络上的开发者（几乎）不需要做任何修改, 直接迁移应用，到 Mixin 上使用。
+Since Mixin uses the same degree of privacy but a more flexible TIP scheme to store private keys, developers of other blockchains (such as Ethereum, EOS) cannot easily use their existing technical solutions in Mixin ecosystem. The purpose of MVM is to facilitate smart contract developers to develop based on Mixin.
 
-# MVM 实现了哪些功能
+MVM allows developers on other networks to migrate their applications directly to Mixin almost without any modification.
 
-1. 直接把 EVM 兼容 (或 EOS) 的智能合约，迁移到 MVM 上
-2. Mixin 用户用转帐的方式，方便的使用其它网络上已有的智能合约 
-3. MVM 帮助实现了内部数据的交换
+# Functions MVM Achieved
+
+1. Directly migrate EVM compatible (or EOS compatible) smart contracts to MVM
+2. Users of Mixin can easily use existing smart contracts on other networks by simply transferring assets. 
+3. MVM can facilitate the exchange of internal data.
