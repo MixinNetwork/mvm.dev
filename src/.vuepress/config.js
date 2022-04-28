@@ -6,6 +6,7 @@ module.exports = {
     // As a special case, the default locale can use '/' as its path.
     '/': {
       lang: 'en', // this will be set as the lang attribute on <html>
+      label: 'English',
       name: 'Mixin Virtual Machine',
       /**
        * Ref：https://v1.vuepress.vuejs.org/config/#title
@@ -14,6 +15,7 @@ module.exports = {
     },
     '/zh/': {
       lang: 'zh',
+      label: '简体中文',
       name: 'MVM 开发文档',
       title: 'MVM 开发文档',
     }
