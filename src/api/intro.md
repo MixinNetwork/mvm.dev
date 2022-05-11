@@ -9,6 +9,6 @@
 主要封装了以下功能:
 
 1. [支付参数构建](/api/payment)
-2. 获取用户或资产的映射
+2. [获取用户或资产的映射](/api/map.md)
 
 <!-- > [api 调用的例子请点击](https://github.com/MixinNetwork/bot-api-nodejs-client/blob/main/example/mvm_api.js) -->
