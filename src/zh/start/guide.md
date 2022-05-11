@@ -13,7 +13,7 @@
 1. 浏览器如何安装 Metamask
    [Chrome](https://chrome.google.com/webstore/detail/metamask/nkbihfbeogaeaoehlefnkodbefgpgknn?hl=zh-CN) [Firefox](https://addons.mozilla.org/zh-CN/firefox/addon/ether-metamask/?utm_source=addons.mozilla.org&utm_medium=referral&utm_content=search)
 
-2. Metamask 如何添加 [Quorum 测试网](/testnet/join)
+2. Metamask 如何添加 [Quorum 测试网](/zh/testnet/join)
 
 3. 在[水龙头网站](https://faucet.test.mixinbots.com/)领取 Quorum 测试代币
 

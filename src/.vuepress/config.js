@@ -218,23 +218,23 @@ module.exports = {
               children: [
                 {
                   title: '快速开始',
-                  path: '/start/guide',
+                  path: '/zh/start/guide',
                 },
                 {
                   title: '计数器合约',
-                  path: '/start/counter'
+                  path: '/zh/start/counter'
                 },
                 {
                   title: '转账合约',
-                  path: '/start/transfer'
+                  path: '/zh/start/transfer'
                 },
                 {
                   title: '错误定位',
-                  path: '/start/trycatch'
+                  path: '/zh/start/trycatch'
                 },
                 {
                   title: 'uniswap迁移',
-                  path: '/start/uniswap'
+                  path: '/zh/start/uniswap'
                 }
               ]
             },
@@ -243,15 +243,15 @@ module.exports = {
               children: [
                 {
                   title: "简介",
-                  path: "/api/intro"
+                  path: "/zh/api/intro"
                 },
                 {
                   title: "合约调用",
-                  path: "/api/payment"
+                  path: "/zh/api/payment"
                 },
                 {
                   title: "mixin 和 mvm 用户及资产映射",
-                  path: "/api/map"
+                  path: "/zh/api/map"
                 }
               ]
             },
