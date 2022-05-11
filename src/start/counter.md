@@ -69,7 +69,7 @@ npm install mixin-node-sdk # 安装 nodejs 的 sdk
 
 ```json title='keystore.json'
 {
-  "user_id": "3dbf04fe-afc4-35ca-b686-a174437ccdb5",
+  "client_id": "3dbf04fe-afc4-35ca-b686-a174437ccdb5",
   "session_id": "43bab197-fbb1-4534-9930-99fc9830e25c",
   "full_name": "MVM Contract User 1648870654",
   "private_key": "pIRdMkYeNBplIYhvU1yh-8Cn6VklwL_Bf7QQ3Ts3ivrd7gcG5GrWWXDB6UEJYXXLNkEv9eVo9HwxDm9M6iPSdQ",
@@ -83,29 +83,20 @@ npm install mixin-node-sdk # 安装 nodejs 的 sdk
 1. 直接用 sdk 发送交易, 调用合约
 
 ```js
-const {
-  extraGeneratByInfo,
-  getMvmTransaction,
-  Client,
-} = require('mixin-node-sdk')
+const { paymentGenerateByInfo, Client } = require('mixin-node-sdk')
 const keystore = require('./keystore.json')
-// 1. 初始化 Mixin 客户端
 const client = new Client(keystore)
 
 async function main() {
-  // 2. 生成 extra
-  const extra = await extraGeneratByInfo({
+  // 2. 生成 payment
+  const txInput = await paymentGenerateByInfo({
     // 要调用的合约地址
     contractAddress: '0x4f31E2eAF25DCDD46651AcE019B61E3E750023E0',
     // 合约方法
     methodName: 'addOne',
-  })
-
-  // 3. 使用 extra 来获取 txInput
-  const txInput = getMvmTransaction({
-    extra,
-    amount: '0.00000001',
-    asset: '965e5c6e-434c-3fa9-b780-c50f43cd955c',
+    payment: {
+      type: 'tx',
+    },
   })
 
   // 4.1. 直接发送交易
@@ -123,26 +114,14 @@ async function main() {
 :::
 
 ```js
-const {
-  extraGeneratByInfo,
-  getMvmTransaction,
-  Client,
-} = require('mixin-node-sdk')
-const keystore = require('./keystore.json')
-const client = new Client(keystore)
+const { paymentGenerateByInfo } = require('mixin-node-sdk')
 async function main() {
-  const extra = await extraGeneratByInfo({
+  // 到这里, 同上. (注释同上)
+  // 生成 payment
+  const payment = await paymentGenerateByInfo({
     contractAddress: '0x4f31E2eAF25DCDD46651AcE019B61E3E750023E0',
     methodName: 'addOne',
   })
-  const txInput = getMvmTransaction({
-    extra,
-    amount: '0.00000001',
-    asset: '965e5c6e-434c-3fa9-b780-c50f43cd955c',
-  })
-  // 到这里, 同上. (注释同上)
-  // 生成 payment
-  const payment = await client.verifyPayment(txInput)
   console.log(`mixin://codes/${payment.code_id}`)
   // 控制台看到这条消息, 然后将这条消息复制到 Mixin Messenger 中,
   // 直接用 Mixin Messenger 打开, 就可以直接付款了.
@@ -154,33 +133,24 @@ async function main() {
 1. 直接用 sdk 发送交易, 调用合约
 
 ```js
-const {
-  extraGeneratByInfo,
-  getMvmTransaction,
-  Client,
-} = require('mixin-node-sdk')
+const { paymentGenerateByInfo, Client } = require('mixin-node-sdk')
 const keystore = require('./keystore.json')
 // 1. 初始化 Mixin 客户端
 const client = new Client(keystore)
 
 async function main() {
-  // 2. 生成 extra
-  const extra = await extraGeneratByInfo({
+  // 2. 生成 txInput
+  const txInput = await paymentGenerateByInfo({
     // 要调用的合约地址
     contractAddress: '0x4f31E2eAF25DCDD46651AcE019B61E3E750023E0',
     methodName: 'addAny', // 合约方法
     types: ['uint256'], // 合约的对应参数类型列表
     values: [2], // 合约的对应参数的值
+    payment: {
+      type: 'tx',
+    },
   })
-
-  // 3. 使用 extra 来获取 txInput
-  const txInput = getMvmTransaction({
-    extra,
-    amount: '0.00000001',
-    asset: '965e5c6e-434c-3fa9-b780-c50f43cd955c',
-  })
-
-  // 4.1. 直接发送交易
+  // 3. 直接发送交易
   const txOutput = client.transaction(txInput) // 此操作需要上述账户有 0.00000001 CNB.
   // 转账完毕后, 红包会自行退回.
 }
@@ -194,29 +164,16 @@ async function main() {
 :::
 
 ```js
-const {
-  extraGeneratByInfo,
-  getMvmTransaction,
-  Client,
-} = require('mixin-node-sdk')
-const keystore = require('./keystore.json')
-const client = new Client(keystore)
-
+const { paymentGenerateByInfo, Client } = require('mixin-node-sdk')
 async function main() {
-  const extra = await extraGeneratByInfo({
+  // 到这里, 同上. (注释同上)
+  // 生成 payment
+  const payment = await paymentGenerateByInfo({
     contractAddress: '0x4f31E2eAF25DCDD46651AcE019B61E3E750023E0',
     methodName: 'addAny', // addAny(uint256)
     types: ['uint256'], // 合约的对应参数类型列表
     values: [2], // 合约的对应参数的值
   })
-  const txInput = getMvmTransaction({
-    extra,
-    amount: '0.00000001',
-    asset: '965e5c6e-434c-3fa9-b780-c50f43cd955c',
-  })
-  // 到这里, 同上. (注释同上)
-  // 生成 payment
-  const payment = await client.verifyPayment(txInput)
   console.log(`mixin://codes/${payment.code_id}`)
   // 控制台看到这条消息, 然后将这条消息复制到 Mixin Messenger 中,
   // 直接用 Mixin Messenger 打开, 就可以直接付款了.

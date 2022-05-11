@@ -425,7 +425,7 @@ contract UniswapMVMRouter {
         uint256 amountAMin,
         uint256 amountBMin
     ) public {
-        pair.call(abi.encodeWithSignature("approve(address,uint256)",router, liquidity));
+        IERC20(pair).approve(router, liquidity);
         IUniswapV2Router02(router).removeLiquidity(
             tokenA, tokenB,
             liquidity,
@@ -482,16 +482,16 @@ const roayAssetID = '69b2d237-1eb2-3b6c-8e1d-3876e507b263'
 async function addLiquidity() {
   const assetAmount = 0.0001
   const assetContract = await getContractByAssetID(cnbAssetID)
-  const extra = await extraGeneratByInfo({
+  const txInput = await paymentGenerateByInfo({
     contractAddress: '0xD69D54724c6d6B4F071429ED8D562c1F97CDF7f0',
     methodName: 'addLiquidity',
     types: ['address', 'uint256'],
     values: [assetContract, assetAmount * 1e8],
-  })
-  const txInput = getMvmTransaction({
-    extra,
-    amount: String(assetAmount),
-    asset: cnbAssetID,
+    payment: {
+      type: 'tx',
+      amount: String(assetAmount),
+      asset: cnbAssetID,
+    },
   })
   const res = await client.transaction(txInput)
   console.log(res)
@@ -512,18 +512,17 @@ async function swap() {
     '3dbf04fe-afc4-35ca-b686-a174437ccdb5',
   )
   const time = Math.ceil(Date.now() / 1000) + 300
-  const extra = await extraGeneratByInfo({
+  const extra = await paymentGenerateByInfo({
     contractAddress: '0xa71E83E79DED8dD19F471dA4Eda58dCc06D5cEb6',
     methodName: 'swapExactTokensForTokens',
     types: ['uint256', 'uint256', 'address[]', 'address', 'uint256'],
     values: [amountA, amountB, [tokenA, tokenB], userContract, time],
     options: { uploadkey: '123' },
-  })
-
-  const txInput = getMvmTransaction({
-    extra,
-    amount: String(_amountA),
-    asset: roayAssetID,
+    payment: {
+      type: 'tx',
+      amount: String(_amountA),
+      asset: roayAssetID,
+    },
   })
   const res = await client.transaction(txInput)
   console.log(res)
@@ -539,7 +538,7 @@ async function main() {
   const userContract = await getContractByUserIDs(
     '3dbf04fe-afc4-35ca-b686-a174437ccdb5',
   )
-  const extra = await extraGeneratByInfo({
+  const extra = await paymentGenerateByInfo({
     contractAddress: '0xD69D54724c6d6B4F071429ED8D562c1F97CDF7f0',
     methodName: 'removeLiquidity',
     types: [
@@ -564,11 +563,6 @@ async function main() {
       uploadkey: '123',
       delegatecall: true,
     },
-  })
-  const txInput = getMvmTransaction({
-    extra,
-    asset: cnbAssetID,
-    amount: '0.00000001',
   })
   const res = await client.transaction(txInput)
   console.log(res)

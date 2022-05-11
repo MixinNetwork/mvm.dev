@@ -65,31 +65,7 @@ module.exports = {
     sidebar: {
       auto: false,
       nav: [
-        {
-          title: '快速开始',
-          children: [
-            {
-              title: '快速开始',
-              path: '/start/1.guide',
-            },
-            {
-              title: '计数器合约',
-              path: '/start/2.counter'
-            },
-            {
-              title: '转账合约',
-              path: '/start/3.transfer'
-            },
-            {
-              title: '错误定位',
-              path: '/start/4.trycatch'
-            },
-            {
-              title: 'uniswap迁移',
-              path: '/start/5.uniswap'
-            }
-          ]
-        },
+
         {
           title: '参考',
           children: [
@@ -156,6 +132,48 @@ module.exports = {
           ]
         },
         {
+          title: 'NodeJS 教程',
+          children: [
+            {
+              title: '快速开始',
+              path: '/start/guide',
+            },
+            {
+              title: '计数器合约',
+              path: '/start/counter'
+            },
+            {
+              title: '转账合约',
+              path: '/start/transfer'
+            },
+            {
+              title: '错误定位',
+              path: '/start/trycatch'
+            },
+            {
+              title: 'uniswap迁移',
+              path: '/start/uniswap'
+            }
+          ]
+        },
+        {
+          title: "API 服务",
+          children: [
+            {
+              title: "简介",
+              path: "/api/intro"
+            },
+            {
+              title: "合约调用",
+              path: "/api/payment"
+            },
+            {
+              title: "mixin 和 mvm 用户及资产映射",
+              path: "/api/map"
+            }
+          ]
+        },
+        {
           title: '资源',
           children: [
             {
@@ -168,7 +186,7 @@ module.exports = {
               path: 'https://docs.soliditylang.org/en/latest/abi-spec.html'
             },
           ]
-        },
+        }
       ]
     }
   },

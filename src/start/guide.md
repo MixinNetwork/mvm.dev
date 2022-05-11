@@ -17,7 +17,6 @@
 
 3. 在[水龙头网站](https://faucet.test.mixinbots.com/)领取 Quorum 测试代币
 
-
 ::: tip
 
 遇到任何问题欢迎联系 30265 咨询.
@@ -30,11 +29,11 @@ Mvm 有许多特点, 如 独有的编码方式、 `Registry` 等.
 
 但其实开发者并不太用关注这些信息, 就可以直接开始进行合约的开发. 并且便捷的
 
-甚至我们已经准备好了 `mixin-node-sdk` , 让您能够方便快捷的使用 Mixin Messenger 快捷的进行收付款以及合约的调用.
+甚至我们已经准备好了 `mixin-node-sdk` 与 `mvm 调用 api`, 让您能够方便快捷的使用 Mixin Messenger 快捷的进行收付款以及合约的调用.
 
 > [详细的例子请点击](https://github.com/MixinNetwork/bot-api-nodejs-client/blob/main/example/mvm.js)
 
-接下来, 我们来编写一些简单的智能合约, 开始 Mvm 之旅.
+> 接下来, 我们来编写一些简单的智能合约, 开始 Mvm 之旅.
 
 我们的合约教程分为以下几个部分.
 

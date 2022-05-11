@@ -123,11 +123,10 @@ client.verifyPayment(txInput).then((payment) => {
 
 ```js
 const {
-  getMvmTransaction,
   Client,
   getContractByUserIDs,
   getContractByAssetID,
-  extraGeneratByInfo,
+  paymentGeneratByInfo,
 } = require('mixin-node-sdk')
 const client = new Client(keystore)
 const UserID = 'e8e8cd79-cd40-4796-8c54-3a13cfe50115'
@@ -135,20 +134,21 @@ const CNBID = '965e5c6e-434c-3fa9-b780-c50f43cd955c'
 async function main() {
   const userContract = await getContractByUserIDs(UserID)
   const CNBContract = await getContractByAssetID(CNBID)
-  const extra = await extraGeneratByInfo({
+  const transferAmount = '1'
+  const txInput = await paymentGeneratByInfo({
     contractAddress: CNBContract, // 调用合约的地址
     methodName: 'transfer', // 调用合约的方法名
     types: ['address', 'uint256'], // 调用合约方法的参数类型列表
-    values: [userContract, '1'], // 调用合约方法的参数值列表
+    values: [userContract, String(Number(transferAmount) * 1e8)], // 调用合约方法的参数值列表
     // 这里需要注意, 所有注册的资产合约的 decimal 都是 8
     // 所以, 如果要转账, 这里的金额就是转账金额乘以 1 亿
+    payment: {
+      type: 'tx',
+      asset: CNBID, // 转账的资产id
+      amount: transferAmount, // 要转账的金额
+    },
   })
 }
-const txInput = getMvmTransaction({
-  extra,
-  amount: '0.00000001',
-  asset: '965e5c6e-434c-3fa9-b780-c50f43cd955c',
-})
 client.transaction(txInput) // 转账成功即完成转账.
 ```
 
