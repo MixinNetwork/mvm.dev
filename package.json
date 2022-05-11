@@ -22,6 +22,6 @@
     "entities": "^2.0.3",
     "markdown-it": "^12.3.2",
     "markdown-it-katex": "^2.0.3",
-    "vuepress-theme-cosmos": "^1.0.183"
+    "vuepress-theme-cosmos": "jadeydi/vuepress-theme-cosmos#master"
   }
 }
