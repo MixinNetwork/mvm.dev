@@ -234,6 +234,16 @@ module.exports = {
               ]
             },
             {
+              title: 'RPC 接口',
+              children: [
+                {
+                  title: 'MVM RPC 接口',
+                  directory: false,
+                  path: '/zh/rpc/intro'
+                },
+              ]
+            },
+            {
               title: '资源',
               children: [
                 {
