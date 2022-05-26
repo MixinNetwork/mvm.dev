@@ -30,7 +30,7 @@ module.exports = {
    *
    * ref：https://v1.vuepress.vuejs.org/config/#head
    */
-   markdown: {
+  markdown: {
     extendMarkdown: (md) => {
       md.use(require("markdown-it-katex"));
     },
@@ -211,6 +211,48 @@ module.exports = {
                   directory: false,
                   path: '/zh/guide/encoding'
                 },
+              ]
+            },
+            {
+              title: 'NodeJS 教程',
+              children: [
+                {
+                  title: '快速开始',
+                  path: '/zh/start/guide',
+                },
+                {
+                  title: '计数器合约',
+                  path: '/zh/start/counter'
+                },
+                {
+                  title: '转账合约',
+                  path: '/zh/start/transfer'
+                },
+                {
+                  title: '错误定位',
+                  path: '/zh/start/trycatch'
+                },
+                {
+                  title: 'uniswap迁移',
+                  path: '/zh/start/uniswap'
+                }
+              ]
+            },
+            {
+              title: "API 服务",
+              children: [
+                {
+                  title: "简介",
+                  path: "/zh/api/intro"
+                },
+                {
+                  title: "合约调用",
+                  path: "/zh/api/payment"
+                },
+                {
+                  title: "mixin 和 mvm 用户及资产映射",
+                  path: "/zh/api/map"
+                }
               ]
             },
             {
