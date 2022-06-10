@@ -8,7 +8,7 @@
 
 1. 合约开发者部署 EVM 智能合约(过程与 [refund.sol](./refund.html##refund-sol-源码) 等其它合约部署类似)，部署完成后，拿到合约地址。
 
-2. 用户调用合约时，需要使用开发者生成的一个支付链接。支付链接通过 POST /payment 生成。
+2. 用户调用合约时，需要使用开发者生成的一个支付链接。支付链接通过 POST /payments 生成。
 
     提示: 这个支付地址的生成没有限制，任何人只需知道合约地址都可以生成。
     相关文档：<https://developers.mixin.one/zh-CN/docs/api/transfer/payment>
