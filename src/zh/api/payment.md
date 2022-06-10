@@ -1,66 +1,27 @@
 ### API
 
-`POST /payment`
+`POST /payments`
 
 ### 参数
 
-| 参数            |   类型   | 必填  | 说明               |
-| :-------------- | :------: | :---: | :----------------- |
-| contractAddress |  string  | true  | 要调用的合约地址   |
-| methodName      |  string  | true  | 要调用的合约方法名 |
-| types           | string[] | false | 参数类型列表       |
-| values          |  any[]   | false | 参数值列表         |
-| payment         |  object  | false | 详情见下文         |
-| options         |  object  | false | 详情见下文         |
-
-payment 参数是跟构建支付相关的参数
-| 参数 | 类型 | 必填 | 说明 |
-| :----- | :----: | :---: | :-------------------------- |
-| type | string | false | 默认为 `payment`, 可选 `tx` |
-| trace | string | false | 转账的 trace_id, 默认随机 `uuid` |
-| asset | string | false | 转账的币种, 默认 `cnb` 的 `asset_id` |
-| amount | string | false | 转账的金额, 默认 `0.00000001` |
-
-> `type`=`tx` 主要是为了方便服务端直接调用 `POST /transaction` 直接完成支付.
-
-options 参数是跟构建合约相关的参数
-
-| 参数         |  类型  | 必填  | 说明                  |
-| :----------- | :----: | :---: | :-------------------- |
-| delegatecall |  bool  | false |                       |
-| uploadKey    | string | false | 测试版暂时不用填      |
-| process      | string | false | registry 的 processID |
-| address      | string | false | registry 的 address   |
+| 参数                |   类型   |  必填   | 说明      |
+|:------------------|:------:|:-----:|:--------|
+| asset_id          | string | true  | 转账币种    |
+| amount            | string | true  | 转账金额    |
+| trace_id          | string | true  | 转账的唯一标识 |
+| memo              | string | true  | 转账备注    |
+| opponent_multisig | object | true  | 详情见下文   |
+| delegatecall      |  bool  | false |         |
 
 > 1. `delegatecall` 主要是为了提供让用户调用 `mvm` 中未与 `mixin` 映射的资产.
-> 2. `uploadKey`: 由于 `mixin` 转账的 `memo` 长度限制, 针对参数较多的合约调用, 将会由服务端先将参数写入到合约里, 然后再调用合约.
-> 3. `process` 和 `address` 请配套使用. 基本现有的 `registry` 可以满足绝大部分需求.
+
+payment 参数是跟多签相关的参数
+| 参数 | 类型 | 必填 | 说明 |
+| :----- | :----: | :---: | :-------------------------- |
+| receivers | string[] | true | 参与多签的 user_id 数组 |
+| threshold | number | true | 完成多签需要的人数 |
 
 ### 返回值
-
-1. 当指定 `payment='tx'` 时. 会返回 `txInput`
-
-```json
-{
-  "asset_id": "965e5c6e-434c-3fa9-b780-c50f43cd955c",
-  "amount": "0.00000001",
-  "trace_id": "8ee8abc3-9a25-4b35-927b-08c79dd2aff5",
-  "opponent_multisig": {
-    "receivers": [
-      "a15e0b6d-76ed-4443-b83f-ade9eca2681a",
-      "b9126674-b07d-49b6-bf4f-48d965b2242b",
-      "15141fe4-1cfd-40f8-9819-71e453054639",
-      "3e72ca0c-1bab-49ad-aa0a-4d8471d375e7"
-    ],
-    "threshold": 3
-  },
-  "memo": "AAGGxYdl7IE8pKNbh181oK19AAAAAAA5AJbciA7QNc_dLzNIdDebtqEorKeIgbrBTwAAAAAAAAAAAAAAAJqe4TJWQW9BoqSZwNQXlmNAcmmo"
-}
-```
-
-> 这个返回的内容, 可以直接用于 `POST /transaction` 的参数.
-
-2. 其他情况会返回 `payment`
 
 ```json
 {
@@ -90,59 +51,297 @@ options 参数是跟构建合约相关的参数
 
 计数器合约+1
 
-```json
-{
-  "contractAddress": "0x4f31E2eAF25DCDD46651AcE019B61E3E750023E0",
-  "methodName": "addOne"
+```javascript
+import {
+  encodeMemo,
+  MVMMainnet,
+  MVMApi,
+  MVMApiTestUrl
+} from 'mixin-node-sdk';
+import { utils } from 'ethers';
+import { v4 as uuid } from 'uuid';
+
+// 合约地址
+const contractAddress = '0x4f31E2eAF25DCDD46651AcE019B61E3E750023E0';
+// 合约方法名
+const methodName = 'addOne';
+// 参数类型列表
+const types = [];
+// 参数值列表
+const value = [];
+// 无需非 mixin 映射资产的调用
+const delegatecall = false;
+
+// step 1: 生成 memo 
+// memo 由三部分构成
+// * 去掉 '0x' 的合约地址
+// * 合约方法声明 KECCAK256 哈希值去掉 '0x' 后的前八位
+//   如 addLiquidity(address,uint256)，中间无空格
+// * 合约方法参数的 ABI 编码
+const paramsTypeStr = types.map(t => t.trim()).join(',');
+const methodId = utils.id(`${methodName}${paramsTypeStr}`).slice(2, 10);
+let extra = `${contractAddress.slice(2)}${methodId}`;
+if (types.length && values.length && types.length === values.length) {
+  const abiCoder = new utils.AbiCoder();
+  extra += abiCoder.encode(types, values).slice(2);
 }
+// 生成 memo 的 base64 编码，第二个参数为 registry 合约机器人的 client_id
+let memo = encodeMemo(extra, MVMMainnet.Registry.PID);
+
+let opcode = 0
+if (memo.length > 200) {
+    opcode += 1
+}
+if (delegatecall) {
+    opcode += 2
+}
+memo = `0${opcode}${memo}`
+
+// step 2: 发送请求
+// MVM sdk client
+const client = MVMApi(MVMApiTestUrl);
+const params = {
+  // 默认币种
+  asset_id: '965e5c6e-434c-3fa9-b780-c50f43cd955c',
+  // 默认最小金额
+  amount: '0.00000001',
+  // 唯一标识
+  trace_id: uuid(),
+  // 备注
+  memo,
+  // 多签
+  opponent_multisig: {
+    receivers: MVMMainnet.MVMMenbers,
+    threshold: MVMMainnet.MVMThreshold,  
+  },
+};
+client.payments(params);
+
 ```
 
 跨链桥合约绑定地址方法调用
 
-```json
-{
-  "contractAddress": "0x96dC880Ed035CFdd2F334874379bb6A128aca788",
-  "methodName": "bind",
-  "types": ["address"],
-  "values": ["0x9A9EE13256416f41a2a499C0d4179663407269A8"]
+```javascript
+import {
+  encodeMemo,
+  MVMMainnet,
+  MVMApi,
+  MVMApiTestUrl
+} from 'mixin-node-sdk';
+import { utils } from 'ethers';
+import { v4 as uuid } from 'uuid';
+
+// 合约地址
+const contractAddress = '0x96dC880Ed035CFdd2F334874379bb6A128aca788';
+// 合约方法名
+const methodName = 'bind';
+// 参数类型列表
+const types = ["address"];
+// 参数值列表
+const value = ["0x9A9EE13256416f41a2a499C0d4179663407269A8"];
+// 无需非 mixin 映射资产的调用
+const delegatecall = false;
+
+// step 1: 生成 memo 
+// memo 由三部分构成
+// * 去掉 '0x' 的合约地址
+// * 合约方法声明 KECCAK256 哈希值去掉 '0x' 后的前八位
+//   如 addLiquidity(address,uint256)，中间无空格
+// * 合约方法参数的 ABI 编码
+const paramsTypeStr = types.map(t => t.trim()).join(',');
+const methodId = utils.id(`${methodName}${paramsTypeStr}`).slice(2, 10);
+let extra = `${contractAddress.slice(2)}${methodId}`;
+if (types.length && values.length && types.length === values.length) {
+  const abiCoder = new utils.AbiCoder();
+  extra += abiCoder.encode(types, values).slice(2);
 }
+// 生成 memo 的 base64 编码，第二个参数为 registry 合约机器人的 client_id
+let memo = encodeMemo(extra, MVMMainnet.Registry.PID);
+
+let opcode = 0
+if (memo.length > 200) {
+  opcode += 1
+}
+if (delegatecall) {
+  opcode += 2
+}
+memo = `0${opcode}${memo}`
+
+// step 2: 发送请求
+// MVM sdk client
+const client = MVMApi(MVMApiTestUrl);
+const params = {
+  // 默认币种
+  asset_id: '965e5c6e-434c-3fa9-b780-c50f43cd955c',
+  // 默认最小金额
+  amount: '0.00000001',
+  // 唯一标识
+  trace_id: uuid(),
+  // 备注
+  memo,
+  // 多签
+  opponent_multisig: {
+    receivers: MVMMainnet.MVMMenbers,
+    threshold: MVMMainnet.MVMThreshold,
+  },
+};
+client.payments(params);
+
 ```
 
 2. 需要资产的合约调用
 
 跨链桥合约转账方法调用
 
-```json
-{
-  "contractAddress": "0x96dC880Ed035CFdd2F334874379bb6A128aca788",
-  "methodName": "deposit",
-  "types": ["address", "uint256"],
-  "values": ["0x001fB10b1bFede8505AB138c2Bb2E239CB3b50dC", "100000000"],
-  "payment": { "asset": "965e5c6e-434c-3fa9-b780-c50f43cd955c", "amount": "1" }
+```javascript
+import {
+  encodeMemo,
+  MVMMainnet,
+  MVMApi, 
+  MVMApiTestUrl
+} from 'mixin-node-sdk';
+import { utils } from 'ethers';
+import { v4 as uuid } from 'uuid';
+
+// 资产地址
+const asset_id = "965e5c6e-434c-3fa9-b780-c50f43cd955c";
+// 转账金额
+const amount = "1";
+// 合约地址
+const contractAddress = '0x96dC880Ed035CFdd2F334874379bb6A128aca788';
+// 合约方法名
+const methodName = 'deposit';
+// 参数类型列表
+const types = ["address", "uint256"];
+// 参数值列表
+const value = ["0x001fB10b1bFede8505AB138c2Bb2E239CB3b50dC", "100000000"];
+// 无需非 mixin 映射资产的调用
+const delegatecall = false;
+
+// step 1: 生成 memo 
+// memo 由三部分构成
+// * 去掉 '0x' 的合约地址
+// * 合约方法声明 KECCAK256 哈希值去掉 '0x' 后的前八位
+//   如 addLiquidity(address,uint256)，中间无空格
+// * 合约方法参数的 ABI 编码
+const paramsTypeStr = types.map(t => t.trim()).join(',');
+const methodId = utils.id(`${methodName}${paramsTypeStr}`).slice(2, 10);
+let extra = `${contractAddress.slice(2)}${methodId}`;
+if (types.length && values.length && types.length === values.length) {
+  const abiCoder = new utils.AbiCoder();
+  extra += abiCoder.encode(types, values).slice(2);
 }
+// 生成 memo 的 base64 编码，第二个参数为 registry 合约机器人的 client_id
+let memo = encodeMemo(extra, MVMMainnet.Registry.PID);
+
+let opcode = 0
+if (memo.length > 200) {
+  opcode += 1
+}
+if (delegatecall) {
+  opcode += 2
+}
+memo = `0${opcode}${memo}`
+
+// step 2: 发送请求
+// MVM sdk client
+const client = MVMApi(MVMApiTestUrl);
+const params = {
+  asset_id,
+  amount,
+  // 唯一标识
+  trace_id: uuid(),
+  // 备注
+  memo,
+  opponent_multisig: {
+    receivers: MVMMainnet.MVMMenbers,
+    threshold: MVMMainnet.MVMThreshold,
+  },
+};
+client.payments(params);
+
 ```
 
 3. 复杂的合约调用
 
 uniswap 的 swap 合约方法调用(values 可以为一个数组或者对象)
 
-```json
-{
-  "contractAddress": "0xe4aeAc26BCd161aFAEea468AC22F45FE5a35737F",
-  "methodName": "swapExactTokensForTokens",
-  "types": ["uint256", "uint256", "address[]", "address", "uint256"],
-  "values": [
-    "100000000",
-    "12400948731547",
-    [
-      "0x001fB10b1bFede8505AB138c2Bb2E239CB3b50dC",
-      "0x71c1C2D82b39C0e952751c9BEA39c28c70c47Ff4"
-    ],
-    "0xa192D5856A9a7c07731bc13559Da7489C7829C74",
-    1652262893
+```javascript
+import {
+  encodeMemo,
+  MVMMainnet,
+  MVMApi,
+  MVMApiTestUrl
+} from 'mixin-node-sdk';
+import { utils } from 'ethers';
+import { v4 as uuid } from 'uuid';
+
+// 资产地址
+const asset_id = "965e5c6e-434c-3fa9-b780-c50f43cd955c";
+// 转账金额
+const amount = "1";
+// 合约地址
+const contractAddress = '0xe4aeAc26BCd161aFAEea468AC22F45FE5a35737F';
+// 合约方法名
+const methodName = 'swapExactTokensForTokens';
+// 参数类型列表
+const types = ["uint256", "uint256", "address[]", "address", "uint256"];
+// 参数值列表
+const value = [
+  100000000,
+  12400948731547,
+  [
+    "0x001fB10b1bFede8505AB138c2Bb2E239CB3b50dC",
+    "0x71c1C2D82b39C0e952751c9BEA39c28c70c47Ff4"
   ],
-  "payment": { "asset": "965e5c6e-434c-3fa9-b780-c50f43cd955c", "amount": "1" }
+  "0xa192D5856A9a7c07731bc13559Da7489C7829C74",
+  1652262893
+];
+// 无需非 mixin 映射资产的调用
+const delegatecall = false;
+
+// step 1: 生成 memo 
+// memo 由三部分构成
+// * 去掉 '0x' 的合约地址
+// * 合约方法声明 KECCAK256 哈希值去掉 '0x' 后的前八位
+//   如 addLiquidity(address,uint256)，中间无空格
+// * 合约方法参数的 ABI 编码
+const paramsTypeStr = types.map(t => t.trim()).join(',');
+const methodId = utils.id(`${methodName}${paramsTypeStr}`).slice(2, 10);
+let extra = `${contractAddress.slice(2)}${methodId}`;
+if (types.length && values.length && types.length === values.length) {
+  const abiCoder = new utils.AbiCoder();
+  extra += abiCoder.encode(types, values).slice(2);
 }
+// 生成 memo 的 base64 编码，第二个参数为 registry 合约机器人的 client_id
+let memo = encodeMemo(extra, MVMMainnet.Registry.PID);
+
+let opcode = 0
+if (memo.length > 200) {
+  opcode += 1
+}
+if (delegatecall) {
+  opcode += 2
+}
+memo = `0${opcode}${memo}`
+
+// step 2: 发送请求
+// MVM sdk client
+const client = MVMApi(MVMApiTestUrl);
+const params = {
+  asset_id,
+  amount,
+  // 唯一标识
+  trace_id: uuid(),
+  // 备注
+  memo,
+  opponent_multisig: {
+    receivers: MVMMainnet.MVMMenbers,
+    threshold: MVMMainnet.MVMThreshold,
+  },
+};
+client.payments(params);
+
 ```
 
 4. 需要非 mixin 映射资产的调用.
@@ -153,28 +352,87 @@ uniswap 的 swap 合约方法调用(values 可以为一个数组或者对象)
 
 uniswap 的移除流动性方法调用
 
-```json
-{
-  "contractAddress": "0x774A9E576f14d81d7fB439efB1Eb14973a7144Fb",
-  "methodName": "removeLiquidity",
-  "types": [
-    "address",
-    "address",
-    "address",
-    "address",
-    "uint256",
-    "uint256",
-    "uint256"
-  ],
-  "values": [
-    "0x5EFDe32C3857fe54b152D3ffa7DCE31e28b83aC6",
-    "0x001fB10b1bFede8505AB138c2Bb2E239CB3b50dC",
-    "0x71c1C2D82b39C0e952751c9BEA39c28c70c47Ff4",
-    "0xa192D5856A9a7c07731bc13559Da7489C7829C74",
-    "44",
-    0,
-    0
-  ],
-  "options": { "uploadkey": "123", "delegatecall": true }
+```javascript
+import {
+  encodeMemo,
+  MVMMainnet,
+  MVMApi,
+  MVMApiTestUrl
+} from 'mixin-node-sdk';
+import { utils } from 'ethers';
+import { v4 as uuid } from 'uuid';
+
+// 资产地址
+const asset_id = "965e5c6e-434c-3fa9-b780-c50f43cd955c";
+// 转账金额
+const amount = "1";
+// 合约地址
+const contractAddress = '0x774A9E576f14d81d7fB439efB1Eb14973a7144Fb';
+// 合约方法名
+const methodName = 'removeLiquidity';
+// 参数类型列表
+const types = [
+  "address",
+  "address",
+  "address",
+  "address",
+  "uint256",
+  "uint256",
+  "uint256"
+];
+// 参数值列表
+const value = [
+  "0x5EFDe32C3857fe54b152D3ffa7DCE31e28b83aC6", 
+  "0x001fB10b1bFede8505AB138c2Bb2E239CB3b50dC",
+  "0x71c1C2D82b39C0e952751c9BEA39c28c70c47Ff4",
+  "0xa192D5856A9a7c07731bc13559Da7489C7829C74",
+  44,
+  0,
+  0
+];
+// 需要非 mixin 映射资产的调用
+const delegatecall = true;
+
+// step 1: 生成 memo 
+// memo 由三部分构成
+// * 去掉 '0x' 的合约地址
+// * 合约方法声明 KECCAK256 哈希值去掉 '0x' 后的前八位
+//   如 addLiquidity(address,uint256)，中间无空格
+// * 合约方法参数的 ABI 编码
+const paramsTypeStr = types.map(t => t.trim()).join(',');
+const methodId = utils.id(`${methodName}${paramsTypeStr}`).slice(2, 10);
+let extra = `${contractAddress.slice(2)}${methodId}`;
+if (types.length && values.length && types.length === values.length) {
+  const abiCoder = new utils.AbiCoder();
+  extra += abiCoder.encode(types, values).slice(2);
 }
+// 生成 memo 的 base64 编码，第二个参数为 registry 合约机器人的 client_id
+let memo = encodeMemo(extra, MVMMainnet.Registry.PID);
+
+let opcode = 0
+if (memo.length > 200) {
+  opcode += 1
+}
+if (delegatecall) {
+  opcode += 2
+}
+memo = `0${opcode}${memo}`
+
+// step 2: 发送请求
+// MVM sdk client
+const client = MVMApi(MVMApiTestUrl);
+const params = {
+  asset_id,
+  amount,
+  // 唯一标识
+  trace_id: uuid(),
+  // 备注
+  memo,
+  opponent_multisig: {
+    receivers: MVMMainnet.MVMMenbers,
+    threshold: MVMMainnet.MVMThreshold,
+  },
+};
+client.payments(params);
+
 ```
