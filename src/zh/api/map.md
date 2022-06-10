@@ -1,4 +1,4 @@
-### 1. 根据 `user_id` 获取`用户合约地址`
+### 1. 根据 `user_id` 获取 `用户合约地址`
 
 `GET /user_contract`
 
@@ -28,7 +28,7 @@
 { "user_contract": "0xa192D5856A9a7c07731bc13559Da7489C7829C74" }
 ```
 
-### 2. 根据 `asset_id` 获取`资产合约地址`
+### 2. 根据 `asset_id` 获取 `资产合约地址`
 
 `GET /asset_contract`
 
