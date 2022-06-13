@@ -119,7 +119,7 @@ async function main() {
   // 3 生成付款码
   const txInput = await mvmClient.payments(params);
   // 4 发送交易
-  const res = await client.transfer.toAddress(txInput); // 此操作需要上述账户有 0.00000001 CNB.
+  const res = await mixinClient.transfer.toAddress(txInput); // 此操作需要上述账户有 0.00000001 CNB.
   // 转账完毕后, cnb 会自行退回.
   console.log(res);
 }
@@ -153,7 +153,7 @@ import { v4 as uuid } from 'uuid';
 const { MixinApi, MVMApi, MVMApiTestURI, getExtra, MVMMainnet } = require('mixin-node-sdk');
 const keystore = require('./keystore.json');
 
-const client = MixinApi({ keystore });
+const mixinClient = MixinApi({ keystore });
 const mvmClient = MVMApi(MVMApiTestURI);
 
 async function main() {
@@ -187,7 +187,7 @@ async function main() {
   // 3 生成付款码
   const txInput = await mvmClient.payments(params);
   // 4 发送交易  
-  const res = client.transfer.toAddress(txInput) // 此操作需要上述账户有 0.00000001 CNB.
+  const res = mixinClient.transfer.toAddress(txInput) // 此操作需要上述账户有 0.00000001 CNB.
   // 转账完毕后, 红包会自行退回.
 }
 ```

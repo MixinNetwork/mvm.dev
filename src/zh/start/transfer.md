@@ -63,7 +63,7 @@ const { MixinApi, MVMApi, MVMApiTestURI, MVMMainnet } = require('mixin-node-sdk'
 import { v4 as uuid } from 'uuid';
 const keystore = require('./keystore.json');
 
-const client = MixinApi({keystore});
+const mixinClient = MixinApi({keystore});
 const mvmClient = MVMApi(MVMApiTestURI);
 
 const params = {
@@ -80,7 +80,7 @@ const params = {
 
 
 const txInput = await mvmClient.payments(params);
-client.transfer.toAddress(txInput); // 转账成功即完成注册.
+mixinClient.transfer.toAddress(txInput); // 转账成功即完成注册.
 // 或者使用 payment 的形式, 使用 Mixin Messenger 付款.
 ```
 
@@ -166,7 +166,7 @@ const { MixinApi, MVMApi, MVMApiTestURI, Registry, MVMMainnet } = require('mixin
 import { v4 as uuid } from 'uuid';
 const keystore = require('./keystore.json');
 
-const client = MixinApi({ keystore });
+const mixinClient = MixinApi({ keystore });
 const mvmClient = MVMApi(MVMApiTestURI);
 
 const registry = Registry({
@@ -206,8 +206,8 @@ async function main() {
     },
   };
   const txInput = await mvmClient.payments(params);
-  
-  client.transfer.toAddress(txInput); // 转账成功即完成转账.
+
+  mixinClient.transfer.toAddress(txInput); // 转账成功即完成转账.
 }
 ```
 
