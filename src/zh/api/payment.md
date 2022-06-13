@@ -9,7 +9,7 @@
 | asset_id          | string | true  | 转账币种    |
 | amount            | string | true  | 转账金额    |
 | trace_id          | string | true  | 转账的唯一标识 |
-| memo              | string | true  | 转账备注    |
+| extra             | string | true  | 转账备注    |
 | opponent_multisig | object | true  | 详情见下文   |
 | delegatecall      |  bool  | false |         |
 
@@ -52,14 +52,8 @@ payment 参数是跟多签相关的参数
 计数器合约+1
 
 ```javascript
-import {
-  encodeMemo,
-  MVMMainnet,
-  MVMApi,
-  MVMApiTestUrl
-} from 'mixin-node-sdk';
-import { utils } from 'ethers';
 import { v4 as uuid } from 'uuid';
+import { getExtra, MVMMainnet } from 'mixin-node-sdk';
 
 // 合约地址
 const contractAddress = '0x4f31E2eAF25DCDD46651AcE019B61E3E750023E0';
@@ -72,34 +66,15 @@ const value = [];
 // 无需非 mixin 映射资产的调用
 const delegatecall = false;
 
-// step 1: 生成 memo 
-// memo 由三部分构成
+// step 1: 生成 extra 
+// extra 由三部分构成
 // * 去掉 '0x' 的合约地址
 // * 合约方法声明 KECCAK256 哈希值去掉 '0x' 后的前八位
 //   如 addLiquidity(address,uint256)，中间无空格
 // * 合约方法参数的 ABI 编码
-const paramsTypeStr = types.map(t => t.trim()).join(',');
-const methodId = utils.id(`${methodName}${paramsTypeStr}`).slice(2, 10);
-let extra = `${contractAddress.slice(2)}${methodId}`;
-if (types.length && values.length && types.length === values.length) {
-  const abiCoder = new utils.AbiCoder();
-  extra += abiCoder.encode(types, values).slice(2);
-}
-// 生成 memo 的 base64 编码，第二个参数为 registry 合约机器人的 client_id
-let memo = encodeMemo(extra, MVMMainnet.Registry.PID);
-
-let opcode = 0
-if (memo.length > 200) {
-    opcode += 1
-}
-if (delegatecall) {
-    opcode += 2
-}
-memo = `0${opcode}${memo}`
+const extra = getExtra(contractAddress, methodName, types, values);
 
 // step 2: 发送请求
-// MVM sdk client
-const client = MVMApi(MVMApiTestUrl);
 const params = {
   // 默认币种
   asset_id: '965e5c6e-434c-3fa9-b780-c50f43cd955c',
@@ -108,68 +83,43 @@ const params = {
   // 唯一标识
   trace_id: uuid(),
   // 备注
-  memo,
+  extra,
   // 多签
   opponent_multisig: {
     receivers: MVMMainnet.MVMMenbers,
     threshold: MVMMainnet.MVMThreshold,  
   },
+  delegatecall
 };
-client.payments(params);
-
+axios.post('/payments', params);
 ```
 
 跨链桥合约绑定地址方法调用
 
 ```javascript
-import {
-  encodeMemo,
-  MVMMainnet,
-  MVMApi,
-  MVMApiTestUrl
-} from 'mixin-node-sdk';
-import { utils } from 'ethers';
 import { v4 as uuid } from 'uuid';
+import { getExtra, MVMMainnet } from 'mixin-node-sdk';
 
 // 合约地址
 const contractAddress = '0x96dC880Ed035CFdd2F334874379bb6A128aca788';
 // 合约方法名
 const methodName = 'bind';
 // 参数类型列表
-const types = ["address"];
+const types = ['address'];
 // 参数值列表
-const value = ["0x9A9EE13256416f41a2a499C0d4179663407269A8"];
+const values = ['0x9A9EE13256416f41a2a499C0d4179663407269A8'];
 // 无需非 mixin 映射资产的调用
 const delegatecall = false;
 
-// step 1: 生成 memo 
-// memo 由三部分构成
+// step 1: 生成 extra
+// extra 由三部分构成
 // * 去掉 '0x' 的合约地址
 // * 合约方法声明 KECCAK256 哈希值去掉 '0x' 后的前八位
 //   如 addLiquidity(address,uint256)，中间无空格
 // * 合约方法参数的 ABI 编码
-const paramsTypeStr = types.map(t => t.trim()).join(',');
-const methodId = utils.id(`${methodName}${paramsTypeStr}`).slice(2, 10);
-let extra = `${contractAddress.slice(2)}${methodId}`;
-if (types.length && values.length && types.length === values.length) {
-  const abiCoder = new utils.AbiCoder();
-  extra += abiCoder.encode(types, values).slice(2);
-}
-// 生成 memo 的 base64 编码，第二个参数为 registry 合约机器人的 client_id
-let memo = encodeMemo(extra, MVMMainnet.Registry.PID);
-
-let opcode = 0
-if (memo.length > 200) {
-  opcode += 1
-}
-if (delegatecall) {
-  opcode += 2
-}
-memo = `0${opcode}${memo}`
+const extra = getExtra(contractAddress, methodName, types, values);
 
 // step 2: 发送请求
-// MVM sdk client
-const client = MVMApi(MVMApiTestUrl);
 const params = {
   // 默认币种
   asset_id: '965e5c6e-434c-3fa9-b780-c50f43cd955c',
@@ -178,15 +128,15 @@ const params = {
   // 唯一标识
   trace_id: uuid(),
   // 备注
-  memo,
+  extra,
   // 多签
   opponent_multisig: {
-    receivers: MVMMainnet.MVMMenbers,
+    receivers: MVMMainnet.MVMMembers,
     threshold: MVMMainnet.MVMThreshold,
   },
+  delegatecall
 };
-client.payments(params);
-
+axios.post('/payments', params);
 ```
 
 2. 需要资产的合约调用
@@ -194,14 +144,8 @@ client.payments(params);
 跨链桥合约转账方法调用
 
 ```javascript
-import {
-  encodeMemo,
-  MVMMainnet,
-  MVMApi, 
-  MVMApiTestUrl
-} from 'mixin-node-sdk';
-import { utils } from 'ethers';
 import { v4 as uuid } from 'uuid';
+import { getExtra, MVMMainnet } from 'mixin-node-sdk';
 
 // 资产地址
 const asset_id = "965e5c6e-434c-3fa9-b780-c50f43cd955c";
@@ -218,48 +162,32 @@ const value = ["0x001fB10b1bFede8505AB138c2Bb2E239CB3b50dC", "100000000"];
 // 无需非 mixin 映射资产的调用
 const delegatecall = false;
 
-// step 1: 生成 memo 
-// memo 由三部分构成
+// step 1: 生成 extra
+// extra 由三部分构成
 // * 去掉 '0x' 的合约地址
 // * 合约方法声明 KECCAK256 哈希值去掉 '0x' 后的前八位
 //   如 addLiquidity(address,uint256)，中间无空格
 // * 合约方法参数的 ABI 编码
-const paramsTypeStr = types.map(t => t.trim()).join(',');
-const methodId = utils.id(`${methodName}${paramsTypeStr}`).slice(2, 10);
-let extra = `${contractAddress.slice(2)}${methodId}`;
-if (types.length && values.length && types.length === values.length) {
-  const abiCoder = new utils.AbiCoder();
-  extra += abiCoder.encode(types, values).slice(2);
-}
-// 生成 memo 的 base64 编码，第二个参数为 registry 合约机器人的 client_id
-let memo = encodeMemo(extra, MVMMainnet.Registry.PID);
-
-let opcode = 0
-if (memo.length > 200) {
-  opcode += 1
-}
-if (delegatecall) {
-  opcode += 2
-}
-memo = `0${opcode}${memo}`
+const extra = getExtra(contractAddress, methodName, types, values);
 
 // step 2: 发送请求
-// MVM sdk client
-const client = MVMApi(MVMApiTestUrl);
 const params = {
+  // 转账币种
   asset_id,
+  // 转账金额
   amount,
   // 唯一标识
   trace_id: uuid(),
   // 备注
-  memo,
+  extra,
+  // 多签
   opponent_multisig: {
-    receivers: MVMMainnet.MVMMenbers,
+    receivers: MVMMainnet.MVMMembers,
     threshold: MVMMainnet.MVMThreshold,
   },
+  delegatecall
 };
-client.payments(params);
-
+axios.post('/payments', params);
 ```
 
 3. 复杂的合约调用
@@ -267,14 +195,8 @@ client.payments(params);
 uniswap 的 swap 合约方法调用(values 可以为一个数组或者对象)
 
 ```javascript
-import {
-  encodeMemo,
-  MVMMainnet,
-  MVMApi,
-  MVMApiTestUrl
-} from 'mixin-node-sdk';
-import { utils } from 'ethers';
 import { v4 as uuid } from 'uuid';
+import { getExtra, MVMMainnet } from 'mixin-node-sdk';
 
 // 资产地址
 const asset_id = "965e5c6e-434c-3fa9-b780-c50f43cd955c";
@@ -300,47 +222,32 @@ const value = [
 // 无需非 mixin 映射资产的调用
 const delegatecall = false;
 
-// step 1: 生成 memo 
-// memo 由三部分构成
+// step 1: 生成 extra 
+// extra 由三部分构成
 // * 去掉 '0x' 的合约地址
 // * 合约方法声明 KECCAK256 哈希值去掉 '0x' 后的前八位
 //   如 addLiquidity(address,uint256)，中间无空格
 // * 合约方法参数的 ABI 编码
-const paramsTypeStr = types.map(t => t.trim()).join(',');
-const methodId = utils.id(`${methodName}${paramsTypeStr}`).slice(2, 10);
-let extra = `${contractAddress.slice(2)}${methodId}`;
-if (types.length && values.length && types.length === values.length) {
-  const abiCoder = new utils.AbiCoder();
-  extra += abiCoder.encode(types, values).slice(2);
-}
-// 生成 memo 的 base64 编码，第二个参数为 registry 合约机器人的 client_id
-let memo = encodeMemo(extra, MVMMainnet.Registry.PID);
-
-let opcode = 0
-if (memo.length > 200) {
-  opcode += 1
-}
-if (delegatecall) {
-  opcode += 2
-}
-memo = `0${opcode}${memo}`
+const extra = getExtra(contractAddress, methodName, types, values);
 
 // step 2: 发送请求
-// MVM sdk client
-const client = MVMApi(MVMApiTestUrl);
 const params = {
+  // 转账币种
   asset_id,
+  // 转账金额
   amount,
   // 唯一标识
   trace_id: uuid(),
   // 备注
-  memo,
+  extra,
+  // 多签
   opponent_multisig: {
-    receivers: MVMMainnet.MVMMenbers,
+    receivers: MVMMainnet.MVMMembers,
     threshold: MVMMainnet.MVMThreshold,
   },
+  delegatecall
 };
-client.payments(params);
+axios.post('/payments', params);
 
 ```
 
@@ -353,14 +260,8 @@ client.payments(params);
 uniswap 的移除流动性方法调用
 
 ```javascript
-import {
-  encodeMemo,
-  MVMMainnet,
-  MVMApi,
-  MVMApiTestUrl
-} from 'mixin-node-sdk';
-import { utils } from 'ethers';
 import { v4 as uuid } from 'uuid';
+import { getExtra, MVMMainnet } from 'mixin-node-sdk';
 
 // 资产地址
 const asset_id = "965e5c6e-434c-3fa9-b780-c50f43cd955c";
@@ -393,46 +294,30 @@ const value = [
 // 需要非 mixin 映射资产的调用
 const delegatecall = true;
 
-// step 1: 生成 memo 
-// memo 由三部分构成
+// step 1: 生成 extra
+// extra 由三部分构成
 // * 去掉 '0x' 的合约地址
 // * 合约方法声明 KECCAK256 哈希值去掉 '0x' 后的前八位
 //   如 addLiquidity(address,uint256)，中间无空格
 // * 合约方法参数的 ABI 编码
-const paramsTypeStr = types.map(t => t.trim()).join(',');
-const methodId = utils.id(`${methodName}${paramsTypeStr}`).slice(2, 10);
-let extra = `${contractAddress.slice(2)}${methodId}`;
-if (types.length && values.length && types.length === values.length) {
-  const abiCoder = new utils.AbiCoder();
-  extra += abiCoder.encode(types, values).slice(2);
-}
-// 生成 memo 的 base64 编码，第二个参数为 registry 合约机器人的 client_id
-let memo = encodeMemo(extra, MVMMainnet.Registry.PID);
-
-let opcode = 0
-if (memo.length > 200) {
-  opcode += 1
-}
-if (delegatecall) {
-  opcode += 2
-}
-memo = `0${opcode}${memo}`
+const extra = getExtra(contractAddress, methodName, types, values);
 
 // step 2: 发送请求
-// MVM sdk client
-const client = MVMApi(MVMApiTestUrl);
 const params = {
+  // 转账币种
   asset_id,
+  // 转账金额
   amount,
   // 唯一标识
   trace_id: uuid(),
   // 备注
-  memo,
+  extra,
+  // 多签
   opponent_multisig: {
-    receivers: MVMMainnet.MVMMenbers,
+    receivers: MVMMainnet.MVMMembers,
     threshold: MVMMainnet.MVMThreshold,
   },
+  delegatecall
 };
-client.payments(params);
-
+axios.post('/payments', params);
 ```
