@@ -133,7 +133,6 @@ async function main() {
 :::
 
 ```js
-const { paymentGenerateByInfo } = require('mixin-node-sdk')
 async function main() {
   // 到这里, 同上. (注释同上)
   // const txInput = mvmClient.payments(params);
@@ -200,7 +199,6 @@ async function main() {
 :::
 
 ```js
-const { paymentGenerateByInfo, Client } = require('mixin-node-sdk')
 async function main() {
   // 到这里, 同上. (注释同上)
   // const txInput = mvmClient.payments(params);
