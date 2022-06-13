@@ -59,11 +59,13 @@ const CNBAddress = await registry.fetchAssetContract('965e5c6e-434c-3fa9-b780-c5
 > 注册资产不需要消耗任何费用. 注册完了转账的金额会退回.
 
 ```js
-const { MixinApi, MVMMainnet } = require('mixin-node-sdk');
+const { MixinApi, MVMApi, MVMApiTestURI, MVMMainnet } = require('mixin-node-sdk');
 import { v4 as uuid } from 'uuid';
 const keystore = require('./keystore.json');
 
 const client = MixinApi({keystore});
+const mvmClient = MVMApi(MVMApiTestURI);
+
 const params = {
   asset_id: '965e5c6e-434c-3fa9-b780-c50f43cd955c', // 注册 CNB
   amount: '0.00000001',
@@ -76,7 +78,9 @@ const params = {
   extra: '', // 这个时候并不需要调用任何的合约, 所以 extra 留空就行
 };
 
-client.transfer.toAddress(params); // 转账成功即完成注册.
+
+const txInput = await mvmClient.payments(params);
+client.transfer.toAddress(txInput); // 转账成功即完成注册.
 // 或者使用 payment 的形式, 使用 Mixin Messenger 付款.
 ```
 
@@ -111,7 +115,7 @@ const { MixinApi } = require('mixin-node-sdk');
 const keystore = require('./keystore.json');
 
 const client = MixinApi({ keystore });
-const { user_id } = client.user.search('30265') // 返回的结果里有 user_id
+const { user_id } = await client.user.search('30265') // 返回的结果里有 user_id
 ```
 
 :::tip 注意
@@ -141,7 +145,6 @@ const params = {
   },
   extra: '', // 这个时候并不需要调用任何的合约, 所以 extra 留空就行
 }
-
 client.payment.request(params).then((payment) => {
   // 将这个 code 让指定的用户从 Mixin Messenger 里打开并完成支付.
   // 就完成了用户的注册, 转账的 CNB 也会一并退回.
@@ -159,11 +162,13 @@ client.payment.request(params).then((payment) => {
 这里举的例子, 就直接用机器人给你的用户转账吧.
 
 ```js
-const { MixinApi, Registry, MVMMainnet } = require('mixin-node-sdk');
+const { MixinApi, MVMApi, MVMApiTestURI, Registry, MVMMainnet } = require('mixin-node-sdk');
 import { v4 as uuid } from 'uuid';
 const keystore = require('./keystore.json');
 
 const client = MixinApi({ keystore });
+const mvmClient = MVMApi(MVMApiTestURI);
+
 const registry = Registry({
   address: MVMMainnet.Registry.Address,
   uri: MVMMainnet.RPCUri,
@@ -185,7 +190,6 @@ async function main() {
   
   // 生成 extra
   const extra = getExtra(CNBContract, methodName);
-  
   const params = {
     // 默认币种
     asset_id: CNBID,
@@ -201,7 +205,8 @@ async function main() {
       threshold: MVMMainnet.MVMThreshold,
     },
   };
-  const txInput = await client.payment.request(params);
+  const txInput = await mvmClient.payments(params);
+  
   client.transfer.toAddress(txInput); // 转账成功即完成转账.
 }
 ```
