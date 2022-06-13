@@ -11,47 +11,47 @@
 
 ### 一个真实的案例
 ```sol
- function addLiquidity(address asset, uint256 amount) public {
-        IERC20(asset).transferFrom(msg.sender, address(this), amount);
+function addLiquidity(address asset, uint256 amount) public {
+    IERC20(asset).transferFrom(msg.sender, address(this), amount);
 
-        Operation memory op = operations[msg.sender];
-        if (op.asset == address(0)) {
-            op.asset = asset;
-            op.amount = amount;
-            op.deadline = block.timestamp + AGE;
-            operations[msg.sender] = op;
-            return;
-        }
-
-        if (op.deadline < block.timestamp || op.asset == asset) {
-            IERC20(op.asset).transfer(msg.sender, op.amount);
-            IERC20(asset).transfer(msg.sender, amount);
-            operations[msg.sender].asset = address(0);
-            return;
-        }
-
-        IERC20(op.asset).approve(router, op.amount);
-        IERC20(asset).approve(router, amount);
-
-        uint256 amountA = op.amount;
-        uint256 amountB = amount;
-        uint256 liquidity;
-        (amountA, amountB, liquidity) = IUniswapV2Router02(router).addLiquidity(
-            op.asset, asset,
-            amountA, amountB,
-            amountA / 2, amountB / 2,
-            msg.sender,
-            block.timestamp + AGE
-        );
-
-        if (op.amount > amountA) {
-            IERC20(op.asset).transfer(msg.sender, op.amount - amountA);
-        }
-        if (amount > amountB) {
-            IERC20(asset).transfer(msg.sender, amount - amountB);
-        }
-        operations[msg.sender].asset = address(0);
+    Operation memory op = operations[msg.sender];
+    if (op.asset == address(0)) {
+        op.asset = asset;
+        op.amount = amount;
+        op.deadline = block.timestamp + AGE;
+        operations[msg.sender] = op;
+        return;
     }
+
+    if (op.deadline < block.timestamp || op.asset == asset) {
+        IERC20(op.asset).transfer(msg.sender, op.amount);
+        IERC20(asset).transfer(msg.sender, amount);
+        operations[msg.sender].asset = address(0);
+        return;
+    }
+
+    IERC20(op.asset).approve(router, op.amount);
+    IERC20(asset).approve(router, amount);
+
+    uint256 amountA = op.amount;
+    uint256 amountB = amount;
+    uint256 liquidity;
+    (amountA, amountB, liquidity) = IUniswapV2Router02(router).addLiquidity(
+        op.asset, asset,
+        amountA, amountB,
+        amountA / 2, amountB / 2,
+        msg.sender,
+        block.timestamp + AGE
+    );
+
+    if (op.amount > amountA) {
+        IERC20(op.asset).transfer(msg.sender, op.amount - amountA);
+    }
+    if (amount > amountB) {
+        IERC20(asset).transfer(msg.sender, amount - amountB);
+    }
+    operations[msg.sender].asset = address(0);
+}
 ```
 
 上面的合约是一个对 `uniswap` 添加流动性的改造. 
@@ -73,103 +73,102 @@
 4. 当合约出现问题的时候, 直接从 `mvm` 上查看全局状态, 就能知道是哪个函数出现问题了.
 
 ```sol
-    // 我们向外部暴露 3 个全局变量
-    uint256 public errorStatus = 10000;
-    string public errorMsg = "test msg";
-    bytes public errorBytes;
-    function addLiquidity(address asset, uint256 amount) public {
-        // 在每一处函数的调用的地方加上 try catch 并指定唯一的 errorStatus
-        try IERC20(asset).transferFrom(msg.sender, address(this), amount){
-        } catch Error(string memory error) {
-            errorStatus = 1;
-            errorMsg = error;
-            return;
-        } catch (bytes memory error) {
-            errorStatus = 2;
-            errorBytes = error;
-            return;
-        }
-
-        Operation memory op = operations[msg.sender];
-        if (op.asset == address(0)) {
-            op.asset = asset;
-            op.amount = amount;
-            op.deadline = block.timestamp + AGE;
-            operations[msg.sender] = op;
-            return;
-        }
-
-        if (op.deadline < block.timestamp || op.asset == asset) {
-            try IERC20(op.asset).transfer(msg.sender, op.amount) {
-            } catch Error(string memory error) {
-                errorStatus = 3;
-                errorMsg = error;
-                return;
-            } catch (bytes memory error) {
-                errorStatus = 4;
-                errorBytes = error;
-                return;
-            }
-            try IERC20(asset).transfer(msg.sender, amount) {
-            } catch Error(string memory error) {
-                errorStatus = 5;
-                errorMsg = error;
-                return;
-            } catch (bytes memory error) {
-                errorStatus = 6;
-                errorBytes = error;
-                return;
-            }
-            operations[msg.sender].asset = address(0);
-            return;
-        }
-
-        try IERC20(op.asset).approve(router, op.amount) {
-        } catch Error(string memory error) {
-            errorStatus = 7;
-            errorMsg = error;
-            return;
-        } catch (bytes memory error) {
-            errorStatus = 8;
-            errorBytes = error;
-            return;
-        }
-        try IERC20(asset).approve(router, amount) {
-        } catch Error(string memory error) {
-            errorStatus = 9;
-            errorMsg = error;
-            return;
-        } catch (bytes memory error) {
-            errorStatus = 10;
-            errorBytes = error;
-            return;
-        }
-
-        try IUniswapV2Router02(router).addLiquidity(
-            op.asset, asset,
-            op.amount, amount,
-            op.amount / 2, amount / 2,
-            msg.sender,
-            block.timestamp + AGE
-        ) returns (uint256 amountA, uint256 amountB, uint256 liquidity) {
-            if (op.amount > amountA) {
-                IERC20(op.asset).transfer(msg.sender, op.amount - amountA);
-            }
-            if (amount > amountB) {
-                IERC20(asset).transfer(msg.sender, amount - amountB);
-            }
-            operations[msg.sender].asset = address(0);
-        } catch Error(string memory error) {
-            errorStatus = 11;
-            errorMsg = error;
-            return;
-        } catch (bytes memory error) {
-            errorStatus = 12;
-            errorBytes = error;
-            return;
-        };
-
+// 我们向外部暴露 3 个全局变量
+uint256 public errorStatus = 10000;
+string public errorMsg = "test msg";
+bytes public errorBytes;
+function addLiquidity(address asset, uint256 amount) public {
+    // 在每一处函数的调用的地方加上 try catch 并指定唯一的 errorStatus
+    try IERC20(asset).transferFrom(msg.sender, address(this), amount){
+    } catch Error(string memory error) {
+        errorStatus = 1;
+        errorMsg = error;
+        return;
+    } catch (bytes memory error) {
+        errorStatus = 2;
+        errorBytes = error;
+        return;
     }
+
+    Operation memory op = operations[msg.sender];
+    if (op.asset == address(0)) {
+        op.asset = asset;
+        op.amount = amount;
+        op.deadline = block.timestamp + AGE;
+        operations[msg.sender] = op;
+        return;
+    }
+
+    if (op.deadline < block.timestamp || op.asset == asset) {
+        try IERC20(op.asset).transfer(msg.sender, op.amount) {
+        } catch Error(string memory error) {
+            errorStatus = 3;
+            errorMsg = error;
+            return;
+        } catch (bytes memory error) {
+            errorStatus = 4;
+            errorBytes = error;
+            return;
+        }
+        try IERC20(asset).transfer(msg.sender, amount) {
+        } catch Error(string memory error) {
+            errorStatus = 5;
+            errorMsg = error;
+            return;
+        } catch (bytes memory error) {
+            errorStatus = 6;
+            errorBytes = error;
+            return;
+        }
+        operations[msg.sender].asset = address(0);
+        return;
+    }
+
+    try IERC20(op.asset).approve(router, op.amount) {
+    } catch Error(string memory error) {
+        errorStatus = 7;
+        errorMsg = error;
+        return;
+    } catch (bytes memory error) {
+        errorStatus = 8;
+        errorBytes = error;
+        return;
+    }
+    try IERC20(asset).approve(router, amount) {
+    } catch Error(string memory error) {
+        errorStatus = 9;
+        errorMsg = error;
+        return;
+    } catch (bytes memory error) {
+        errorStatus = 10;
+        errorBytes = error;
+        return;
+    }
+
+    try IUniswapV2Router02(router).addLiquidity(
+        op.asset, asset,
+        op.amount, amount,
+        op.amount / 2, amount / 2,
+        msg.sender,
+        block.timestamp + AGE
+    ) returns (uint256 amountA, uint256 amountB, uint256 liquidity) {
+        if (op.amount > amountA) {
+            IERC20(op.asset).transfer(msg.sender, op.amount - amountA);
+        }
+        if (amount > amountB) {
+            IERC20(asset).transfer(msg.sender, amount - amountB);
+        }
+        operations[msg.sender].asset = address(0);
+    } catch Error(string memory error) {
+        errorStatus = 11;
+        errorMsg = error;
+        return;
+    } catch (bytes memory error) {
+        errorStatus = 12;
+        errorBytes = error;
+        return;
+    };
+}
 ```
 
 加上了全局状态 和 `try` `catch` 之后, 我们就可以重新部署合约了.
@@ -186,7 +185,7 @@
 再仔细查看 `erc20` 标准的 `approve` 的代码, 就一目了然了.
 
 ```sol
-  function approve(address _spender, uint256 _value) public override returns (bool) {
+function approve(address _spender, uint256 _value) public override returns (bool) {
     // To change the approve amount you first have to reduce the addresses`
     //  allowance to zero by calling `approve(_spender, 0)` if it is not
     //  already 0 to mitigate the race condition described here:
@@ -195,7 +194,7 @@
     allowed[msg.sender][_spender] = _value;
     emit Approval(msg.sender, _spender, _value);
     return true;
-  }
+}
 ```
 
 问题就在于我们返还用户资产的时候, `_value` 和 `allowed[msg.sender][_spender]` 均不为 0. 此时如果直接修改 `allowed[msg.sender][_spender]` 的状态, 将会引起另外的一个问题.
@@ -208,50 +207,49 @@
 
 最终修复完成的代码如下
 ```sol
-    function addLiquidity(address asset, uint256 amount) public {
-        IERC20(asset).transferFrom(msg.sender, address(this), amount);
+function addLiquidity(address asset, uint256 amount) public {
+    IERC20(asset).transferFrom(msg.sender, address(this), amount);
 
-        Operation memory op = operations[msg.sender];
-        if (op.asset == address(0)) {
-            op.asset = asset;
-            op.amount = amount;
-            op.deadline = block.timestamp + AGE;
-            operations[msg.sender] = op;
-            return;
-        }
-
-        if (op.deadline < block.timestamp || op.asset == asset) {
-            IERC20(op.asset).transfer(msg.sender, op.amount);
-            IERC20(asset).transfer(msg.sender, amount);
-            operations[msg.sender].asset = address(0);
-            return;
-        }
-
-        IERC20(op.asset).approve(router, op.amount);
-        IERC20(asset).approve(router, amount);
-
-        uint256 amountA = op.amount;
-        uint256 amountB = amount;
-        uint256 liquidity;
-        (amountA, amountB, liquidity) = IUniswapV2Router02(router).addLiquidity(
-            op.asset, asset,
-            amountA, amountB,
-            amountA / 2, amountB / 2,
-            msg.sender,
-            block.timestamp + AGE
-        );
-
-        if (op.amount > amountA) {
-            IERC20(op.asset).transfer(msg.sender, op.amount - amountA);
-            IERC20(op.asset).approve(router, 0); // 新增本行
-        }
-        if (amount > amountB) {
-            IERC20(asset).transfer(msg.sender, amount - amountB);
-            IERC20(asset).approve(router, 0); // 新增本行
-        }
-        operations[msg.sender].asset = address(0);
+    Operation memory op = operations[msg.sender];
+    if (op.asset == address(0)) {
+        op.asset = asset;
+        op.amount = amount;
+        op.deadline = block.timestamp + AGE;
+        operations[msg.sender] = op;
+        return;
     }
 
+    if (op.deadline < block.timestamp || op.asset == asset) {
+        IERC20(op.asset).transfer(msg.sender, op.amount);
+        IERC20(asset).transfer(msg.sender, amount);
+        operations[msg.sender].asset = address(0);
+        return;
+    }
+
+    IERC20(op.asset).approve(router, op.amount);
+    IERC20(asset).approve(router, amount);
+
+    uint256 amountA = op.amount;
+    uint256 amountB = amount;
+    uint256 liquidity;
+    (amountA, amountB, liquidity) = IUniswapV2Router02(router).addLiquidity(
+        op.asset, asset,
+        amountA, amountB,
+        amountA / 2, amountB / 2,
+        msg.sender,
+        block.timestamp + AGE
+    );
+
+    if (op.amount > amountA) {
+        IERC20(op.asset).transfer(msg.sender, op.amount - amountA);
+        IERC20(op.asset).approve(router, 0); // 新增本行
+    }
+    if (amount > amountB) {
+        IERC20(asset).transfer(msg.sender, amount - amountB);
+        IERC20(asset).approve(router, 0); // 新增本行
+    }
+    operations[msg.sender].asset = address(0);
+}
 ```
 
 
