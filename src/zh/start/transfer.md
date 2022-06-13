@@ -63,7 +63,7 @@ const { MixinApi, MVMApi, MVMApiTestURI, MVMMainnet } = require('mixin-node-sdk'
 import { v4 as uuid } from 'uuid';
 const keystore = require('./keystore.json');
 
-const mixinClient = MixinApi({keystore});
+const mixinClient = MixinApi({ keystore });
 const mvmClient = MVMApi(MVMApiTestURI);
 
 const params = {
@@ -77,7 +77,6 @@ const params = {
   },
   extra: '', // 这个时候并不需要调用任何的合约, 所以 extra 留空就行
 };
-
 
 const txInput = await mvmClient.payments(params);
 mixinClient.transfer.toAddress(txInput); // 转账成功即完成注册.
@@ -145,6 +144,7 @@ const params = {
   },
   extra: '', // 这个时候并不需要调用任何的合约, 所以 extra 留空就行
 }
+
 client.payment.request(params).then((payment) => {
   // 将这个 code 让指定的用户从 Mixin Messenger 里打开并完成支付.
   // 就完成了用户的注册, 转账的 CNB 也会一并退回.
@@ -168,12 +168,12 @@ const keystore = require('./keystore.json');
 
 const mixinClient = MixinApi({ keystore });
 const mvmClient = MVMApi(MVMApiTestURI);
-
 const registry = Registry({
   address: MVMMainnet.Registry.Address,
   uri: MVMMainnet.RPCUri,
   secret: keystore.privateKey,
 });
+
 const UserID = 'e8e8cd79-cd40-4796-8c54-3a13cfe50115';
 const CNBID = '965e5c6e-434c-3fa9-b780-c50f43cd955c';
 

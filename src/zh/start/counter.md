@@ -98,7 +98,7 @@ async function main() {
   // 1 生成 extra
   const extra = getExtra(contractAddress, methodName);
   
-  // 2. 组合请求
+  // 2. 构造请求参数
   const params = {
     // 默认币种
     asset_id: '965e5c6e-434c-3fa9-b780-c50f43cd955c',
@@ -166,7 +166,7 @@ async function main() {
   // 1 生成 extra
   const extra = getExtra(contractAddress, methodName, types, values);
 
-  // 2. 组合请求
+  // 2. 构造请求参数
   const params = {
     // 默认币种
     asset_id: '965e5c6e-434c-3fa9-b780-c50f43cd955c',
