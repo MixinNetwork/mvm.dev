@@ -61,11 +61,11 @@ op := &encoding.Operation{
 
   Request parameters:
 
-  ```
+  ```json
   {
-    "asset_id":     "965e5c6e-434c-3fa9-b780-c50f43cd955c",
-    "amount":       "1",
-    "opponent_multisig":  {
+    "asset_id": "965e5c6e-434c-3fa9-b780-c50f43cd955c",
+    "amount": "1",
+    "opponent_multisig": {
       "receivers": [
         "a15e0b6d-76ed-4443-b83f-ade9eca2681a",
         "b9126674-b07d-49b6-bf4f-48d965b2242b",
@@ -74,30 +74,30 @@ op := &encoding.Operation{
       ],
       "threshold": 3
     },
-    "trace_id":     "5a74b05c-55d3-4081-99d0-f98917079fdf",
-    "memo":         "AAuNz4I9nrNNooc08KrVDA2mAAZxdW9ydW0AKjB4MkE0NjMwNTUwQWQ5MDlCOTBhQWNEODJiNWY2NUUzM2FmRkEwNDMyMwAETUVUQQ",
+    "trace_id": "5a74b05c-55d3-4081-99d0-f98917079fdf",
+    "memo": "AAuNz4I9nrNNooc08KrVDA2mAAZxdW9ydW0AKjB4MkE0NjMwNTUwQWQ5MDlCOTBhQWNEODJiNWY2NUUzM2FmRkEwNDMyMwAETUVUQQ",
   }
   ```
 
   API interface documentation: https://developers.mixin.one/zh-CN/docs/api/transfer/raw-transfer#transfer-to-a-multi-signature-address
 
-    ```json
-    {
-      "asset_id":     "965e5c6e-434c-3fa9-b780-c50f43cd955c",
-      "amount":       "1",
-      "opponent_multisig":  {
-        "receivers": [
-          "a15e0b6d-76ed-4443-b83f-ade9eca2681a",
-          "b9126674-b07d-49b6-bf4f-48d965b2242b",
-          "15141fe4-1cfd-40f8-9819-71e453054639",
-          "3e72ca0c-1bab-49ad-aa0a-4d8471d375e7"
-        ],
-        "threshold": 3
-      },
-      "trace_id":     "5a74b05c-55d3-4081-99d0-f98917079fdf",
-      "memo":         "AAuNz4I9nrNNooc08KrVDA2mAAZxdW9ydW0AKjB4MkE0NjMwNTUwQWQ5MDlCOTBhQWNEODJiNWY2NUUzM2FmRkEwNDMyMwAETUVUQQ",
-    }
-    ```
+  ```json
+  {
+    "asset_id": "965e5c6e-434c-3fa9-b780-c50f43cd955c",
+    "amount": "1",
+    "opponent_multisig": {
+      "receivers": [
+        "a15e0b6d-76ed-4443-b83f-ade9eca2681a",
+        "b9126674-b07d-49b6-bf4f-48d965b2242b",
+        "15141fe4-1cfd-40f8-9819-71e453054639",
+        "3e72ca0c-1bab-49ad-aa0a-4d8471d375e7"
+      ],
+      "threshold": 3
+     },
+     "trace_id": "5a74b05c-55d3-4081-99d0-f98917079fdf",
+     "memo": "AAuNz4I9nrNNooc08KrVDA2mAAZxdW9ydW0AKjB4MkE0NjMwNTUwQWQ5MDlCOTBhQWNEODJiNWY2NUUzM2FmRkEwNDMyMwAETUVUQQ",
+   }
+   ```
 
 2. You can also refer to the Golang code example: https://github.com/MixinNetwork/trusted-group/blob/master/mvm/publish.go
 
@@ -164,23 +164,23 @@ import {MixinProcess} from './mixin.sol';
 
 // a simple contract to refund everything
 contract RefundWorker is MixinProcess {
-  // PID is a UUID of Mixin Messenger user, e.g. 27d0c319-a4e3-38b4-93ff-cb45da8adbe1
-  uint128 public constant PID = 0x27d0c319a4e338b493ffcb45da8adbe1;
-
-  function _pid() internal pure override(MixinProcess) returns (uint128) {
-    return PID;
-  }
-
-  // just refund everything
-  function _work(Event memory evt) internal override(MixinProcess) returns (bool) {
-    require(evt.timestamp > 0, "invalid timestamp");
-    require(evt.nonce % 2 == 1, "not an odd nonce");
-
-    bytes memory log = buildMixinTransaction(evt.nonce, evt.asset, evt.amount, evt.extra, evt.members);
-    emit MixinTransaction(log);
-
-    return true;
-  }
+    // PID is a UUID of Mixin Messenger user, e.g. 27d0c319-a4e3-38b4-93ff-cb45da8adbe1
+    uint128 public constant PID = 0x27d0c319a4e338b493ffcb45da8adbe1;
+    
+    function _pid() internal pure override(MixinProcess) returns (uint128) {
+      return PID;
+    }
+    
+    // just refund everything
+    function _work(Event memory evt) internal override(MixinProcess) returns (bool) {
+        require(evt.timestamp > 0, "invalid timestamp");
+        require(evt.nonce % 2 == 1, "not an odd nonce");
+        
+        bytes memory log = buildMixinTransaction(evt.nonce, evt.asset, evt.amount, evt.extra, evt.members);
+        emit MixinTransaction(log);
+        
+        return true;
+    }
 }
 ```
 
