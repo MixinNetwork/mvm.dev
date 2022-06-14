@@ -19,7 +19,7 @@
 
 ::: tip
 
-遇到任何问题欢迎入群 <https://mixin.one/codes/236792f0-bf56-4067-a174-f29895cb8f5c> 探讨.
+遇到任何问题欢迎入群 <https://mixin.one/codes/a91c865c-5de7-40c1-a130-f6c92ee89bd7> 探讨.
 
 :::
 
