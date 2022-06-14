@@ -22,25 +22,25 @@
 第一个是将 `contracts/UniswapV2ERC20.sol` 中的 chainId 修改成 Quorum 测试网的网络 ID，注意这里去掉了对 assembly 的调用，是因为 Uniswap 的代码非常古老，很多新的特性在新的网络上支持不好。
 
 ```solidity
-     constructor() public {
--        uint chainId;
--        assembly {
--            chainId := chainid
--        }
-+        uint chainId = 82397;
-         DOMAIN_SEPARATOR = keccak256(
+constructor() public {
+    uint chainId;
+    assembly {
+        chainId := chainid
+    }
+    uint chainId = 82397;
+    DOMAIN_SEPARATOR = keccak256(
 ```
 
 第二处修改是在 `contracts/UniswapV2Factory.sol` 的 constructor 中添加一个简单的 event 来方便知道 UniswapV2Pair 这个合约字节码的 keccak256 值，方便对后续的文件修改做准备。
 
 ```solidity
-+    event InitCode(bytes32 indexed hash);
+event InitCode(bytes32 indexed hash);
 
-     constructor(address _feeToSetter) public {
-         feeToSetter = _feeToSetter;
-+        bytes memory bytecode = type(UniswapV2Pair).creationCode;
-+        emit InitCode(keccak256(bytecode));
-     }
+constructor(address _feeToSetter) public {
+    feeToSetter = _feeToSetter;
+    bytes memory bytecode = type(UniswapV2Pair).creationCode;
+    emit InitCode(keccak256(bytecode));
+}
 ```
 
 然后直接通过 Remix 来部署 UniswapV2Factory 了，部署时只有一个参数，可以直接输入自己的测试网的地址即可，部署成功后，会得到这个合约的地址。在 MVM 的 Quorum 测试网浏览器，搜索这个合约地址打开后，查看 logs 会得到我们添加的这个 InitCode 事件的输出结果。
