@@ -23,7 +23,10 @@
 
     PID 是 MVM 里跟智能合约的合约地址进行绑定的。
 
-    > 注意：这个机器人的 client_id, 只能使用一次，也就是跟一个合约绑定。
+
+    ::: tip 注意
+    这个机器人的 client_id 只能使用一次，也就是只能跟一个合约绑定。
+    :::
 
 2. `function _work(Event memory evt) internal override(MixinProcess) returns (bool)`
 
@@ -150,7 +153,9 @@ Mixin 用户使用合约同样也是通过 MTG 的多签转帐。需要开发者
 2. MVM 把 Event 按格式编码之后，发送给 refund 合约
 3. refund 反编码 Event, 进行简单的 timestamp、nonce 的验证，[代码示例](https://github.com/MixinNetwork/mvm-contracts/blob/main/contracts/mixin/refund.sol#L17)
 4. refund 合约执行完成后，通过 `event MixinTransaction(bytes)` 返回给 MVM 退款信息，[代码示例](https://github.com/MixinNetwork/mvm-contracts/blob/main/contracts/mixin/refund.sol#L21)。
-   > 注意：`event MixinTransaction(bytes)` 只能在注册 publish 的那一个合约里用，其他合约用不了
+   ::: tip 注意
+   `event MixinTransaction(bytes)` 只能在注册 publish 的那一个合约里用，其他合约用不了
+   :::
 5. MVM 接收到执行结果后，把 Token 返还给用户
 
 代码示例：<https://github.com/MixinNetwork/trusted-group/blob/master/mvm/invoke.go>
