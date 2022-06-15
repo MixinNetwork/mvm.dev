@@ -4,23 +4,19 @@
 
 #### 参数
 
-情况 1: 查询普通用户合约地址
-| 参数 | 类型 | 必填 | 说明 |
-| :--- | :----: | :--: | :--- |
-| user | string | true | 用户的 user_id |
-| address | string | false | registry 的地址 |
-
-情况 2: 查询多签用户合约地址
-
-| 参数      |   类型   | 必填  | 说明            |
-| :-------- | :------: | :---: | :-------------- |
-| user      | string[] | true  | 多签用户组      |
-| threshold |   int    | true  | 多签数量        |
+| 参数        |   类型   |  必填   | 说明           |
+|:----------| :------: |:-----:|:-------------|
+| users     | string[] | true  | 用户数组         |
+| threshold |   int    | false | 多签数量         |
 | address   |  string  | false | registry 的地址 |
+
+查询普通用户的合约地址时，`users` 可设为长度为 1 的数组，如 `['e8e8cd79-cd40-4796-8c54-3a13cfe50115']`
+
+查询多签用户的合约地址时，须传入对应的多签数量 `threshold`
 
 #### 示例
 
-<https://api.test.mvm.dev/user_contract?user=e8e8cd79-cd40-4796-8c54-3a13cfe50115>
+<https://api.test.mvm.dev/user_contract?users[0]=e8e8cd79-cd40-4796-8c54-3a13cfe50115>
 
 #### 返回值
 
