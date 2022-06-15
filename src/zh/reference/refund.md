@@ -49,24 +49,22 @@
 
 ## 在 MVM 发布合约
 
-智能合约在 [Quorum](/testnet/join) 部署完成后，需要在 MVM 与 Mixin 机器人绑定 (发布合约)，MVM 会基于 [PID](#refund-合约实现) 来打包数据，并发送到 [Quorum](/testnet/join)，并把 [Quorum](/testnet/join)
-发布合约是一个给 MTG 的多签转帐，在 memo [PID](#refund-合约实现), 合约地址等信息。
+智能合约在 [Quorum](/testnet/join) 部署完成后，需要在 MVM 与 Mixin 机器人绑定 (发布合约)，MVM 会基于 [PID](#refund-合约实现) 来打包数据，并发送到 [Quorum](/testnet/join)，生成一个给 MTG 的多签转帐，在 memo 中包含 [PID](#refund-合约实现)、合约地址等信息。
 
 1. 开发者需要给 MTG 转一笔金额 >= 1 的 CNB，memo 为 Operation 的编码
-2. MVM 收到 output 后，会解析 memo，验证合约地址等一些基本信息，符合要求后，把这 process 这些信息保存下来
-3. 合约执行工作，在下一步调用合约，详细描述
 
-Operation 结构：
-
-```golang
-op := &encoding.Operation{
-  Purpose:  encoding.OperationPurposeAddProcess, // 发布合约固定值 11
-  Process:  key.ClientId, // 机器人 client_id, 例如：27d0c319-a4e3-38b4-93ff-cb45da8adbe1 
-  Platform: c.String("platform"), // 如果是 EVM 合约，值是 quorum
-  Address:  c.String("address"), // EVM 合约地址
-  Extra:    []byte(c.String("extra")), // 可选项，如果需要自动创建资产，值是 META
-}
-```
+   Operation 结构：
+   ```golang
+   op := &encoding.Operation{
+   Purpose:  encoding.OperationPurposeAddProcess, // 发布合约固定值 11
+   Process:  key.ClientId, // 机器人 client_id, 例如：27d0c319-a4e3-38b4-93ff-cb45da8adbe1
+   Platform: c.String("platform"), // 如果是 EVM 合约，值是 quorum
+   Address:  c.String("address"), // EVM 合约地址
+   Extra:    []byte(c.String("extra")), // 可选项，如果需要自动创建资产，值是 META
+   }
+   ```
+2. MVM 收到 output 后，会解析 memo、验证合约地址等一些基本信息。符合要求后，把这 process 这些信息保存下来，[代码示例](https://github.com/MixinNetwork/mvm-contracts/blob/main/contracts/mixin/registry.sol#L242)
+3. 合约执行工作，在下一节[调用合约](/zh/reference/refund.html#调用合约)中详细描述
 
 ### 发布合约的三种方式（效果相同）：
 
@@ -150,9 +148,9 @@ Mixin 用户使用合约同样也是通过 MTG 的多签转帐。需要开发者
 
 1. 用户完成支付后，MVM 会收到 output，通过解析 output 的 memo，拿到资产、金额、执行合约地址等相关信息并保存为 Event
 2. MVM 把 Event 按格式编码之后，发送给 refund 合约
-3. refund 反编码 Event, 进行简单的 timestamp、nonce 的验证
-4. refund 合约执行完成后，通过 `event MixinTransaction(bytes)` 返回给 MVM 退款信息。
-   注意：`event MixinTransaction(bytes)` 只能在注册 publish 的那一个合约里用，其他合约用不了
+3. refund 反编码 Event, 进行简单的 timestamp、nonce 的验证，[代码示例](https://github.com/MixinNetwork/mvm-contracts/blob/main/contracts/mixin/refund.sol#L17)
+4. refund 合约执行完成后，通过 `event MixinTransaction(bytes)` 返回给 MVM 退款信息，[代码示例](https://github.com/MixinNetwork/mvm-contracts/blob/main/contracts/mixin/refund.sol#L21)。
+   > 注意：`event MixinTransaction(bytes)` 只能在注册 publish 的那一个合约里用，其他合约用不了
 5. MVM 接收到执行结果后，把 Token 返还给用户
 
 代码示例：<https://github.com/MixinNetwork/trusted-group/blob/master/mvm/invoke.go>

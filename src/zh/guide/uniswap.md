@@ -153,7 +153,7 @@ Mixin 用户添加流动性的操作，也是通过一次给 mtg 的多签转帐
 
 1. 开发者(任意)生成一个 `https://mixin.one/codes/:id`
 
-    把 Operation encode 之后做为 memo, 调用 POST /payments 接口, [相关文档](/zh/api/payment)
+    把 Operation encode 之后做为 memo, 调用 POST /payments 接口，[相关文档](/zh/api/payment)
 
     Operation 结构
 

@@ -31,10 +31,10 @@ PID 是 process id 的缩写，MVM 把 Mixin 里的机器人 ID (或者机器人
 
 ### function mixin(bytes memory raw)
 
-mixin 函数是 MVM 里智能合约的唯一入口，所有的合约都需要实现这个函数，Registry 也实现了这个函数。如果是通过 Registry 来调用其它合约, 那么其它合约不需要再实现这个函数。
+[mixin 函数](https://github.com/MixinNetwork/mvm-contracts/blob/main/contracts/mixin/registry.sol#L242)是 MVM 里智能合约的唯一入口，所有的合约都需要实现这个函数，Registry 也实现了这个函数。如果是通过 Registry 来调用其它合约, 那么其它合约不需要再实现这个函数。
 
 ### event MixinTransaction(bytes)
 
-MVM 里智能合约唯一返回数据的出口, 同样我们在 Registry 里实现了这个函数。如果是通过 Registry 来调用其它合约, 那么其它合约也不需要实现这个函数。
+[MixinTransaction 事件](https://github.com/MixinNetwork/mvm-contracts/blob/main/contracts/mixin/registry.sol#L104) 是 MVM 里智能合约唯一返回数据的出口, 同样我们在 Registry 里实现了这个函数。如果是通过 Registry 来调用其它合约, 那么其它合约也不需要实现这个函数。
 
 > 注意: `event MixinTransaction(bytes)` 只能在注册 publish 的那一个合约里用，其他合约用不了，也就是如果是用 Registry，就不能在自己的合约里写这个。
