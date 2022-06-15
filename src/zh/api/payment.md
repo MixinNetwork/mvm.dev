@@ -53,7 +53,7 @@ payment 参数是跟多签相关的参数
 
 ```javascript
 import { v4 as uuid } from 'uuid';
-import { getExtra, MVMMainnet } from 'mixin-node-sdk';
+import { MVMApi, MVMApiTestURI, getExtra, MVMMainnet } from 'mixin-node-sdk';
 
 // 合约地址
 const contractAddress = '0x4f31E2eAF25DCDD46651AcE019B61E3E750023E0';
@@ -91,14 +91,16 @@ const params = {
   },
   delegatecall
 };
-axios.post('/payments', params);
+
+const mvmClient = MVMApi(MVMApiTestURI);
+await mvmClient.payments(params);
 ```
 
 跨链桥合约绑定地址方法调用
 
 ```javascript
 import { v4 as uuid } from 'uuid';
-import { getExtra, MVMMainnet } from 'mixin-node-sdk';
+import { MVMApi, MVMApiTestURI, getExtra, MVMMainnet } from 'mixin-node-sdk';
 
 // 合约地址
 const contractAddress = '0x96dC880Ed035CFdd2F334874379bb6A128aca788';
@@ -136,7 +138,9 @@ const params = {
   },
   delegatecall
 };
-axios.post('/payments', params);
+
+const mvmClient = MVMApi(MVMApiTestURI);
+await mvmClient.payments(params);
 ```
 
 2. 需要资产的合约调用
@@ -145,7 +149,7 @@ axios.post('/payments', params);
 
 ```javascript
 import { v4 as uuid } from 'uuid';
-import { getExtra, MVMMainnet } from 'mixin-node-sdk';
+import { MVMApi, MVMApiTestURI, getExtra, MVMMainnet } from 'mixin-node-sdk';
 
 // 资产地址
 const asset_id = "965e5c6e-434c-3fa9-b780-c50f43cd955c";
@@ -187,7 +191,9 @@ const params = {
   },
   delegatecall
 };
-axios.post('/payments', params);
+
+const mvmClient = MVMApi(MVMApiTestURI);
+await mvmClient.payments(params);
 ```
 
 3. 复杂的合约调用
@@ -196,7 +202,7 @@ uniswap 的 swap 合约方法调用(values 可以为一个数组或者对象)
 
 ```javascript
 import { v4 as uuid } from 'uuid';
-import { getExtra, MVMMainnet } from 'mixin-node-sdk';
+import { MVMApi, MVMApiTestURI, getExtra, MVMMainnet } from 'mixin-node-sdk';
 
 // 资产地址
 const asset_id = "965e5c6e-434c-3fa9-b780-c50f43cd955c";
@@ -247,8 +253,9 @@ const params = {
   },
   delegatecall
 };
-axios.post('/payments', params);
 
+const mvmClient = MVMApi(MVMApiTestURI);
+await mvmClient.payments(params);
 ```
 
 4. 需要非 mixin 映射资产的调用.
@@ -261,7 +268,7 @@ uniswap 的移除流动性方法调用
 
 ```javascript
 import { v4 as uuid } from 'uuid';
-import { getExtra, MVMMainnet } from 'mixin-node-sdk';
+import { MVMApi, MVMApiTestURI, getExtra, MVMMainnet } from 'mixin-node-sdk';
 
 // 资产地址
 const asset_id = "965e5c6e-434c-3fa9-b780-c50f43cd955c";
@@ -320,4 +327,7 @@ const params = {
   delegatecall
 };
 axios.post('/payments', params);
+
+const mvmClient = MVMApi(MVMApiTestURI);
+await mvmClient.payments(params);
 ```
