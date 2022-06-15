@@ -42,12 +42,14 @@ func (o *Operation) Encode() []byte {
    ```comment
     extra: 7c15d0d2faa1b63862880bed982bd3020e1f1a9a5668870000000000000000000000000099cfc3d0c229d03c5a712b158a29ff186b294ab300000000000000000000000000000000000000000000000000000000000007d0
   
-    extra 分成两部分:
+    extra 分成三部分:
     a. 0x7c15d0D2faA1b63862880Bed982bd3020e1f1A9A 去掉 0x 后全部小写, 是需要执行合约的地址
-    b. 从 566887 开始则是 addLiquidity(address,uint256) 方法加详细参数的 ABI 值, 
-     上面的例子中是 c6d0c728-2624-429b-8e0d-d9d19b6592fa 是 BTC 在 Mixin 网络里的资产 ID
-     amount 0.00002 的 ABI 编码, 这个我们会单独的介绍
-     编码格式参照：https://docs.soliditylang.org/en/v0.8.12/abi-spec.html
+    b. 56688700 开始则是 addLiquidity(address,uint256) 方法加参数类型的 ABI 编码, 
+    c. 之后的则是参数值的 ABI 编码
+       0000000000000000000000000099cfc3d0c229d03c5a712b158a29ff186b294ab3 是 mixin BTC 对应 registry 里的资产合约地址。
+       00000000000000000000000000000000000000000000000000000000000007d0 是转帐金额的 ABI 编码，也就是 "0.00002" 的编码。
+
+    编码格式参照：https://docs.soliditylang.org/en/v0.8.12/abi-spec.html
    ```
 
 ## Memo 反编成 Operation

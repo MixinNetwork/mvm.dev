@@ -28,8 +28,8 @@
     7c15d0d2faa1b63862880bed982bd3020e1f1a9a56688700000000000000000000000000bd6efc2e2cb99aef928433209c0a3be09a34f11400000000000000000000000000000000000000000000000000000000000007d0
     ```
 
-    1. 0x7c15d0D2faA1b63862880Bed982bd3020e1f1A9A 去掉 0x 后全部小写，是需要执行合约的地址
-    2. 56688700 则是 addLiquidity(address,uint256) 的 KECCAK256 hash 值去掉 0x 的前八位
+    1. `0x7c15d0D2faA1b63862880Bed982bd3020e1f1A9A` 去掉 0x 后全部小写，是需要执行合约的地址
+    2. `56688700` 则是 addLiquidity(address,uint256) 的 KECCAK256 hash 值去掉 0x 的前八位
 
         ```javascript
         // 使用 ethers 例子
@@ -38,7 +38,11 @@
         const methodExtra = utils.id(`${method}(${methodType})`).slice(2, 10)
         ```
 
-    3. 剩下的是参数内容，上面的例子中是 c6d0c728-2624-429b-8e0d-d9d19b6592fa 是 BTC 在 Mixin 网络里的资产 ID，通过 [registry.sol 中的对应关系](#messenger-用户-资产跟-mvm-合约中如何对应) 获取的合约地址s，加上 amount 0.00002 的 ABI 编码，同样去除 0x
+    3. 剩下的是参数值的 abi 编码：
+       `0000000000000000000000000099cfc3d0c229d03c5a712b158a29ff186b294ab3` 是 mixin BTC 对应 registry 里的资产合约地址
+       `00000000000000000000000000000000000000000000000000000000000007d0` 是转帐金额的 abi 编码，也就是 "0.00002" 的编码
+   
+       代码示例
 
         ```javascript
         // 使用 ethers 例子

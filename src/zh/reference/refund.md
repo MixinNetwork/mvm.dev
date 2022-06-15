@@ -59,11 +59,11 @@
    Operation 结构：
    ```golang
    op := &encoding.Operation{
-   Purpose:  encoding.OperationPurposeAddProcess, // 发布合约固定值 11
-   Process:  key.ClientId, // 机器人 client_id, 例如：27d0c319-a4e3-38b4-93ff-cb45da8adbe1
-   Platform: c.String("platform"), // 如果是 EVM 合约，值是 quorum
-   Address:  c.String("address"), // EVM 合约地址
-   Extra:    []byte(c.String("extra")), // 可选项，如果需要自动创建资产，值是 META
+     Purpose:  encoding.OperationPurposeAddProcess, // 发布合约固定值 11
+     Process:  key.ClientId, // 机器人 client_id, 例如：27d0c319-a4e3-38b4-93ff-cb45da8adbe1
+     Platform: c.String("platform"), // 如果是 EVM 合约，值是 quorum
+     Address:  c.String("address"), // EVM 合约地址
+     Extra:    []byte(c.String("extra")), // 可选项，如果需要自动创建资产，值是 META
    }
    ```
 2. MVM 收到 output 后，会解析 memo、验证合约地址等一些基本信息。符合要求后，把这 process 这些信息保存下来，[代码示例](https://github.com/MixinNetwork/mvm-contracts/blob/main/contracts/mixin/registry.sol#L242)
@@ -138,9 +138,9 @@ Mixin 用户使用合约同样也是通过 MTG 的多签转帐。需要开发者
    Operation 结构
    ```golang
    op := &encoding.Operation{
-    Purpose: encoding.OperationPurposeGroupEvent, // 固定值 1
-    Process: c.String("process"), // 机器人的 client_id
-    Extra:   extra, // 合约执行的内容，refund 合约为空
+     Purpose: encoding.OperationPurposeGroupEvent, // 固定值 1
+     Process: c.String("process"), // 机器人的 client_id
+     Extra:   extra, // 合约执行的内容，refund 合约为空
    }
    ```
 
