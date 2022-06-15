@@ -59,6 +59,6 @@
 1. 用户完成支付后，MVM 会收到 output，通过解析 output 的 memo, 拿到资产，金额，执行合约地址等相关信息，保存为 Event
 2. MVM 把 Event 按格式编码之后，发送给 registry 合约
 3. registry 反编码 Event, 然后按需要创建帐号及资产信息
-4. 验证信息通过后，执行 uniswap 的 addLiquidity 方法
+4. 验证信息通过后，执行 uniswap 的 addLiquidity 方法，[代码示例](https://github.com/MixinNetwork/mvm-contracts/blob/d8772fde2f42e75f0abf50e92a862f39378bb4d9/contracts/periphery/UniswapMVMRouter.sol#L25)
 5. 调用完成后，通过 `event MixinTransaction(bytes);`  返回给 MVM 相关信息
 6. MVM 获取到结果后处理，由于添加流动性不需要有结果的返回，所以就到此结束，用户不会收到退款之类的信息

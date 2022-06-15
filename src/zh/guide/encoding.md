@@ -89,6 +89,8 @@ func DecodeOperation(b []byte) (*Operation, error) {
 }
 ```
 
+开源地址：<https://github.com/MixinNetwork/trusted-group/blob/c11cd4f516874f4d3a5d6ee4b429427188d82eb7/mvm/encoding/operation.go#L30>
+
 ## MTG 到 MVM 的编码格式
 
 在第三步中 Event 会按 process || nonce || asset || amount || extra || timestamp || members || threshold || sig 顺序进行编码
@@ -158,6 +160,8 @@ func DecodeEvent(b []byte) (*Event, error) {
 }
 ```
 
+开源地址：<https://github.com/MixinNetwork/trusted-group/blob/07473dac20a7ae1a9cfecb3e9be6c5400612e147/mvm/encoding/event.go#L58>
+
 ## MVM 到 MTG 的编码格式
 
 在第四步中，MVM 将收到的结果按 process || nonce || asset || amount || extra || timestamp || members || threshold 顺序解码
@@ -190,6 +194,8 @@ func (e *Event) Encode() []byte {
  return enc.Bytes()
 }
 ```
+
+开源地址：<https://github.com/MixinNetwork/trusted-group/blob/07473dac20a7ae1a9cfecb3e9be6c5400612e147/mvm/encoding/event.go#L33>
 
 ## 总结
 
