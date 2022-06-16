@@ -107,7 +107,7 @@ async function main() {
     // 唯一标识
     trace_id: uuid(),
     // 备注
-    extra,
+    memo: extra,
     // 多签
     opponent_multisig: {
       receivers: MVMMainnet.MVMMenbers,
@@ -174,7 +174,7 @@ async function main() {
     // 唯一标识
     trace_id: uuid(),
     // 备注
-    extra,
+    memo: extra,
     // 多签
     opponent_multisig: {
       receivers: MVMMainnet.MVMMenbers,

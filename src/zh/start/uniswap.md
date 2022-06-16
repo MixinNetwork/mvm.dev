@@ -482,10 +482,10 @@ const keystore = require('./keystore.json');
 
 const mixinClient = MixinApi({ keystore });
 const mvmClient = MVMApi(MVMApiTestURI);
-const registry = Registry({
+const registry = new Registry({
   address: MVMMainnet.Registry.Address,
   uri: MVMMainnet.RPCUri,
-  secret: keystore.privateKey,
+  secret: keystore.private_key,
 });
 
 const cnbAssetID = '965e5c6e-434c-3fa9-b780-c50f43cd955c';
@@ -508,7 +508,7 @@ async function addLiquidity() {
     // 唯一标识
     trace_id: uuid(),
     // 备注
-    extra,
+    memo: extra,
     // 多签
     opponent_multisig: {
       receivers: MVMMainnet.MVMMenbers,
@@ -531,10 +531,10 @@ const keystore = require('./keystore.json');
 
 const mixinClient = MixinApi({ keystore });
 const mvmClient = MVMApi(MVMApiTestURI);
-const registry = Registry({
+const registry = new Registry({
   address: MVMMainnet.Registry.Address,
   uri: MVMMainnet.RPCUri,
-  secret: keystore.privateKey,
+  secret: keystore.private_key,
 });
 
 const cnbAssetID = '965e5c6e-434c-3fa9-b780-c50f43cd955c';
@@ -564,7 +564,7 @@ async function swap() {
     // 唯一标识
     trace_id: uuid(),
     // 备注
-    extra,
+    memo: extra,
     // 多签
     opponent_multisig: {
       receivers: MVMMainnet.MVMMenbers,
@@ -586,10 +586,10 @@ const keystore = require('./keystore.json');
 
 const mixinClient = MixinApi({ keystore });
 const mvmClient = MVMApi(MVMApiTestURI);
-const registry = Registry({
+const registry = new Registry({
   address: MVMMainnet.Registry.Address,
   uri: MVMMainnet.RPCUri,
-  secret: keystore.privateKey,
+  secret: keystore.private_key,
 });
 
 const cnbAssetID = '965e5c6e-434c-3fa9-b780-c50f43cd955c';
@@ -631,7 +631,7 @@ async function main() {
     // 唯一标识
     trace_id: uuid(),
     // 备注
-    extra,
+    memo: extra,
     // 多签
     opponent_multisig: {
       receivers: MVMMainnet.MVMMenbers,

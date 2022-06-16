@@ -33,10 +33,10 @@ function transfer(address to, uint256 value) external returns (bool);
 const { Registry, MVMMainnet } = require('mixin-node-sdk');
 const keystore = require('./keystore.json');
 
-const registry = Registry({
+const registry = new Registry({
   address: MVMMainnet.Registry.Address,
   uri: MVMMainnet.RPCUri,
-  secret: keystore.privateKey,
+  secret: keystore.private_key,
 });
 
 // BTC address
@@ -75,7 +75,7 @@ const params = {
     receivers: MVMMainnet.MVMMenbers,
     threshold: MVMMainnet.MVMThreshold,
   },
-  extra: '', // 这个时候并不需要调用任何的合约, 所以 extra 留空就行
+  memo: '', // 这个时候并不需要调用任何的合约, 所以 extra 留空就行
 };
 
 const txInput = await mvmClient.payments(params);
@@ -97,10 +97,10 @@ mixinClient.transfer.toAddress(txInput); // 转账成功即完成注册.
 const { Registry, MVMMainnet } = require('mixin-node-sdk');
 const keystore = require('./keystore.json');
 
-const registry = Registry({
+const registry = new Registry({
   address: MVMMainnet.Registry.Address,
   uri: MVMMainnet.RPCUri,
-  secret: keystore.privateKey,
+  secret: keystore.private_key,
 });
 
 // 30265 address
@@ -142,7 +142,7 @@ const params = {
     receivers: MVMMainnet.MVMMenbers,
     threshold: MVMMainnet.MVMThreshold,
   },
-  extra: '', // 这个时候并不需要调用任何的合约, 所以 extra 留空就行
+  memo: '', // 这个时候并不需要调用任何的合约, 所以 extra 留空就行
 }
 
 client.payment.request(params).then((payment) => {
@@ -168,10 +168,10 @@ const keystore = require('./keystore.json');
 
 const mixinClient = MixinApi({ keystore });
 const mvmClient = MVMApi(MVMApiTestURI);
-const registry = Registry({
+const registry = new Registry({
   address: MVMMainnet.Registry.Address,
   uri: MVMMainnet.RPCUri,
-  secret: keystore.privateKey,
+  secret: keystore.private_key,
 });
 
 const UserID = 'e8e8cd79-cd40-4796-8c54-3a13cfe50115';
@@ -198,7 +198,7 @@ async function main() {
     // 唯一标识
     trace_id: uuid(),
     // 备注
-    extra,
+    memo: extra,
     // 多签
     opponent_multisig: {
       receivers: MVMMainnet.MVMMenbers,
