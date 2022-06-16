@@ -10,9 +10,9 @@ API Interface POST /payments, and take the BTC in the previous steps as an examp
 
 ```json
 {
-  "asset_id":     "c6d0c728-2624-429b-8e0d-d9d19b6592fa",
-  "amount":       "0.00002",
-  "opponent_multisig":  {
+  "asset_id": "c6d0c728-2624-429b-8e0d-d9d19b6592fa",
+  "amount": "0.00002",
+  "opponent_multisig": {
     "receivers": [
       "a15e0b6d-76ed-4443-b83f-ade9eca2681a",
       "b9126674-b07d-49b6-bf4f-48d965b2242b",
@@ -21,8 +21,8 @@ API Interface POST /payments, and take the BTC in the previous steps as an examp
     ],
     "threshold": 3
   },
-  "trace_id":     "5a74b05c-55d3-4081-99d0-f98917079fdf",
-  "memo":         "7c15d0d2faa1b63862880bed982bd3020e1f1a9a5668870000000000000000000000000099cfc3d0c229d03c5a712b158a29ff186b294ab300000000000000000000000000000000000000000000000000000000000007d0",
+  "trace_id": "5a74b05c-55d3-4081-99d0-f98917079fdf",
+  "memo": "7c15d0d2faa1b63862880bed982bd3020e1f1a9a5668870000000000000000000000000099cfc3d0c229d03c5a712b158a29ff186b294ab300000000000000000000000000000000000000000000000000000000000007d0",
 }
 ```
 

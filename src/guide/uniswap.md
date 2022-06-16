@@ -22,25 +22,25 @@ Note: These modifications are not made for deployment to MVM, these are just som
 The first is to change the chainId in `contracts/UniswapV2ERC20.sol` to the network ID of the Quorum testnet. Note that the call to assembly is removed here, because the Uniswap code is very old, and many new features on the new network are not easy to support.  
 
 ```solidity
-     constructor() public {
--        uint chainId;
--        assembly {
--            chainId := chainid
--        }
-+        uint chainId = 82397;
-         DOMAIN_SEPARATOR = keccak256(
+constructor() public {
+    uint chainId;
+    assembly {
+        chainId := chainid
+    }
+    uint chainId = 82397;
+    DOMAIN_SEPARATOR = keccak256(
 ```
 
 The second modification is to add a simple event to the constructor of `contracts/UniswapV2Factory.sol` to facilitate getting the keccak256 value of the UniswapV2Pair contract bytecode, so as to prepare for subsequent file modifications.  
 
 ```solidity
-+    event InitCode(bytes32 indexed hash);
+event InitCode(bytes32 indexed hash);
 
-     constructor(address _feeToSetter) public {
-         feeToSetter = _feeToSetter;
-+        bytes memory bytecode = type(UniswapV2Pair).creationCode;
-+        emit InitCode(keccak256(bytecode));
-     }
+constructor(address _feeToSetter) public {
+    feeToSetter = _feeToSetter;
+    bytes memory bytecode = type(UniswapV2Pair).creationCode;
+    emit InitCode(keccak256(bytecode));
+}
 ```
 
 Then deploy UniswapV2Factory directly through Remix. There is only one parameter when deploying, and you can directly enter the address of your own testnet. After successful deployment, you will get the address of the contract. In MVM's Quorum testnet browser, you can get the output of the InitCode event added through viewing logs by searching for the contract address and opening it.

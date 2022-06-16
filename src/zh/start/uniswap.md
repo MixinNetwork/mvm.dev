@@ -5,8 +5,7 @@
 ::: tip 学完本章将会了解
 
 1. 将现有的合约迁移到 Mvm 的思路
-2. memo 长度超出的解决方案
-3. 如何动用 mvm(registry) 映射的用户地址里的 erc20 的资产
+2. 如何动用 mvm(registry) 映射的用户地址里的 erc20 的资产
 
 :::
 
@@ -477,23 +476,48 @@ contract UniswapMVMRouter {
 1. 添加流动性
 
 ```js
-const cnbAssetID = '965e5c6e-434c-3fa9-b780-c50f43cd955c'
-const roayAssetID = '69b2d237-1eb2-3b6c-8e1d-3876e507b263'
+const { MixinApi, MVMApi, MVMApiTestURI, Registry, MVMMainnet, getExtra } = require('mixin-node-sdk');
+import { v4 as uuid } from 'uuid';
+const keystore = require('./keystore.json');
+
+const mixinClient = MixinApi({ keystore });
+const mvmClient = MVMApi(MVMApiTestURI);
+const registry = Registry({
+  address: MVMMainnet.Registry.Address,
+  uri: MVMMainnet.RPCUri,
+  secret: keystore.privateKey,
+});
+
+const cnbAssetID = '965e5c6e-434c-3fa9-b780-c50f43cd955c';
+const roayAssetID = '69b2d237-1eb2-3b6c-8e1d-3876e507b263';
+
 async function addLiquidity() {
-  const assetAmount = 0.0001
-  const assetContract = await getContractByAssetID(cnbAssetID)
-  const txInput = await paymentGenerateByInfo({
-    contractAddress: '0xD69D54724c6d6B4F071429ED8D562c1F97CDF7f0',
-    methodName: 'addLiquidity',
-    types: ['address', 'uint256'],
-    values: [assetContract, assetAmount * 1e8],
-    payment: {
-      type: 'tx',
-      amount: String(assetAmount),
-      asset: cnbAssetID,
+  const assetAmount = 0.0001;
+  const assetContract = await registry.fetchAssetContract(cnbAssetID);
+
+  const contractAddres = '0xD69D54724c6d6B4F071429ED8D562c1F97CDF7f0';
+  const methodName = 'addLiquidity';
+  const types = ['address', 'uint256'];
+  const values = [assetContract, assetAmount * 1e8];
+  const extra = getExtra(contractAddress, methodName, types, values);
+
+  const params = {
+    asset_id: roayAssetID,
+    // 默认金额
+    amount: String(assetAmoun),
+    // 唯一标识
+    trace_id: uuid(),
+    // 备注
+    extra,
+    // 多签
+    opponent_multisig: {
+      receivers: MVMMainnet.MVMMenbers,
+      threshold: MVMMainnet.MVMThreshold,
     },
-  })
-  const res = await client.transaction(txInput)
+  };
+  const txInput = await mvmClient.payments(params);
+  
+  const res = await mixinClient.transfer.transaction(txInput)
   console.log(res)
 }
 ```
@@ -501,70 +525,123 @@ async function addLiquidity() {
 2. 兑换
 
 ```js
+const { MixinApi, MVMApi, MVMApiTestURI, Registry, MVMMainnet, getExtra } = require('mixin-node-sdk');
+import { v4 as uuid } from 'uuid';
+const keystore = require('./keystore.json');
+
+const mixinClient = MixinApi({ keystore });
+const mvmClient = MVMApi(MVMApiTestURI);
+const registry = Registry({
+  address: MVMMainnet.Registry.Address,
+  uri: MVMMainnet.RPCUri,
+  secret: keystore.privateKey,
+});
+
+const cnbAssetID = '965e5c6e-434c-3fa9-b780-c50f43cd955c';
+const roayAssetID = '69b2d237-1eb2-3b6c-8e1d-3876e507b263';
+
 async function swap() {
-  const tokenA = await getContractByAssetID(roayAssetID)
-  const tokenB = await getContractByAssetID(cnbAssetID)
-  const _amountA = 0.000001
-  const _amountB = 0.00000005
-  const amountA = (_amountA * 1e8) | 0
-  const amountB = (_amountB * 1e8) | 0
-  const userContract = await getContractByUserIDs(
-    '3dbf04fe-afc4-35ca-b686-a174437ccdb5',
-  )
-  const time = Math.ceil(Date.now() / 1000) + 300
-  const extra = await paymentGenerateByInfo({
-    contractAddress: '0xa71E83E79DED8dD19F471dA4Eda58dCc06D5cEb6',
-    methodName: 'swapExactTokensForTokens',
-    types: ['uint256', 'uint256', 'address[]', 'address', 'uint256'],
-    values: [amountA, amountB, [tokenA, tokenB], userContract, time],
-    options: { uploadkey: '123' },
-    payment: {
-      type: 'tx',
-      amount: String(_amountA),
-      asset: roayAssetID,
+  const tokenA = await getContractByAssetID(roayAssetID);
+  const tokenB = await getContractByAssetID(cnbAssetID);
+  const _amountA = 0.000001;
+  const _amountB = 0.00000005;
+  const amountA = (_amountA * 1e8) | 0;
+  const amountB = (_amountB * 1e8) | 0;
+  const userContract = await registry.getUserContract('3dbf04fe-afc4-35ca-b686-a174437ccdb5');
+  const time = Math.ceil(Date.now() / 1000) + 300;
+  const values = [amountA, amountB, [tokenA, tokenB], userContract, time];
+  const types = [amountA, amountB, [tokenA, tokenB], userContract, time];
+
+  const contractAddress = '0xa71E83E79DED8dD19F471dA4Eda58dCc06D5cEb6';
+  const methodName = 'swapExactTokensForTokens';
+  const extra = getExtra(contractAddress, methodName, types, values);
+
+  const params = {
+    // 币种
+    asset_id: roayAssetID,
+    // 默认金额
+    amount: String(_amountA),
+    // 唯一标识
+    trace_id: uuid(),
+    // 备注
+    extra,
+    // 多签
+    opponent_multisig: {
+      receivers: MVMMainnet.MVMMenbers,
+      threshold: MVMMainnet.MVMThreshold,
     },
-  })
-  const res = await client.transaction(txInput)
-  console.log(res)
+  };
+  const txInput = await mvmClient.payments(params);
+  const res = await mixinClient.transfer.toAddress(txInput);
+  console.log(res);
 }
 ```
 
 3. 移除流动性
 
 ```js
+const { MixinApi, MVMApi, MVMApiTestURI, Registry, MVMMainnet, getExtra } = require('mixin-node-sdk');
+import { v4 as uuid } from 'uuid';
+const keystore = require('./keystore.json');
+
+const mixinClient = MixinApi({ keystore });
+const mvmClient = MVMApi(MVMApiTestURI);
+const registry = Registry({
+  address: MVMMainnet.Registry.Address,
+  uri: MVMMainnet.RPCUri,
+  secret: keystore.privateKey,
+});
+
+const cnbAssetID = '965e5c6e-434c-3fa9-b780-c50f43cd955c';
+const roayAssetID = '69b2d237-1eb2-3b6c-8e1d-3876e507b263';
+
 async function main() {
-  const tokenA = await getContractByAssetID(roayAssetID)
-  const tokenB = await getContractByAssetID(cnbAssetID)
-  const userContract = await getContractByUserIDs(
-    '3dbf04fe-afc4-35ca-b686-a174437ccdb5',
-  )
-  const extra = await paymentGenerateByInfo({
-    contractAddress: '0xD69D54724c6d6B4F071429ED8D562c1F97CDF7f0',
-    methodName: 'removeLiquidity',
-    types: [
-      'address',
-      'address',
-      'address',
-      'address',
-      'uint256',
-      'uint256',
-      'uint256',
-    ],
-    values: [
-      '0xc9f4bc2A7afEe68E6e8202fFc2b8d77d7E7B9eC9',
-      tokenA,
-      tokenB,
-      userContract,
-      (9e-16 * 1e18) | 0,
-      0,
-      0,
-    ],
-    options: {
-      uploadkey: '123',
-      delegatecall: true,
+  const tokenA = await getContractByAssetID(roayAssetID);
+  const tokenB = await getContractByAssetID(cnbAssetID);
+  const userContract = await registry.fetchUserContract('3dbf04fe-afc4-35ca-b686-a174437ccdb5');
+
+  const delegatecall = true;
+  const contractAddress = '0xD69D54724c6d6B4F071429ED8D562c1F97CDF7f0';
+  const methodName = 'removeLiquidity';
+  const types = [
+    'address',
+    'address',
+    'address',
+    'address',
+    'uint256',
+    'uint256',
+    'uint256',
+  ];
+  const values = [
+    '0xc9f4bc2A7afEe68E6e8202fFc2b8d77d7E7B9eC9',
+    tokenA,
+    tokenB,
+    userContract,
+    (9e-16 * 1e18) | 0,
+    0,
+    0,
+  ];
+  const extra = getExtra(contractAddress, methodName, types, values);
+
+  const params = {
+    // 默认币种
+    asset_id: cnbAssetID,
+    // 默认金额
+    amount: '0.00000001',
+    // 唯一标识
+    trace_id: uuid(),
+    // 备注
+    extra,
+    // 多签
+    opponent_multisig: {
+      receivers: MVMMainnet.MVMMenbers,
+      threshold: MVMMainnet.MVMThreshold,
     },
-  })
-  const res = await client.transaction(txInput)
+    delegatecall
+  };
+  const txInput = await mvmClient.payments(params);
+
+  const res = await client.transfer.transaction(txInput)
   console.log(res)
 }
 ```

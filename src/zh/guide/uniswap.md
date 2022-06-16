@@ -2,7 +2,7 @@
 
 在上一篇文章中，我们提到通过 registry, 可以不用做任何修改来迁移 EVM 上的合约，这一章我们就来详细介绍一下，如何部署一个 uniswap 的合约。
 
-我们会用 Uniswap V2 版本来部署。在部署之前需要先用 metamask 配置到 Quorum 的测试网，具体的配置方式可以参考，如何加入测试网那一章节内容。
+我们会用 Uniswap V2 版本来部署。在部署之前需要先用 metamask 配置到 Quorum 的测试网，具体的配置方式可以参考 [加入测试网络](/zh/testnet/join) 章节。
 
 核心的 uniswap 代码主要包含 [v2-core](https://github.com/Uniswap/v2-core) 跟 [v2-periphery](https://github.com/Uniswap/v2-periphery) 两部分。 v2-core 是 Uniswap 最核心的功能，v2-periphery 是在核心功能之上的一层简单的封装，给开发者提供更易用的接口。
 
@@ -10,37 +10,39 @@
 
 1. 部署 UniswapV2Factory
 2. 部署 UniswapV2Router02
-3. 部署UniswapMVMRouter
+3. 部署 UniswapMVMRouter
 4. 通过 registry 调用合约
 
 ## 部署 UniswapV2Factory
 
 首先将所有的 v2-core 合约代码导入到 Remix IDE，然后对代码里面的几处参数作一下修改。
 
-> 注意：这些修改不是因为要部署到 MVM 才修改的，这只是一些针对不同网络部署的配置文件性质的修改。
+::: tip 注意
+这些修改不是因为要部署到 MVM 才修改的，这只是一些针对不同网络部署的配置文件性质的修改。
+:::
 
 第一个是将 `contracts/UniswapV2ERC20.sol` 中的 chainId 修改成 Quorum 测试网的网络 ID，注意这里去掉了对 assembly 的调用，是因为 Uniswap 的代码非常古老，很多新的特性在新的网络上支持不好。
 
 ```solidity
-     constructor() public {
--        uint chainId;
--        assembly {
--            chainId := chainid
--        }
-+        uint chainId = 82397;
-         DOMAIN_SEPARATOR = keccak256(
+constructor() public {
+    uint chainId;
+    assembly {
+        chainId := chainid
+    }
+    uint chainId = 82397;
+    DOMAIN_SEPARATOR = keccak256(
 ```
 
 第二处修改是在 `contracts/UniswapV2Factory.sol` 的 constructor 中添加一个简单的 event 来方便知道 UniswapV2Pair 这个合约字节码的 keccak256 值，方便对后续的文件修改做准备。
 
 ```solidity
-+    event InitCode(bytes32 indexed hash);
+event InitCode(bytes32 indexed hash);
 
-     constructor(address _feeToSetter) public {
-         feeToSetter = _feeToSetter;
-+        bytes memory bytecode = type(UniswapV2Pair).creationCode;
-+        emit InitCode(keccak256(bytecode));
-     }
+constructor(address _feeToSetter) public {
+    feeToSetter = _feeToSetter;
+    bytes memory bytecode = type(UniswapV2Pair).creationCode;
+    emit InitCode(keccak256(bytecode));
+}
 ```
 
 然后直接通过 Remix 来部署 UniswapV2Factory 了，部署时只有一个参数，可以直接输入自己的测试网的地址即可，部署成功后，会得到这个合约的地址。在 MVM 的 Quorum 测试网浏览器，搜索这个合约地址打开后，查看 logs 会得到我们添加的这个 InitCode 事件的输出结果。
@@ -153,35 +155,37 @@ Mixin 用户添加流动性的操作，也是通过一次给 mtg 的多签转帐
 
 1. 开发者(任意)生成一个 `https://mixin.one/codes/:id`
 
-    把 Operation encode 之后做为 memo, 调用 POST /payments 接口, 相关文档：
-    <https://developers.mixin.one/zh-CN/docs/api/transfer/payment>
+    把 Operation encode 之后做为 memo, 调用 POST /payments 接口，[相关文档](/zh/api/payment)
 
     Operation 结构
 
     ```golang
     op := &encoding.Operation{
-    Purpose: encoding.OperationPurposeGroupEvent, // 固定值 1
-    Process: c.String("process"), // 官方维护的 registry 的 PID 60e17d47-fa70-3f3f-984d-716313fe838a TODO
-    Extra:   extra, // 合约执行的内容
+      Purpose: encoding.OperationPurposeGroupEvent, // 固定值 1
+      Process: c.String("process"), // 官方维护的 registry 的 PID 60e17d47-fa70-3f3f-984d-716313fe838a TODO
+      Extra:   extra, // 合约执行的内容
     }
+   ```
 
+   extra 构成   
+
+   ```text
     extra: 7c15d0d2faa1b63862880bed982bd3020e1f1a9a5668870000000000000000000000000099cfc3d0c229d03c5a712b158a29ff186b294ab300000000000000000000000000000000000000000000000000000000000007d0
 
-    extra 分成两部分:
+    extra 分成三部分:
     a. 0x7c15d0D2faA1b63862880Bed982bd3020e1f1A9A 去掉 0x 后全部小写, 是需要执行合约的地址
-    b. 从 566887 开始则是 addLiquidity(address,uint256) 方法加详细参数的 ABI 值, 
-        上面的例子中是 c6d0c728-2624-429b-8e0d-d9d19b6592fa 是 BTC 在 Mixin 网络里的资产 ID
-        amount 0.00002 的 ABI 编码, 这个我们会单独的介绍
-        编码格式参照：https://docs.soliditylang.org/en/v0.8.12/abi-spec.html
+    b. 56688700 8位则是 addLiquidity(address,uint256) 方法加参数类型的 ABI 编码, 
+    c. 之后的部分则是详细参数的 ABI 编码，这个我们会单独的介绍
+       编码格式参照：https://docs.soliditylang.org/en/v0.8.12/abi-spec.html
     ```
 
-    获取资产对应关系的方式，可以在 Q&A 里找到。
+    获取资产对应关系的方式，可以在 [Q&A](/zh/resources/qa) 里找到。
 
 2. 用户支付，使用 mixin messenger 扫码（或者唤起）支付。
 
-  在上一步中，会获取到 `https://mixin.one/codes/:id` 的链接，用户可以通过扫码或者 messenger 中唤起支付。
+    在上一步中，会获取到 `https://mixin.one/codes/:id` 的链接，用户可以通过扫码或者 messenger 中唤起支付。
 
-开发者需要做的是生成 `code_id`, 给用户提供支付链接 `https://mixin.one/codes/:id`, 用户使用合约，只需要通过该链接支付即可。
+    用户只需要通过该链接支付即可调用合约。
 
 ### 添加 XIN 进流动池
 
@@ -199,7 +203,7 @@ XIN 流动性的添加，跟 BTC 流动性添加方式一样，生成新的 extr
 
 开发者生成支付链接 `https://mixin.one/codes/:id` ，用户通过扫码或者 messenger 中唤起支付。
 
-到目前为止，在 MVM 上部署 Uniswap，给 Uniswap 添加流动性就完成了。通过 MVM 测试网浏览器（<https://testnet.mvmscan.com/address/0x5aD700bd8B28C55a2Cac14DCc9FBc4b3bf37679B>）可以方便的查看 Registry 进程相关的所有的操作结果。
+到目前为止，在 MVM 上部署 Uniswap，给 Uniswap 添加流动性就完成了。通过 [MVM 测试网浏览器](<https://testnet.mvmscan.com/address/0x5aD700bd8B28C55a2Cac14DCc9FBc4b3bf37679B>) 可以方便的查看 Registry 进程相关的所有的操作结果。
 
 ## 部署示例
 
