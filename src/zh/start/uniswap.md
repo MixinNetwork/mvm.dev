@@ -476,7 +476,14 @@ contract UniswapMVMRouter {
 1. 添加流动性
 
 ```js
-const { MixinApi, MVMApi, MVMApiTestURI, Registry, MVMMainnet, getExtra } = require('mixin-node-sdk');
+const { 
+  MixinApi, 
+  MVMApi, 
+  MVMApiTestURI, 
+  Registry, 
+  MVMMainnet, 
+  getExtra 
+} = require('@mixin.dev/mixin-node-sdk');
 import { v4 as uuid } from 'uuid';
 const keystore = require('./keystore.json');
 
@@ -516,7 +523,7 @@ async function addLiquidity() {
     },
   };
   const txInput = await mvmClient.payments(params);
-  
+
   const res = await mixinClient.transfer.transaction(txInput)
   console.log(res)
 }
@@ -525,7 +532,14 @@ async function addLiquidity() {
 2. 兑换
 
 ```js
-const { MixinApi, MVMApi, MVMApiTestURI, Registry, MVMMainnet, getExtra } = require('mixin-node-sdk');
+const { 
+  MixinApi, 
+  MVMApi, 
+  MVMApiTestURI, 
+  Registry, 
+  MVMMainnet, 
+  getExtra 
+} = require('@mixin.dev/mixin-node-sdk');
 import { v4 as uuid } from 'uuid';
 const keystore = require('./keystore.json');
 
@@ -580,7 +594,14 @@ async function swap() {
 3. 移除流动性
 
 ```js
-const { MixinApi, MVMApi, MVMApiTestURI, Registry, MVMMainnet, getExtra } = require('mixin-node-sdk');
+const {
+  MixinApi,
+  MVMApi,
+  MVMApiTestURI, 
+  Registry, 
+  MVMMainnet, 
+  getExtra 
+} = require('@mixin.dev/mixin-node-sdk');
 import { v4 as uuid } from 'uuid';
 const keystore = require('./keystore.json');
 

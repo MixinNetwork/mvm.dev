@@ -29,7 +29,7 @@ Mvm 有许多特点, 如 独有的编码方式、 `Registry` 等.
 
 但其实开发者并不太用关注这些信息, 就可以直接开始进行合约的开发. 并且便捷的
 
-甚至我们已经准备好了 `mixin-node-sdk` 与 `mvm 调用 api`, 让您能够方便快捷的使用 Mixin Messenger 快捷的进行收付款以及合约的调用.
+甚至我们已经准备好了 `@mixin.dev/mixin-node-sdk` 与 `mvm 调用 api`, 让您能够方便快捷的使用 Mixin Messenger 快捷的进行收付款以及合约的调用.
 
 > [详细的例子请点击](https://github.com/MixinNetwork/bot-api-nodejs-client/blob/main/example/mvm.js)
 

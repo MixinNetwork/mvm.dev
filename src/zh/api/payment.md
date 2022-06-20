@@ -53,7 +53,12 @@ payment 参数是跟多签相关的参数
 
 ```javascript
 import { v4 as uuid } from 'uuid';
-import { MVMApi, MVMApiTestURI, getExtra, MVMMainnet } from 'mixin-node-sdk';
+import { 
+  MVMApi, 
+  MVMApiTestURI, 
+  getExtra, 
+  MVMMainnet 
+} from '@mixin.dev/mixin-node-sdk';
 
 // 合约地址
 const contractAddress = '0x4f31E2eAF25DCDD46651AcE019B61E3E750023E0';
@@ -100,7 +105,12 @@ await mvmClient.payments(params);
 
 ```javascript
 import { v4 as uuid } from 'uuid';
-import { MVMApi, MVMApiTestURI, getExtra, MVMMainnet } from 'mixin-node-sdk';
+import { 
+  MVMApi, 
+  MVMApiTestURI, 
+  getExtra, 
+  MVMMainnet 
+} from '@mixin.dev/mixin-node-sdk';
 
 // 合约地址
 const contractAddress = '0x96dC880Ed035CFdd2F334874379bb6A128aca788';
@@ -149,7 +159,12 @@ await mvmClient.payments(params);
 
 ```javascript
 import { v4 as uuid } from 'uuid';
-import { MVMApi, MVMApiTestURI, getExtra, MVMMainnet } from 'mixin-node-sdk';
+import { 
+  MVMApi, 
+  MVMApiTestURI, 
+  getExtra, 
+  MVMMainnet 
+} from '@mixin.dev/mixin-node-sdk';
 
 // 资产地址
 const asset_id = "965e5c6e-434c-3fa9-b780-c50f43cd955c";
@@ -202,7 +217,12 @@ uniswap 的 swap 合约方法调用(values 可以为一个数组或者对象)
 
 ```javascript
 import { v4 as uuid } from 'uuid';
-import { MVMApi, MVMApiTestURI, getExtra, MVMMainnet } from 'mixin-node-sdk';
+import { 
+  MVMApi, 
+  MVMApiTestURI, 
+  getExtra, 
+  MVMMainnet 
+} from '@mixin.dev/mixin-node-sdk';
 
 // 资产地址
 const asset_id = "965e5c6e-434c-3fa9-b780-c50f43cd955c";
@@ -268,7 +288,12 @@ uniswap 的移除流动性方法调用
 
 ```javascript
 import { v4 as uuid } from 'uuid';
-import { MVMApi, MVMApiTestURI, getExtra, MVMMainnet } from 'mixin-node-sdk';
+import { 
+  MVMApi, 
+  MVMApiTestURI, 
+  getExtra, 
+  MVMMainnet 
+} from '@mixin.dev/mixin-node-sdk';
 
 // 资产地址
 const asset_id = "965e5c6e-434c-3fa9-b780-c50f43cd955c";
