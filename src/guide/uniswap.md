@@ -61,7 +61,7 @@ So far, all the code of Uniswap V2 has been successfully deployed on MVM's Quoru
 
 ## Deploy UniswapMVMRouter 
 
-This contract is a simple encapsulation we made based on Uniswap to make it more convenient for MM users to call (mainly for adding and removing liquidity). The code is very simple and can be directly placed in the file of contracts/UniswapMVVMRouter.sol under the `v2-periphery` project.
+This contract is a simple encapsulation we made based on Uniswap to make it more convenient for MM users to call (mainly for adding and removing liquidity). The code is very simple and can be directly placed in the file of contracts/UniswapMVMRouter.sol under the `v2-periphery` project.
 
 ```solidity
 pragma solidity =0.6.6;
@@ -145,7 +145,7 @@ This contract deployment has only one parameter, which is the contract address o
 
 In the previous article, we have introduced the deployment and principle of registry in detail. Next, we will use this example to demonstrate how to call the uniswap contract through the registry. 
 
-The first step is to add liquidity. In the previous paragraph, we mentioned UniswapMVVMRouter, mainly because in the mixin, you can only operate one asset at a time, so you need to add liquidity twice.
+The first step is to add liquidity. In the previous paragraph, we mentioned UniswapMVMRouter, mainly because in the mixin, you can only operate one asset at a time, so you need to add liquidity twice.
 
 ### Add BTC to the Liquidity Pool
 

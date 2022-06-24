@@ -43,7 +43,7 @@ Let's take the uniswap contract as an example:
 7c15d0d2faa1b63862880bed982bd3020e1f1a9a5668870000000000000000000000000099cfc3d0c229d03c5a712b158a29ff186b294ab300000000000000000000000000000000000000000000000000000000000007d0
 ```
 
-`0x7c15d0D2faA1b63862880Bed982bd3020e1f1A9A` after removing 0x and making all lowercase, we can get the address of UniswapMVVMRouter.
+`0x7c15d0D2faA1b63862880Bed982bd3020e1f1A9A` after removing 0x and making all lowercase, we can get the address of UniswapMVMRouter.
 
 `566887` is the addLiquidity(address,uint256) abi encoding.
 
