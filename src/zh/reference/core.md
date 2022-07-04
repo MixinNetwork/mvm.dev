@@ -10,12 +10,12 @@ MTG 多重签名托管节点，是一个开源协议，所有者可以选择一�
 
 ## PID
 
-PID 是 process id 的缩写，MVM 把 Mixin 里的机器人 ID (或者机器人用户 ID) 跟 EVM 合约地址进行映射。主要以下几个方面需要注意：
+PID 是 process id 的缩写，MVM 把 Mixin 里的机器人 ID (或者机器人用户 ID) 跟 EVM 合约地址进行映射。主要有以下几个方面需要注意：
 
 1. 在 MVM 发布合约时，会将配置条件跟 PID 绑定。
-2. Mixin 用户调用合约时，会读取发布时的配置和用户的参数，编码后调用 EVM 合约。
+2. Mixin 用户调用合约时，会读取发布时的配置和用户的参数，对其编码后调用 EVM 合约。
 3. EVM 合约会根据 raw 里的值判断，是否是来自这个 PID，[参考代码](https://github.com/MixinNetwork/mvm-contracts/blob/main/contracts/mixin/registry.sol#L250)。
-4. 任意没有在 MVM 使用过的机器人（或者机器人用户），都可以从 7000103716 获取一个机器人用户。
+4. 可以在 [Mixin Messenger](https://mixin.one/messenger) 上添加 7000103716 机器人，回复 `claim` 获取一个机器人用户。
 
     示例：
 

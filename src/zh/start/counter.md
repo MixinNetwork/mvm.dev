@@ -57,8 +57,8 @@ contract Counter { // 计数器合约
 mkdir mvm-invoke # 初始化工作目录
 cd mvm-invoke # 进入工作目录
 npm init -y # 初始化 npm 项目
-npm install mixin-node-sdk # 安装 nodejs 的 sdk
-# 注意 mixin-node-sdk 的版本要 >= 3.0.24
+npm install @mixin.dev/mixin-node-sdk # 安装 nodejs 的 sdk
+# 注意 @mixin.dev/mixin-node-sdk 的版本要 >= 4.1.0
 ```
 
 ### 4.2 准备 `keystore.json`
@@ -84,7 +84,13 @@ npm install mixin-node-sdk # 安装 nodejs 的 sdk
 
 ```js
 import { v4 as uuid } from 'uuid';
-const { MixinApi, MVMApi, MVMApiTestURI, getExtra, MVMMainnet } = require('mixin-node-sdk');
+const { 
+  MixinApi, 
+  MVMApi, 
+  MVMApiTestURI, 
+  getExtra, 
+  MVMMainnet 
+} = require('@mixin.dev/mixin-node-sdk');
 const keystore = require('./keystore.json');
 
 const mixinClient = MixinApi({ keystore });
@@ -107,7 +113,7 @@ async function main() {
     // 唯一标识
     trace_id: uuid(),
     // 备注
-    extra,
+    memo: extra,
     // 多签
     opponent_multisig: {
       receivers: MVMMainnet.MVMMenbers,
@@ -149,7 +155,13 @@ async function main() {
 
 ```js
 import { v4 as uuid } from 'uuid';
-const { MixinApi, MVMApi, MVMApiTestURI, getExtra, MVMMainnet } = require('mixin-node-sdk');
+const { 
+  MixinApi, 
+  MVMApi, 
+  MVMApiTestURI, 
+  getExtra, 
+  MVMMainnet 
+} = require('@mixin.dev/mixin-node-sdk');
 const keystore = require('./keystore.json');
 
 const mixinClient = MixinApi({ keystore });
@@ -174,7 +186,7 @@ async function main() {
     // 唯一标识
     trace_id: uuid(),
     // 备注
-    extra,
+    memo: extra,
     // 多签
     opponent_multisig: {
       receivers: MVMMainnet.MVMMenbers,

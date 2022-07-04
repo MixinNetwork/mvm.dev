@@ -48,13 +48,37 @@
     PRIVATE_KEY=privateKey yarn hardhat run --network quorum scripts/refund.ts
     ```
 
-    > 你可以在 [https://faucet.mvmscan.com/](https://faucet.mvmscan.com/) 领取测试币
+    ::: tip 注意
+    1. 这里填的是收款钱包的私钥。
+    2. 你可以在 [https://faucet.mvmscan.com/](https://faucet.mvmscan.com/) 领取测试币
+    :::
 
 ## 在 MVM 发布合约
 
-智能合约在 [Quorum](/testnet/join) 部署完成后，需要在 MVM 与 Mixin 机器人绑定 (发布合约)，MVM 会基于 [PID](#refund-合约实现) 来打包数据，并发送到 [Quorum](/testnet/join)，生成一个给 MTG 的多签转帐，在 memo 中包含 [PID](#refund-合约实现)、合约地址等信息。
+智能合约在 [Quorum](/testnet/join) 部署完成后，还需要在 MVM 与 Mixin 机器人绑定 (发布合约)。
+MVM 会基于合约发布请求中携带的 [PID](#refund-合约实现) 来打包数据，并发送到 [Quorum](/testnet/join)。
+
+过程：
 
 1. 开发者需要给 MTG 转一笔金额 >= 1 的 CNB，memo 为 Operation 的编码
+2. MVM 收到 output 后，会解析 memo、验证合约地址等一些基本信息。符合要求后，把这 process 这些信息保存下来，[代码示例](https://github.com/MixinNetwork/mvm-contracts/blob/main/contracts/mixin/registry.sol#L242)
+3. 合约执行工作，在下一节[调用合约](/zh/reference/refund.html#调用合约)中详细描述
+
+发布合约的三种方式（效果相同）：
+
+1. 通过合约机器人发布合约
+
+   推荐通过 [Mixin Messenger](https://mixin.one/messenger) 内的合约机器人 **7000103716** 来发布合约。命令：`publish 机器人ID:合约地址`
+
+   例子:
+
+    ```text
+    publish 72f3b2ba-775d-3b8a-a1a9-c407deab4df6:0x3EC07990be4d38b22a8910d0CB0d2bE1E9F573c3 
+    ```
+
+2. POST /transactions 接口发布合约
+
+   开发者需要先生成一个给 MTG 的多签转帐，并在 memo 中包含 [PID](#refund-合约实现)、合约地址等信息。
 
    Operation 结构：
    ```golang
@@ -66,22 +90,6 @@
      Extra:    []byte(c.String("extra")), // 可选项，如果需要自动创建资产，值是 META
    }
    ```
-2. MVM 收到 output 后，会解析 memo、验证合约地址等一些基本信息。符合要求后，把这 process 这些信息保存下来，[代码示例](https://github.com/MixinNetwork/mvm-contracts/blob/main/contracts/mixin/registry.sol#L242)
-3. 合约执行工作，在下一节[调用合约](/zh/reference/refund.html#调用合约)中详细描述
-
-### 发布合约的三种方式（效果相同）：
-
-1. 通过合约机器人发布合约。
-
-   推荐通过合约机器人 **7000103716** 来发布合约。命令：`publish 机器人ID:合约地址`
-
-   例子:
-
-    ```text
-    publish 72f3b2ba-775d-3b8a-a1a9-c407deab4df6:0x3EC07990be4d38b22a8910d0CB0d2bE1E9F573c3 
-    ```
-
-2. POST /transactions 接口发布合约
 
    相关文档：<https://developers.mixin.one/zh-CN/docs/api/transfer/payment>
 
@@ -126,7 +134,7 @@
 
 ## 调用合约
 
-Mixin 用户使用合约同样也是通过 MTG 的多签转帐。需要开发者生成一个用户对 MTG 多签转帐的链接。
+Mixin 用户使用合约同样也是通过 MTG 的多签转帐。
 
 1. 开发者生成一个多签转账的支付链接，例如：`https://mixin.one/codes/:code_id`
 
