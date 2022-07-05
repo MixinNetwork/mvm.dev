@@ -138,12 +138,12 @@ module.exports = {
               ]
             },
             {
-              title: 'Testnet',
+              title: 'Quorum',
               children: [
                 {
                   title: 'Join',
                   directory: false,
-                  path: '/testnet/join'
+                  path: '/quorum/join'
                 },
               ]
             },
@@ -266,12 +266,12 @@ module.exports = {
               ]
             },
             {
-              title: '测试网',
+              title: 'Quorum',
               children: [
                 {
                   title: '如何加入',
                   directory: false,
-                  path: '/zh/testnet/join'
+                  path: '/zh/quorum/join'
                 },
               ]
             },
