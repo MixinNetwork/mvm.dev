@@ -1,4 +1,4 @@
-# storage 合约原理及使用
+# Storage 合约原理及使用
 
 在上一篇文章中，我们介绍了如何通过代理合约 [Registry](https://github.com/MixinNetwork/trusted-group/blob/master/mvm/quorum/contracts/registry.sol)，
 来执行部署在 [Quorum](/zh/quorum/join) 上的其他合约。
@@ -67,7 +67,7 @@ contract Storage {
    3179976b4babd610973b16996df33c1ecd13a3ddff436d4734d3c3862a2c3fe9 为 keccak256 hash 去掉 0x
    ```
 
-或者，使用官方 js sdk：
+或者，使用 [官方 js sdk](https://github.com/MixinNetwork/bot-api-nodejs-client)：
 
 ```javascript
 import { StorageContract, MVMMainnet, getExtraWithStorageKey, MixinApi } from '@mixin.dev/mixin-node-sdk';
