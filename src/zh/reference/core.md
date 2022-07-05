@@ -2,7 +2,7 @@
 
 ## MTG
 
-MTG 多重签名托管节点，是一个开源协议，所有者可以选择一些可信任的节点来，实现并运行这个程序。
+[MTG](https://github.com/MixinNetwork/trusted-group) 多重签名托管节点，是一个开源协议，所有者可以选择一些可信任的节点来，实现并运行这个程序。
 
 ## Quorum 网络
 
