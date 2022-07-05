@@ -256,6 +256,15 @@ module.exports = {
               ]
             },
             {
+              title: "Bridge 合约",
+              children: [
+                {
+                  title: "简介",
+                  path: "/zh/bridge/intro"
+                },
+              ]
+            },
+            {
               title: 'ABI 规范',
               children: [
                 {
