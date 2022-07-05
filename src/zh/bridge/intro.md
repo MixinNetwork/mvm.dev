@@ -85,8 +85,6 @@ Bridge 简单的说是一个跨链桥，但是它是连接 Mixin 所有支持的
   }
 ```
 
-## 
-
 ## 完整 bridge.sol 代码
 https://github.com/MixinNetwork/trusted-group/blob/master/mvm/quorum/bridge/contracts/Bridge.sol
 
