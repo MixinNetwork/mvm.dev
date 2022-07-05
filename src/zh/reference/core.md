@@ -6,7 +6,7 @@
 
 ## Quorum 网络
 
-由 MVM 部署的，多个节点管理的 EVM 兼容的 POS 网络。[加入测试网络](/quorum/join.html)
+由 MVM 部署的，多个节点管理的 EVM 兼容的 POS 网络。[加入网络](/zh/quorum/join.html)
 
 ## PID
 
