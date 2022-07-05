@@ -2,7 +2,7 @@
 
 在上一篇文章中，我们介绍了如何在 MVM 部署并使用一个完整的合约，其中提到，合约开发者需要对原有的合约做一些修改，因此我们又进一步实现了 [registry.sol](#开源代码)。
 
-[registry](#开源代码) 是 MVM 代理合约，原有的智能合约不需要做修改，在 [Quorum](/testnet/join) 上部署后，可以直接通过 [registry](#开源代码) 来执行。
+[registry](#开源代码) 是 MVM 代理合约，原有的智能合约不需要做修改，在 [Quorum](/quorum/join) 上部署后，可以直接通过 [registry](#开源代码) 来执行。
 另外，[registry](#开源代码) 还支持批量执行多个合约。
 
 ## 如何使用 registry
@@ -159,6 +159,6 @@ registry.sol 开源地址: <https://github.com/MixinNetwork/trusted-group/tree/m
 
 ## 总结
 
-registry 辅助实现了：Mixin 用户与 [Quorum](/testnet/join) 帐户的映射、mixin 资产与 [Quorum](/testnet/join) 资产的映射、合约调用以及执行结果返回的工作。EVM 合约也可以直接迁移不需要作修改。
+registry 辅助实现了：Mixin 用户与 [Quorum](/quorum/join) 帐户的映射、mixin 资产与 [Quorum](/testnet/join) 资产的映射、合约调用以及执行结果返回的工作。EVM 合约也可以直接迁移不需要作修改。
 
 但是，由于 mtg 对 extra 的长度有限制，当 extra 的长度超过 200 时，需要进行额外的处理，我们将在下一节介绍 Storage 合约的原理和使用以解决这个问题。

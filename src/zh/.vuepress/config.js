@@ -131,7 +131,7 @@ module.exports = {
             {
               title: '如何加入',
               directory: false,
-              path: '/testnet/join'
+              path: '/quorum/join'
             },
           ]
         },
