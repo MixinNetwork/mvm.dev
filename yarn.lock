@@ -8828,9 +8828,9 @@ vuepress-plugin-smooth-scroll@^0.0.3:
   dependencies:
     smoothscroll-polyfill "^0.4.3"
 
-vuepress-theme-cosmos@jadeydi/vuepress-theme-cosmos#master:
+vuepress-theme-cosmos@MixinNetwork/vuepress-theme-cosmos#master:
   version "1.0.183"
-  resolved "https://codeload.github.com/jadeydi/vuepress-theme-cosmos/tar.gz/6a10a1640d28c0e4ef5c7f66c2d0a25992e7f578"
+  resolved "https://codeload.github.com/MixinNetwork/vuepress-theme-cosmos/tar.gz/b4e7083a897fe0768ef713e474df961c4f1c063f"
   dependencies:
     "@cosmos-ui/vue" "^0.35.0"
     "@vuepress/plugin-google-analytics" "1.8.2"
