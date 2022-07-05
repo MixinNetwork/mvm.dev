@@ -88,6 +88,11 @@ module.exports = {
               directory: false,
               path: '/reference/registry'
             },
+            {
+              title: 'Storage 合约',
+              directory: false,
+              path: '/reference/storage'
+            }
           ]
         },
         {
