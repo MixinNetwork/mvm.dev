@@ -2,6 +2,8 @@
 
 在上一章中我们简介了 bridge.sol 里实现的功能，然后又基于 MVM 实现了跨链充值, 这里我们会为开发者介绍一下，如何用 MVM Bridge 实现跨链充值。
 
+在这篇文章跟，我们会以 MetaMask Address 为例，其它的 ETH 钱包同理，没有区别。
+
 ## Bridge 的 API 接口列表
 
 Bridge RPC host: https://bridge.mvm.dev
@@ -18,7 +20,7 @@ Bridge RPC host: https://bridge.mvm.dev
 
 请求参数：
 
-```solidty
+```javascript
 {"public_key": "0x12266b2Bbd....0CF83c3997Bc8dbAD0be0"}
 ```
 
@@ -47,6 +49,33 @@ Bridge RPC host: https://bridge.mvm.dev
 
 在上一步中，拿到具体的 BTC, ETH, SOL, DOT 等等的地址之后，只需要对相关的资产进行链上充值, 之后 MetaMask 中就会有相关的 erc20 资产。
 
+整个流程中重要的是通过 API 请求拿到 MetaMask address 对应, 不同链的充值地址。
+
+接下来，我们会介绍如何通过 Metamask 地址完成对其它链的提现。
+
+## POST "/extra"
+
+请求参数:
+
+```javascript
+{
+  "destination": "0x12266b2Bbd....0CF83c3997Bc8dbAD0be0",
+  "tag": "EOS memo",
+  "receivers": ["58099349-b159-4662-ad51-c18e809c9035", "58099349-b159-4662-ad51-c18e809c9035", ...],
+  "threshold": 1,
+  "extra: "extra ..."
+}
+```
+
+返回值: 
+
+```
+{"extra": "12345"}
+```
+
+其中 `destination` 跟 `tag` 是给多链提现使用，`receivers` 跟 `threshold` 是给 Mixin User 转帐使用。
+
+这个 API 主要是给提现用的，在下一章，从 Metamask 提现到多链中我们会详细介绍。
 
 ## Bridge 的开源地址：
 
