@@ -31,12 +31,10 @@ function transfer(address to, uint256 value) external returns (bool);
 
 ```js
 const { Registry, MVMMainnet } = require('@mixin.dev/mixin-node-sdk');
-const keystore = require('./keystore.json');
 
 const registry = new Registry({
-  address: MVMMainnet.Registry.Address,
-  uri: MVMMainnet.RPCUri,
-  secret: keystore.private_key,
+  address: MVMMainnet.Registry.Contract,
+  uri: MVMMainnet.RPCUri
 });
 
 // BTC address
@@ -54,22 +52,17 @@ const CNBAddress = await registry.fetchAssetContract('965e5c6e-434c-3fa9-b780-c5
 
 ### 3. 手动注册资产合约
 
-注册资产合约的方式也非常简单, 就是给 Mvm 转账一次该资产就注册完了.
+注册资产合约的方式也非常简单, 即给 MVM 转账一次该资产.
 
 > 注册资产不需要消耗任何费用. 注册完了转账的金额会退回.
 
 ```js
-const { 
-  MixinApi, 
-  MVMApi, 
-  MVMApiTestURI, 
-  MVMMainnet 
-} = require('@mixin.dev/mixin-node-sdk');
+const { MixinApi, MVMMainnet } = require('@mixin.dev/mixin-node-sdk');
 import { v4 as uuid } from 'uuid';
 const keystore = require('./keystore.json');
 
-const mixinClient = MixinApi({ keystore });
-const mvmClient = MVMApi(MVMApiTestURI);
+keystore.user_id = keystore.client_id;
+const client = MixinApi({ keystore });
 
 const params = {
   asset_id: '965e5c6e-434c-3fa9-b780-c50f43cd955c', // 注册 CNB
@@ -83,9 +76,10 @@ const params = {
   memo: '', // 这个时候并不需要调用任何的合约, 所以 extra 留空就行
 };
 
-const txInput = await mvmClient.payments(params);
-mixinClient.transfer.toAddress(txInput); // 转账成功即完成注册.
-// 或者使用 payment 的形式, 使用 Mixin Messenger 付款.
+const txInput = await client.payment.request(params);
+const res = await client.transfer.toAddress(txInput); // 转账成功即完成注册.
+// 或者使用 Mixin Messenger 付款，支付链接如下
+console.log(`mixin://codes/${txInput.code_id}`)
 ```
 
 > 转账成功后, 稍等 30 秒 - 1 分钟, 再查询就得到资产合约地址了.
@@ -100,12 +94,10 @@ mixinClient.transfer.toAddress(txInput); // 转账成功即完成注册.
 
 ```js
 const { Registry, MVMMainnet } = require('@mixin.dev/mixin-node-sdk');
-const keystore = require('./keystore.json');
 
 const registry = new Registry({
   address: MVMMainnet.Registry.Address,
-  uri: MVMMainnet.RPCUri,
-  secret: keystore.private_key,
+  uri: MVMMainnet.RPCUri
 });
 
 // 30265 address
@@ -118,6 +110,7 @@ const userContract = await registry.fetchUserContract('e8e8cd79-cd40-4796-8c54-3
 const { MixinApi } = require('@mixin.dev/mixin-node-sdk');
 const keystore = require('./keystore.json');
 
+keystore.user_id = keystore.client_id;
 const client = MixinApi({ keystore });
 const { user_id } = await client.user.search('30265') // 返回的结果里有 user_id
 ```
@@ -137,9 +130,11 @@ const { MixinApi } = require('@mixin.dev/mixin-node-sdk');
 import { v4 as uuid } from 'uuid';
 const keystore = require('./keystore.json');
 
+keystore.user_id = keystore.client_id;
 const client = MixinApi({ keystore });
+
 const params = {
-  asset_id: '965e5c6e-434c-3fa9-b780-c50f43cd955c', // 注册 CNB
+  asset_id: '965e5c6e-434c-3fa9-b780-c50f43cd955c', // CNB
   amount: '0.00000001',
   trace_id: uuid(),
   // 多签
@@ -168,21 +163,18 @@ client.payment.request(params).then((payment) => {
 
 ```js
 const { 
-  MixinApi, 
-  MVMApi, 
-  MVMApiTestURI, 
+  MixinApi,
   Registry, 
   MVMMainnet 
 } = require('@mixin.dev/mixin-node-sdk');
 import { v4 as uuid } from 'uuid';
 const keystore = require('./keystore.json');
 
+keystore.user_id = keystore.client_id;
 const mixinClient = MixinApi({ keystore });
-const mvmClient = MVMApi(MVMApiTestURI);
 const registry = new Registry({
   address: MVMMainnet.Registry.Address,
-  uri: MVMMainnet.RPCUri,
-  secret: keystore.private_key,
+  uri: MVMMainnet.RPCUri
 });
 
 const UserID = 'e8e8cd79-cd40-4796-8c54-3a13cfe50115';
@@ -191,16 +183,19 @@ const CNBID = '965e5c6e-434c-3fa9-b780-c50f43cd955c';
 async function main() {
   const userContract = await registry.fetchUserContract(UserID);
   const CNBContract = await registry.fetchAssetContract(CNBID);
+  const transferAmount = '1';
   
-  const methodName = 'transfer'; // 调用合约的方法名
-  const transferAmount = '1'; // 要转账的金额
-  const types = ['address', 'uint256']; // 调用合约方法的参数类型列表
-  // 这里需要注意, 所有注册的资产合约的 decimal 都是 8
-  // 所以, 如果要转账, 这里的金额就是转账金额乘以 1 亿
-  const values = [userContract, String(Number(transferAmount) * 1e8)]; // 调用合约方法的参数值列表
+  const contract = {
+    address: CNBContract,
+    method: 'transfer',
+    types: ['address', 'uint256'],
+    // 这里需要注意, 所有注册的资产合约的 decimal 都是 8
+    // 所以, 如果要转账, 这里的金额就是转账金额乘以 1 亿
+    values: [userContract, String(Number(transferAmount) * 1e8)]
+  };
   
   // 生成 extra
-  const extra = getExtra(CNBContract, methodName);
+  const extra = getExtra([contract]);
   const params = {
     // 默认币种
     asset_id: CNBID,
@@ -216,9 +211,9 @@ async function main() {
       threshold: MVMMainnet.MVMThreshold,
     },
   };
-  const txInput = await mvmClient.payments(params);
-
-  mixinClient.transfer.toAddress(txInput); // 转账成功即完成转账.
+  
+  const txInput = await client.payment.request(params);
+  await client.transfer.toAddress(txInput); // 转账成功即完成转账.
 }
 ```
 
