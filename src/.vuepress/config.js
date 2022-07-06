@@ -262,6 +262,10 @@ module.exports = {
                   title: "简介",
                   path: "/zh/bridge/intro"
                 },
+                {
+                  title: "多链充值",
+                  path: "/zh/bridge/deposit"
+                },
               ]
             },
             {

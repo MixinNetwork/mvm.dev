@@ -85,6 +85,8 @@ Bridge 简单的说是一个跨链桥，但是它是连接 Mixin 所有支持的
   }
 ```
 
+看到这里应该对 Bridge 合约有基本的了解，我们使用 bridge 合约，作了进一步的开发，然后让开发者更加方便的使用，完成不同链到 MVM 的充值，下一篇，我们会针对开发者的使用做一个详细的介绍。
+
 ## 完整 bridge.sol 代码
 https://github.com/MixinNetwork/trusted-group/blob/master/mvm/quorum/bridge/contracts/Bridge.sol
 
