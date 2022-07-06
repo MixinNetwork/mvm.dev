@@ -23,8 +23,9 @@
    }
    ```
 
-   其中，extra 由待执行的合约数量和每个代执行合约函数的 contract_extra 组合而成， 
-   合约调用示例（该合约的源码见 [Counter](zh/start/counter)）：
+   其中，extra 由待执行的合约数量和每个代执行合约函数的 contract_extra 组合而成，[代码示例](https://github.com/MixinNetwork/mvm-contracts/blob/main/contracts/mixin/User.sol#L52)
+
+   以下是合约调用示例（该合约的源码见 [Counter](/zh/start/counter)）：
 
    ```javascript
    const contract1 = {
@@ -57,7 +58,6 @@
         const abiCoder = new ethers.utils.AbiCoder();
         contractExtra += abiCoder.encode(types, values).slice(2);
         ```
-        编码格式参照：<https://docs.soliditylang.org/en/v0.8.12/abi-spec.html>
    3. `2e8f70631208a2ecfc6fa47baf3fde649963bac7000406661abd` 为第二个合约的 contract_extra。
       由三部分组成：
       * `2e8f70631208a2ecfc6fa47baf3fde649963bac7` 为合约地址去掉 `0x` 后的小写
@@ -68,7 +68,6 @@
         let contractExtra = contract2.address.slice(2);
         contractExtra += utils.id(`${contract2.method}()`).slice(2, 10)
         ```
-        编码格式参照：<https://docs.soliditylang.org/en/v0.8.12/abi-spec.html>
 
    通过 [官方 js sdk](https://github.com/MixinNetwork/bot-api-nodejs-client) 生成支付链接
    ```javascript
@@ -123,9 +122,19 @@
 7. 解析 user：Mixin 用户 ID，也可能是多签帐号, 如果用户不存在会创建对应的 Quorum 帐号
 8. 解析 5 里面的 extra 值, 如果 Quorum 对应资产不存在会创建资产
 9. 验证签名
-10. 给 Mixin 用户，对应的 MVM 帐号转入相应的资产
-11. 调用合约, 执行完成后，销毁 MVM 帐号的资产
-12. 返回调用结果 ( 通过调用 `emit MixinTransaction` )
+10. 给 Mixin 用户，对应的 MVM 帐号转入相应的资产，[代码示例](https://github.com/MixinNetwork/mvm-contracts/blob/main/contracts/mixin/Asset.sol#L139)
+11. 依次调用合约 [代码示例](https://github.com/MixinNetwork/mvm-contracts/blob/main/contracts/mixin/User.sol#L42)
+12. 合约调用的结果通过 `ProcessCalled` 事件返回，[代码示例](https://github.com/MixinNetwork/mvm-contracts/blob/main/contracts/mixin/User.sol#L82)
+13. 返回的结果可以在浏览器的 logs 中找到（主网和测试网浏览器的地址见 [Quorum](/zh/quorum/join)）。
+    当 result 为 true 时调用成功，output 为 合约调用的返回；当 result 为 false 时合约调用失败，output 为提示，可以通过 xxd 命令解析。
+    ```shell
+    # result: false
+    # output: 08c379a00000000000000000000000000000000000000000000000000000000000000020000000000000000000000000000000000000000000000000000000000000000c6e6f742072656769737472790000000000000000000000000000000000000000
+    
+    echo 08c379a00000000000000000000000000000000000000000000000000000000000000020000000000000000000000000000000000000000000000000000000000000000c6e6f742072656769737472790000000000000000000000000000000000000000 | xxd -r -p
+    # �y� 
+    #     not registry
+    ```
 
 具体的代码实现
 
