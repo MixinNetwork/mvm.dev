@@ -478,8 +478,6 @@ contract UniswapMVMRouter {
 ```js
 const { 
   MixinApi, 
-  MVMApi, 
-  MVMApiTestURI, 
   Registry, 
   MVMMainnet, 
   getExtra 
@@ -487,12 +485,11 @@ const {
 import { v4 as uuid } from 'uuid';
 const keystore = require('./keystore.json');
 
-const mixinClient = MixinApi({ keystore });
-const mvmClient = MVMApi(MVMApiTestURI);
+keystore.user_id = keystore.client_id;
+const client = MixinApi({ keystore });
 const registry = new Registry({
   address: MVMMainnet.Registry.Address,
   uri: MVMMainnet.RPCUri,
-  secret: keystore.private_key,
 });
 
 const cnbAssetID = '965e5c6e-434c-3fa9-b780-c50f43cd955c';
@@ -502,11 +499,13 @@ async function addLiquidity() {
   const assetAmount = 0.0001;
   const assetContract = await registry.fetchAssetContract(cnbAssetID);
 
-  const contractAddres = '0xD69D54724c6d6B4F071429ED8D562c1F97CDF7f0';
-  const methodName = 'addLiquidity';
-  const types = ['address', 'uint256'];
-  const values = [assetContract, assetAmount * 1e8];
-  const extra = getExtra(contractAddress, methodName, types, values);
+  const contract = {
+    address: '0xD69D54724c6d6B4F071429ED8D562c1F97CDF7f0',
+    method: 'addLiquidity',
+    types: ['address', 'uint256'],
+    values: [assetContract, assetAmount * 1e8], 
+  }
+  const extra = getExtra([contract]);
 
   const params = {
     asset_id: roayAssetID,
@@ -522,9 +521,9 @@ async function addLiquidity() {
       threshold: MVMMainnet.MVMThreshold,
     },
   };
-  const txInput = await mvmClient.payments(params);
-
-  const res = await mixinClient.transfer.transaction(txInput)
+  
+  const txInput = await client.payment.request(params);
+  const res = await client.transfer.transaction(txInput)
   console.log(res)
 }
 ```
@@ -533,9 +532,7 @@ async function addLiquidity() {
 
 ```js
 const { 
-  MixinApi, 
-  MVMApi, 
-  MVMApiTestURI, 
+  MixinApi,
   Registry, 
   MVMMainnet, 
   getExtra 
@@ -543,12 +540,11 @@ const {
 import { v4 as uuid } from 'uuid';
 const keystore = require('./keystore.json');
 
-const mixinClient = MixinApi({ keystore });
-const mvmClient = MVMApi(MVMApiTestURI);
+keystore.user_id = keystore.client_id;
+const client = MixinApi({ keystore });
 const registry = new Registry({
   address: MVMMainnet.Registry.Address,
-  uri: MVMMainnet.RPCUri,
-  secret: keystore.private_key,
+  uri: MVMMainnet.RPCUri
 });
 
 const cnbAssetID = '965e5c6e-434c-3fa9-b780-c50f43cd955c';
@@ -566,9 +562,13 @@ async function swap() {
   const values = [amountA, amountB, [tokenA, tokenB], userContract, time];
   const types = [amountA, amountB, [tokenA, tokenB], userContract, time];
 
-  const contractAddress = '0xa71E83E79DED8dD19F471dA4Eda58dCc06D5cEb6';
-  const methodName = 'swapExactTokensForTokens';
-  const extra = getExtra(contractAddress, methodName, types, values);
+  const contract = {
+    address: '0xa71E83E79DED8dD19F471dA4Eda58dCc06D5cEb6',
+    method: 'swapExactTokensForTokens',
+    types,
+    values
+  }
+  const extra = getExtra([contract]);
 
   const params = {
     // 币种
@@ -585,8 +585,8 @@ async function swap() {
       threshold: MVMMainnet.MVMThreshold,
     },
   };
-  const txInput = await mvmClient.payments(params);
-  const res = await mixinClient.transfer.toAddress(txInput);
+  const txInput = await client.payment.request(params);
+  const res = await client.transfer.toAddress(txInput);
   console.log(res);
 }
 ```
@@ -596,8 +596,6 @@ async function swap() {
 ```js
 const {
   MixinApi,
-  MVMApi,
-  MVMApiTestURI, 
   Registry, 
   MVMMainnet, 
   getExtra 
@@ -605,12 +603,11 @@ const {
 import { v4 as uuid } from 'uuid';
 const keystore = require('./keystore.json');
 
-const mixinClient = MixinApi({ keystore });
-const mvmClient = MVMApi(MVMApiTestURI);
+keystore.user_id = keystore.client_id;
+const client = MixinApi({ keystore });
 const registry = new Registry({
   address: MVMMainnet.Registry.Address,
   uri: MVMMainnet.RPCUri,
-  secret: keystore.private_key,
 });
 
 const cnbAssetID = '965e5c6e-434c-3fa9-b780-c50f43cd955c';
@@ -621,28 +618,21 @@ async function main() {
   const tokenB = await getContractByAssetID(cnbAssetID);
   const userContract = await registry.fetchUserContract('3dbf04fe-afc4-35ca-b686-a174437ccdb5');
 
-  const delegatecall = true;
-  const contractAddress = '0xD69D54724c6d6B4F071429ED8D562c1F97CDF7f0';
-  const methodName = 'removeLiquidity';
-  const types = [
-    'address',
-    'address',
-    'address',
-    'address',
-    'uint256',
-    'uint256',
-    'uint256',
-  ];
-  const values = [
-    '0xc9f4bc2A7afEe68E6e8202fFc2b8d77d7E7B9eC9',
-    tokenA,
-    tokenB,
-    userContract,
-    (9e-16 * 1e18) | 0,
-    0,
-    0,
-  ];
-  const extra = getExtra(contractAddress, methodName, types, values);
+  const contract = {
+    address: '0xD69D54724c6d6B4F071429ED8D562c1F97CDF7f0',
+    method: 'removeLiquidity', 
+    types: ['address', 'address', 'address', 'address', 'uint256', 'uint256', 'uint256'],
+    values: [
+       '0xc9f4bc2A7afEe68E6e8202fFc2b8d77d7E7B9eC9',
+       tokenA,
+       tokenB,
+       userContract,
+       (9e-16 * 1e18) | 0,
+       0,
+       0,
+    ] 
+  }
+  const extra = getExtra([contract]);
 
   const params = {
     // 默认币种
@@ -657,11 +647,10 @@ async function main() {
     opponent_multisig: {
       receivers: MVMMainnet.MVMMenbers,
       threshold: MVMMainnet.MVMThreshold,
-    },
-    delegatecall
+    }
   };
-  const txInput = await mvmClient.payments(params);
-
+  
+  const txInput = await client.payment.request(params);
   const res = await client.transfer.transaction(txInput)
   console.log(res)
 }
