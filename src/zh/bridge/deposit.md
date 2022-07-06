@@ -1,8 +1,8 @@
 # 使用 bridge 进行跨链充值
 
-在上一章中我们简介了 bridge.sol 里实现的功能，然后又基于 MVM 实现了跨链充值, 这里我们会为开发者介绍一下，如何用 MVM Bridge 实现跨链充值。
+在上一章中我们介绍了 bridge.sol 里的实现，然后又基于 MVM 实现了跨链充值, 这里我们会为开发者介绍一下，如何用 MVM Bridge 实现跨链充值。
 
-在这篇文章跟，我们会以 MetaMask Address 为例，其它的 ETH 钱包同理，没有区别。
+在这篇文章里，我们会以 MetaMask 为例，其它的 ETH 钱包同理，没有区别。
 
 ## Bridge 的 API 接口列表
 
@@ -12,9 +12,18 @@ Bridge RPC host: https://bridge.mvm.dev
 * POST "/users"
 * POST "/extra"
 
+## 开发流程, 只需要以下几步
+
+* 获取 MetaMask 的地址 (Public Key)
+* POST "/users" 创建 MetaMask 对应的 Mixin Network User
+* 获取不同链的充值地址
+* 正常流程充值
+
+接下来我们会介绍每个 API 完成的功能
+
 ## GET "/"
 
-这个 API 会返回，bridge, registry, pid, storage, withdrawal 的相关合约地址。
+这个 API 会返回，bridge, registry, pid, storage, withdrawal 的相关合约地址, 访问 [https://bridge.mvm.dev/](https://bridge.mvm.dev/) 可以看到相关信息。
 
 ## POST "/users"
 
