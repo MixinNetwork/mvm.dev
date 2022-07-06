@@ -39,7 +39,7 @@ contract Counter { // 计数器合约
 
 ### 2. 编译、并发布计数器合约
 
-> 合约地址: `0x4f31E2eAF25DCDD46651AcE019B61E3E750023E0`
+> 合约地址: `0x2E8f70631208A2EcFC6FA47Baf3Fde649963baC7`
 
 ### 3. 调用测试计数器合约
 
@@ -58,7 +58,7 @@ mkdir mvm-invoke # 初始化工作目录
 cd mvm-invoke # 进入工作目录
 npm init -y # 初始化 npm 项目
 npm install @mixin.dev/mixin-node-sdk # 安装 nodejs 的 sdk
-# 注意 @mixin.dev/mixin-node-sdk 的版本要 >= 4.1.0
+# 注意 @mixin.dev/mixin-node-sdk 的版本要 >= 4.2.0
 ```
 
 ### 4.2 准备 `keystore.json`
@@ -69,13 +69,12 @@ npm install @mixin.dev/mixin-node-sdk # 安装 nodejs 的 sdk
 
 ```json title='keystore.json'
 {
-  "user_id": "3dbf04fe-afc4-35ca-b686-a174437ccdb5",
-  "session_id": "43bab197-fbb1-4534-9930-99fc9830e25c",
-  "private_key": "pIRdMkYeNBplIYhvU1yh-8Cn6VklwL_Bf7QQ3Ts3ivrd7gcG5GrWWXDB6UEJYXXLNkEv9eVo9HwxDm9M6iPSdQ",
-  "pin": "102350",
-  "pin_token": "yRhF-J7_7Pj9lys9BHxQ8DecdcxDa7rGTasISHk_9TQ",
-  "sign": "owner"
-}
+  client_id: "7a522ae4-841b-357b-a7b1-4f5f51488b8f",
+  session_id: "9e8ba070-0e63-4488-89a2-f82c12bbd196",
+  private_key: "UVXRC3f4sWyFMFq2BmutrYWskXJFy6vmkXY_61weQ1VQl_H_oUba4BRh9nDv8BwlovfqmytE6Q8GEaPgEc09YQ",
+  pin: "291843",
+  pin_token: "dRSDk0j2tkDF1hJak3MmSGYNEWPE5928IqvXTcIT3Uo",
+};
 ```
 
 ### 4.3 不带参数的合约调用
@@ -86,23 +85,22 @@ npm install @mixin.dev/mixin-node-sdk # 安装 nodejs 的 sdk
 import { v4 as uuid } from 'uuid';
 const { 
   MixinApi, 
-  MVMApi, 
-  MVMApiTestURI, 
-  getExtra, 
-  MVMMainnet 
+  getExtra,
+  MVMMainnet
 } = require('@mixin.dev/mixin-node-sdk');
 const keystore = require('./keystore.json');
 
-const mixinClient = MixinApi({ keystore });
-const mvmClient = MVMApi(MVMApiTestURI);
+keystore.user_id = keystore.client_id;
+const client = MixinApi({ keystore });
 
 async function main() {
-  const contractAddress = '0x4f31E2eAF25DCDD46651AcE019B61E3E750023E0';
-  const methodName = 'addOne';
-  const delegatecall = false;
+  const contract = {
+    address: '0x2E8f70631208A2EcFC6FA47Baf3Fde649963baC7', // contract address
+    method: 'addOne', // contract function
+  };
   
   // 1 生成 extra
-  const extra = getExtra(contractAddress, methodName);
+  const extra = getExtra([contract]);
   
   // 2. 构造请求参数
   const params = {
@@ -118,14 +116,13 @@ async function main() {
     opponent_multisig: {
       receivers: MVMMainnet.MVMMenbers,
       threshold: MVMMainnet.MVMThreshold,
-    },
-    delegatecall
+    }
   };
 
   // 3 生成付款码
-  const txInput = await mvmClient.payments(params);
+  const txInput = await client.payment.request(params);
   // 4 发送交易
-  const res = await mixinClient.transfer.toAddress(txInput); // 此操作需要上述账户有 0.00000001 CNB.
+  const res = await client.transfer.toAddress(txInput); // 此操作需要上述账户有 0.00000001 CNB.
   // 转账完毕后, cnb 会自行退回.
   console.log(res);
 }
@@ -141,8 +138,8 @@ async function main() {
 ```js
 async function main() {
   // 到这里, 同上. (注释同上)
-  // const txInput = mvmClient.payments(params);
-
+  // const txInput = await mixinClient.payment.request(params);
+  
   console.log(`mixin://codes/${txInput.code_id}`)
   // 控制台看到这条消息, 然后将这条消息复制到 Mixin Messenger 中,
   // 直接用 Mixin Messenger 打开, 就可以直接付款了.
@@ -157,25 +154,24 @@ async function main() {
 import { v4 as uuid } from 'uuid';
 const { 
   MixinApi, 
-  MVMApi, 
-  MVMApiTestURI, 
   getExtra, 
   MVMMainnet 
 } = require('@mixin.dev/mixin-node-sdk');
 const keystore = require('./keystore.json');
 
-const mixinClient = MixinApi({ keystore });
-const mvmClient = MVMApi(MVMApiTestURI);
+keystore.user_id = keystore.client_id;
+const client = MixinApi({ keystore });
 
 async function main() {
-  const contractAddress = '0x4f31E2eAF25DCDD46651AcE019B61E3E750023E0';
-  const methodName = 'addAny';
-  const types = ['uint256'];
-  const values = [2];
-  const delegatecall = false;
-
+  const contract = {
+    address: '0x2E8f70631208A2EcFC6FA47Baf3Fde649963baC7', // contract address
+    method: 'addAny', // contract function
+    types: ['uint256'], // function parameters type array
+    values: [2], // function parameters value array
+  };
+  
   // 1 生成 extra
-  const extra = getExtra(contractAddress, methodName, types, values);
+  const extra = getExtra([contract]);
 
   // 2. 构造请求参数
   const params = {
@@ -192,13 +188,12 @@ async function main() {
       receivers: MVMMainnet.MVMMenbers,
       threshold: MVMMainnet.MVMThreshold,
     },
-    delegatecall
   };
 
   // 3 生成付款码
-  const txInput = await mvmClient.payments(params);
+  const txInput = await client.payment.request(params);
   // 4 发送交易  
-  const res = mixinClient.transfer.toAddress(txInput) // 此操作需要上述账户有 0.00000001 CNB.
+  const res = await client.transfer.toAddress(txInput) // 此操作需要上述账户有 0.00000001 CNB.
   // 转账完毕后, 红包会自行退回.
 }
 ```
@@ -213,7 +208,7 @@ async function main() {
 ```js
 async function main() {
   // 到这里, 同上. (注释同上)
-  // const txInput = mvmClient.payments(params);
+  // const txInput = await mixinClient.payment.request(params);
 
   console.log(`mixin://codes/${txInput.code_id}`)
   // 控制台看到这条消息, 然后将这条消息复制到 Mixin Messenger 中,
@@ -227,6 +222,78 @@ async function main() {
 
 :::
 
+### 4.5 批量调用多个合约
+
+1. 直接用 sdk 发送交易, 调用合约
+```javascript
+import { v4 as uuid } from 'uuid';
+const {
+  MixinApi,
+  getExtra,
+  MVMMainnet
+} = require('@mixin.dev/mixin-node-sdk');
+const keystore = require('./keystore.json');
+
+keystore.user_id = keystore.client_id;
+const client = MixinApi({ keystore });
+
+async function main() {
+  const contract1 = {
+    address: '0x2E8f70631208A2EcFC6FA47Baf3Fde649963baC7', // contract address
+    method: 'count', // contract function
+  };
+  const contract2 = {
+    address: '0x2E8f70631208A2EcFC6FA47Baf3Fde649963baC7', // contract address
+    method: 'addAny', // contract function
+    types: ['uint256'], // function parameters type array
+    values: [2], // function parameters value array
+  };
+
+  // 1 生成 extra
+  const extra = getExtra([contract1, contract2, contract1]);
+
+  // 2. 构造请求参数
+  const params = {
+    // 默认币种
+    asset_id: '965e5c6e-434c-3fa9-b780-c50f43cd955c',
+    // 默认金额
+    amount: '0.00000001',
+    // 唯一标识
+    trace_id: uuid(),
+    // 备注
+    memo: extra,
+    // 多签
+    opponent_multisig: {
+      receivers: MVMMainnet.MVMMenbers,
+      threshold: MVMMainnet.MVMThreshold,
+    },
+  };
+
+  // 3 生成付款码
+  const txInput = await client.payment.request(params);
+  // 4 发送交易  
+  const res = await client.transfer.toAddress(txInput) // 此操作需要上述账户有 0.00000001 CNB.
+  // 转账完毕后, 红包会自行退回.
+}
+```
+
+2. 在 Mixin Messenger 内发送交易, 调用合约
+
+:::tip 提示
+在 Mixin 内调用起支付, 其实只用让用户打开特定格式的链接就可以实现, 如:
+`mixin://codes/xxxxx`
+:::
+
+```js
+async function main() {
+  // 到这里, 同上. (注释同上)
+  // const txInput = await mixinClient.payment.request(params);
+
+  console.log(`mixin://codes/${txInput.code_id}`)
+  // 控制台看到这条消息, 然后将这条消息复制到 Mixin Messenger 中,
+  // 直接用 Mixin Messenger 打开, 就可以直接付款了.
+}
+```
 > 好了, 到这里, 我们已经掌握了
 >
 > 1. 如何调用 Mvm 的智能合约(带参数的和不带参数的).
