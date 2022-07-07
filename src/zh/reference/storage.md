@@ -34,51 +34,9 @@ contract Storage {
 ## 处理 extra 过长问题
 [mtg](https://github.com/MixinNetwork/trusted-group) 中对 extra 的长度有限制，当 extra 的长度超过 200 时，需对其进行额外的处理。
 
-1. 调用 write 函数将 extra 保存在 [storage 合约](https://github.com/MixinNetwork/trusted-group/blob/master/mvm/quorum/contracts/storage.sol) 中。
-   注意：此方法将会消耗一部分的 XIN，请确保使用的钱包有一定余额。
-
-   代码示例：
-  
-   ```javascript
-   const storageContract = '0xef241988D19892fE4efF4935256087F4fdc5ecAa'; // Storage 合约地址
-   const uri = 'https://geth.mvm.dev'; // MVM 主网地址
-   const key = ethers.utils.keccak256(extra);
-   const privateKey = ''; // 钱包对应的私钥
-   
-   const provider = new StaticJsonRpcProvider(uri);
-   const signer = new Wallet(privateKey, provider);
-   const contract = new Contract(address, StorageABI, signer);
-   
-   contract.write(
-     BigNumber.from(key),
-     value
-   );
-   ```
-
-2. 根据 extra 的 keccak256 hash 值构造一个新的 extra。新的 extra 由三部分构成：
-   * Registry 合约对应的 PID（去掉 `-`）
-   * Storage 合约的地址（去掉 `0x`）
-   * keccak256 hash（去掉 `0x`）
-   ```text
-   bd67087276ce3263b9333aa337e212a4ef241988D19892fE4efF4935256087F4fdc5ecAa3179976b4babd610973b16996df33c1ecd13a3ddff436d4734d3c3862a2c3fe9
-
-   bd67087276ce3263b9333aa337e212a4 为 Registry PID bd670872-76ce-3263-b933-3aa337e212a4 去掉 -
-   ef241988D19892fE4efF4935256087F4fdc5ecAa 为 Storage 合约地址 0xef241988D19892fE4efF4935256087F4fdc5ecAa 去掉 0x
-   3179976b4babd610973b16996df33c1ecd13a3ddff436d4734d3c3862a2c3fe9 为 keccak256 hash 去掉 0x
-   ```
-
-或者，使用 [官方 js sdk](https://github.com/MixinNetwork/bot-api-nodejs-client)：
-
+例：依次进行 5 个合约调用，extra 的长度为 330，超过 200
 ```javascript
-import { StorageContract, MVMMainnet, getExtraWithStorageKey, MixinApi } from '@mixin.dev/mixin-node-sdk';
-import { keccak256 } from 'ethers/lib/utils';
-import { v4 as uuid } from 'uuid';
-import keystore from './keystore.json';
-
-const client = MixinApi({ keystore })
-const storage = new StorageContract({
-  privateKey: '' // 钱包对应的私钥
-});
+import { getExtra } from '@mixin.dev/mixin-node-sdk';
 
 const contractReadCount = {
    address: '0x2E8f70631208A2EcFC6FA47Baf3Fde649963baC7', // contract address
@@ -103,34 +61,102 @@ const contracts = [
 ];
 
 const extra = getExtra(contracts);
-const finalExtra = extra;
-if (extra.length > 200) {
-  // 保存至 Storage 合约
-  // 如果 Storage 中已存在 key 且 value 与 extra 相等，将不会消耗 XIN 再写入一次 
-  const key = keccak256(extra);
-  const { error } = storage.writeValue(finalExtra, key);
-  if (error) throw new Error(error);
-  // 获得新的 extra
-  finalExtra = getExtraWithStorageKey(key, MVMMainnet.Registry.PID, MVMMainnet.Storage.Contract);
-}
+// 0x00052e8f70631208a2ecfc6fa47baf3fde649963bac7000406661abd2e8f70631208a2ecfc6fa47baf3fde649963bac700046057d3ee2e8f70631208a2ecfc6fa47baf3fde649963bac7000406661abd2e8f70631208a2ecfc6fa47baf3fde649963bac7002477ad0aab00000000000000000000000000000000000000000000000000000000000000022e8f70631208a2ecfc6fa47baf3fde649963bac7000406661abd
+```
+
+
+### 自行处理
+
+1. 调用 write 函数将 extra 保存在 [storage 合约](https://github.com/MixinNetwork/trusted-group/blob/master/mvm/quorum/contracts/storage.sol) 中。
+注意：此方法将会消耗一部分的 XIN，请确保使用的钱包有一定余额。
+
+   代码示例：
+
+   ```javascript
+   import { StorageContract, MVMMainnet } from '@mixin.dev/mixin-node-sdk';
+   import { keccak256 } from 'ethers/lib/utils';
+   import { v4 as uuid } from 'uuid';
+   
+   const storage = new StorageContract({
+     address: MVMMainnet.Storage.Contract,
+     uri: MVMMainnet.RPCUri,
+     privateKey: '' // 钱包对应的私钥
+   });
+
+   // 保存至 Storage 合约
+   // 如果 Storage 中已存在 key 且 value 与 extra 相等，将不会消耗 XIN 再写入一次
+   const key = keccak256(extra);
+   const { error } = storage.writeValue(finalExtra, key);
+   if (error) throw new Error(error);
+   ```
+
+2. 根据 extra 的 keccak256 hash 值构造一个新的 extra。新的 extra 
+
+   ```javascript
+   import { StorageContract, MVMMainnet, getExtraWithStorageKey, MixinApi } from '@mixin.dev/mixin-node-sdk';
+   import keystore from './keystore.json';
+   
+   // 获得新的 extra，由三部分构成：
+   // Registry 合约对应的 PID（去掉 `-`）
+   // Storage 合约的地址（去掉 `0x`）
+   // keccak256 hash（去掉 `0x`）
+   finalExtra = getExtraWithStorageKey(key, MVMMainnet.Registry.PID, MVMMainnet.Storage.Contract);
+   // bd67087276ce3263b9333aa337e212a4ef241988D19892fE4efF4935256087F4fdc5ecAa3179976b4babd610973b16996df33c1ecd13a3ddff436d4734d3c3862a2c3fe9
+   // * bd67087276ce3263b9333aa337e212a4 为 Registry PID bd670872-76ce-3263-b933-3aa337e212a4 去掉 -
+   // * ef241988D19892fE4efF4935256087F4fdc5ecAa 为 Storage 合约地址 0xef241988D19892fE4efF4935256087F4fdc5ecAa 去掉 0x
+   // * 3179976b4babd610973b16996df33c1ecd13a3ddff436d4734d3c3862a2c3fe9 为 keccak256 hash 去掉 0x
+   
+   keystore.user_id = keystore.client_id;
+   const client = MixinApi({ keystore })
+   
+   // 构造 post /payments 的请求参数
+   const transactionInput = {
+     asset_id: 'c94ac88f-4671-3976-b60a-09064f1811e8', // XIN
+     amount: '0.00000001',
+     trace_id: uuid(),
+     memo: finalExtra,
+     opponent_multisig: {
+       receivers: MVMMainnet.MVMMembers,
+       threshold: MVMMainnet.MVMThreshold,
+     },
+   };
+   // 请求支付的 code_id
+   const res = client.payment.request(transactionInput);
+   // post /transactions 支付或使用下面的支付链接
+   console.log(`mixin://codes/${res.code_id}`);
+   
+   ```
+
+### 通过 [MVMApi](/zh/api/payment)：
+
+可以通过 MVMApi 来处理 extra 超长的问题。由于向合约内写入数据需要消耗代币，每个 ip 24 小时内可请求 32 次；
+若 extra 不超过 200 则不作限制。代码示例：
+
+```javascript
+import { MVMApi, MVMApiTestURI } from '@mixin.dev/mixin-node-sdk';
 
 // 构造 post /payments 的请求参数
 const transactionInput = {
-   // 测试网用 CNB，asset_id: '965e5c6e-434c-3fa9-b780-c50f43cd955c'
-   asset_id: 'c94ac88f-4671-3976-b60a-09064f1811e8', // XIN
-   amount: '0.00000001',
-   trace_id: uuid(),
-   memo: finalExtra,
-   opponent_multisig: {
-      receivers: MVMMainnet.MVMMembers,
-      threshold: MVMMainnet.MVMThreshold,
-   },
+  asset_id: 'c94ac88f-4671-3976-b60a-09064f1811e8', // XIN
+  amount: '0.00000001',
+  trace_id: uuid(),
+  memo: extra,
+  opponent_multisig: {
+    receivers: MVMMainnet.MVMMembers,
+    threshold: MVMMainnet.MVMThreshold,
+  },
 };
-// 函数内部将 extra 编码成 memo 格式
-const res = client.payment.request(transactionInput);
+
+const client = MVMApi(MVMApiTestURI);
+// extra 长度超过 200 时，免费处理，每个 ip 24 小时内可响应 32 次
+// extra 长度不超过 200 时，不作限制
+const res = client.payments(transactionInput);
+// 请求支付的 code_id
 // post /transactions 支付或使用下面的支付链接
 console.log(`mixin://codes/${res.code_id}`);
 ```
+
+
 
 ## 总结
 

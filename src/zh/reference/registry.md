@@ -9,7 +9,7 @@
 
 1. 合约开发者部署 EVM 智能合约(过程与 [refund.sol](./refund.html##refund-sol-源码) 等其它合约部署类似)，部署完成后拿到合约地址。
 
-2. 用户调用合约时，需要使用开发者生成的一个支付链接。`code_id` 通过 POST /payments 生成，支付链接为 `https://mixin.one/codes/:code_id`。
+2. 用户调用合约时，需要使用开发者生成的一个支付链接：`https://mixin.one/codes/:code_id`，其中 `code_id` 通过 POST /payments 生成。
 
    提示: 这个支付地址的生成没有限制，任何人只需知道合约地址都可以生成，相关文档：<https://developers.mixin.one/zh-CN/docs/api/transfer/payment>。
    其中，memo 为 Operation 的 base64 编码
@@ -62,24 +62,29 @@
       由三部分组成：
       * `2e8f70631208a2ecfc6fa47baf3fde649963bac7` 为合约地址去掉 `0x` 后的小写
       * `0004` 为 函数输入部分的长度的十六进制
-      * `06661abd` 为 `count()` 的 keccak256 hash 值去掉 `0x` 后的前 8 位，该函数没有行参所以没有输入参数的部分。
+      * `06661abd` 为 `count()` 的 keccak256 hash 值去掉 `0x` 后的前 8 位，该函数没有形参所以没有输入参数的部分。
         ```javascript
         // 使用 ethers 例子
         let contractExtra = contract2.address.slice(2);
         contractExtra += utils.id(`${contract2.method}()`).slice(2, 10)
         ```
 
-   通过 [官方 js sdk](https://github.com/MixinNetwork/bot-api-nodejs-client) 生成支付链接
+   [官方 js sdk](https://github.com/MixinNetwork/bot-api-nodejs-client) 示例
    ```javascript
-   import { MVMMainnet, getExtra, MixinApi } from '@mixin.dev/mixin-node-sdk';
+   import { 
+     MVMMainnet, 
+     getExtra, 
+     MixinApi, 
+     MVMApi, 
+     MVMApiTestURI 
+   } from '@mixin.dev/mixin-node-sdk';
    import { v4 as uuid } from 'uuid';
    import keystore from './keystore.json';
-
-   const client = MixinApi({ keystore })
    
    const contracts = [contract1, contract2];
+   // 1 生成 extra
    const extra = getExtra(contracts);
-   // 构造 post /payments 的请求参数
+   // 2 构造生成支付链接的请求参数
    const transactionInput = {
      // 测试网用 CNB，asset_id: '965e5c6e-434c-3fa9-b780-c50f43cd955c'
      asset_id: 'c94ac88f-4671-3976-b60a-09064f1811e8', // XIN asset_id
@@ -91,10 +96,17 @@
        threshold: MVMMainnet.MVMThreshold,
      },
    };
-   // 函数内部将 extra 编码成 memo 格式
-   const res = client.payment.request(transactionInput);
-   // post /transactions 支付或使用下面的支付链接
-   console.log(`mixin://codes/${res.code_id}`); 
+   
+   // 3 请求支付链接的 code_id
+   // 3.1 通过 sdk 
+   keystore.user_id = keystore.client_id
+   const mixinClient = MixinApi({ keystore })
+   const res1 = mixinClient.payment.request(transactionInput);
+   // 3.2 通过 mvmapi
+   const mvmClient = MVMApi(MVMApiTestURI);
+   const res2 = mvmClient.payments(transactionInput);
+   // 通过下面的支付链接支付
+   console.log(`mixin://codes/${res2.code_id}`); 
    ```
 
 4. MVM 收到这个 output 后，解析 memo 成 Event，[代码示例](https://github.com/MixinNetwork/trusted-group/blob/cf3fae2ecacf95e3db7e21c10b7729ab9c11474b/mvm/eos/utils.go#L46)
