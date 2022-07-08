@@ -83,12 +83,12 @@ npm install @mixin.dev/mixin-node-sdk # 安装 nodejs 的 sdk
 
 ```js
 import { v4 as uuid } from 'uuid';
-const { 
+import { 
   MixinApi, 
   getExtra,
   MVMMainnet
-} = require('@mixin.dev/mixin-node-sdk');
-const keystore = require('./keystore.json');
+} from '@mixin.dev/mixin-node-sdk';
+import keystore from './keystore.json';
 
 keystore.user_id = keystore.client_id;
 const client = MixinApi({ keystore });
@@ -114,7 +114,7 @@ async function main() {
     memo: extra,
     // 多签
     opponent_multisig: {
-      receivers: MVMMainnet.MVMMenbers,
+      receivers: MVMMainnet.MVMMembers,
       threshold: MVMMainnet.MVMThreshold,
     }
   };
@@ -122,7 +122,7 @@ async function main() {
   // 3 生成付款码
   const txInput = await client.payment.request(params);
   // 4 发送交易
-  const res = await client.transfer.toAddress(txInput); // 此操作需要上述账户有 0.00000001 CNB.
+  const res = await client.transfer.toAddress(keystore.pin, txInput); // 此操作需要上述账户有 0.00000001 CNB.
   // 转账完毕后, cnb 会自行退回.
   console.log(res);
 }
@@ -152,12 +152,12 @@ async function main() {
 
 ```js
 import { v4 as uuid } from 'uuid';
-const { 
+import { 
   MixinApi, 
   getExtra, 
   MVMMainnet 
-} = require('@mixin.dev/mixin-node-sdk');
-const keystore = require('./keystore.json');
+} from '@mixin.dev/mixin-node-sdk';
+import keystore from './keystore.json';
 
 keystore.user_id = keystore.client_id;
 const client = MixinApi({ keystore });
@@ -185,7 +185,7 @@ async function main() {
     memo: extra,
     // 多签
     opponent_multisig: {
-      receivers: MVMMainnet.MVMMenbers,
+      receivers: MVMMainnet.MVMMembers,
       threshold: MVMMainnet.MVMThreshold,
     },
   };
@@ -193,7 +193,7 @@ async function main() {
   // 3 生成付款码
   const txInput = await client.payment.request(params);
   // 4 发送交易  
-  const res = await client.transfer.toAddress(txInput) // 此操作需要上述账户有 0.00000001 CNB.
+  const res = await client.transfer.toAddress(keystore.pin, txInput) // 此操作需要上述账户有 0.00000001 CNB.
   // 转账完毕后, 红包会自行退回.
 }
 ```
@@ -227,12 +227,12 @@ async function main() {
 1. 直接用 sdk 发送交易, 调用合约
 ```javascript
 import { v4 as uuid } from 'uuid';
-const {
+import {
   MixinApi,
   getExtra,
   MVMMainnet
-} = require('@mixin.dev/mixin-node-sdk');
-const keystore = require('./keystore.json');
+} from '@mixin.dev/mixin-node-sdk';
+import keystore from './keystore.json';
 
 keystore.user_id = keystore.client_id;
 const client = MixinApi({ keystore });
@@ -264,7 +264,7 @@ async function main() {
     memo: extra,
     // 多签
     opponent_multisig: {
-      receivers: MVMMainnet.MVMMenbers,
+      receivers: MVMMainnet.MVMMembers,
       threshold: MVMMainnet.MVMThreshold,
     },
   };
@@ -272,7 +272,7 @@ async function main() {
   // 3 生成付款码
   const txInput = await client.payment.request(params);
   // 4 发送交易  
-  const res = await client.transfer.toAddress(txInput) // 此操作需要上述账户有 0.00000001 CNB.
+  const res = await client.transfer.toAddress(keystore.pin, txInput) // 此操作需要上述账户有 0.00000001 CNB.
   // 转账完毕后, 红包会自行退回.
 }
 ```
@@ -296,5 +296,5 @@ async function main() {
 ```
 > 好了, 到这里, 我们已经掌握了
 >
-> 1. 如何调用 Mvm 的智能合约(带参数的和不带参数的).
-> 2. 如何生成 code_id , 然后使用 Mixin Messenger 来调用 Mvm 的智能合约
+> 1. 如何调用 MVM 的智能合约(带参数的和不带参数的).
+> 2. 如何生成 code_id , 然后使用 Mixin Messenger 来调用 MVM 的智能合约

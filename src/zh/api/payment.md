@@ -81,7 +81,7 @@ const params = {
   memo: extra,
   // 多签
   opponent_multisig: {
-    receivers: MVMMainnet.MVMMenbers,
+    receivers: MVMMainnet.MVMMembers,
     threshold: MVMMainnet.MVMThreshold,  
   },
 };

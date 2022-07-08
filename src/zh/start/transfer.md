@@ -30,7 +30,7 @@ function transfer(address to, uint256 value) external returns (bool);
 > asset_id -> asset_contract
 
 ```js
-const { Registry, MVMMainnet } = require('@mixin.dev/mixin-node-sdk');
+import { Registry, MVMMainnet } from '@mixin.dev/mixin-node-sdk';
 
 const registry = new Registry({
   address: MVMMainnet.Registry.Contract,
@@ -57,9 +57,9 @@ const CNBAddress = await registry.fetchAssetContract('965e5c6e-434c-3fa9-b780-c5
 > 注册资产不需要消耗任何费用. 注册完了转账的金额会退回.
 
 ```js
-const { MixinApi, MVMMainnet } = require('@mixin.dev/mixin-node-sdk');
+import { MixinApi, MVMMainnet } from '@mixin.dev/mixin-node-sdk';
 import { v4 as uuid } from 'uuid';
-const keystore = require('./keystore.json');
+import keystore from './keystore.json';
 
 keystore.user_id = keystore.client_id;
 const client = MixinApi({ keystore });
@@ -70,14 +70,14 @@ const params = {
   trace_id: uuid(),
   // 多签
   opponent_multisig: {
-    receivers: MVMMainnet.MVMMenbers,
+    receivers: MVMMainnet.MVMMembers,
     threshold: MVMMainnet.MVMThreshold,
   },
   memo: '', // 这个时候并不需要调用任何的合约, 所以 extra 留空就行
 };
 
 const txInput = await client.payment.request(params);
-const res = await client.transfer.toAddress(txInput); // 转账成功即完成注册.
+const res = await client.transfer.toAddress(keystore.pin, txInput); // 转账成功即完成注册.
 // 或者使用 Mixin Messenger 付款，支付链接如下
 console.log(`mixin://codes/${txInput.code_id}`)
 ```
@@ -93,7 +93,7 @@ console.log(`mixin://codes/${txInput.code_id}`)
 > user_id -> user_contract
 
 ```js
-const { Registry, MVMMainnet } = require('@mixin.dev/mixin-node-sdk');
+import { Registry, MVMMainnet } from '@mixin.dev/mixin-node-sdk';
 
 const registry = new Registry({
   address: MVMMainnet.Registry.Address,
@@ -107,8 +107,8 @@ const userContract = await registry.fetchUserContract('e8e8cd79-cd40-4796-8c54-3
 这里可能还有问题, 就是如何通过 `Mixin ID(30265)` 获取到 `user_id(e8e8cd79-cd40-4796-8c54-3a13cfe50115)`
 
 ```js
-const { MixinApi } = require('@mixin.dev/mixin-node-sdk');
-const keystore = require('./keystore.json');
+import { MixinApi } from '@mixin.dev/mixin-node-sdk';
+import keystore from './keystore.json';
 
 keystore.user_id = keystore.client_id;
 const client = MixinApi({ keystore });
@@ -126,9 +126,9 @@ const { user_id } = await client.user.search('30265') // 返回的结果里有 u
 所以, 用户的注册, 其实就是让指定的用户, 完成一次跟 MVM 的交互.
 
 ```js
-const { MixinApi } = require('@mixin.dev/mixin-node-sdk');
+import { MixinApi } from '@mixin.dev/mixin-node-sdk';
 import { v4 as uuid } from 'uuid';
-const keystore = require('./keystore.json');
+import keystore from './keystore.json';
 
 keystore.user_id = keystore.client_id;
 const client = MixinApi({ keystore });
@@ -139,7 +139,7 @@ const params = {
   trace_id: uuid(),
   // 多签
   opponent_multisig: {
-    receivers: MVMMainnet.MVMMenbers,
+    receivers: MVMMainnet.MVMMembers,
     threshold: MVMMainnet.MVMThreshold,
   },
   memo: '', // 这个时候并不需要调用任何的合约, 所以 extra 留空就行
@@ -162,16 +162,16 @@ client.payment.request(params).then((payment) => {
 这里举的例子, 就直接用机器人给你的用户转账吧.
 
 ```js
-const { 
+import { 
   MixinApi,
   Registry, 
   MVMMainnet 
-} = require('@mixin.dev/mixin-node-sdk');
+} from '@mixin.dev/mixin-node-sdk';
 import { v4 as uuid } from 'uuid';
-const keystore = require('./keystore.json');
+import keystore from './keystore.json';
 
 keystore.user_id = keystore.client_id;
-const mixinClient = MixinApi({ keystore });
+const client = MixinApi({ keystore });
 const registry = new Registry({
   address: MVMMainnet.Registry.Address,
   uri: MVMMainnet.RPCUri
@@ -207,13 +207,13 @@ async function main() {
     memo: extra,
     // 多签
     opponent_multisig: {
-      receivers: MVMMainnet.MVMMenbers,
+      receivers: MVMMainnet.MVMMembers,
       threshold: MVMMainnet.MVMThreshold,
     },
   };
   
   const txInput = await client.payment.request(params);
-  await client.transfer.toAddress(txInput); // 转账成功即完成转账.
+  await client.transfer.toAddress(keystore.pin, txInput); // 转账成功即完成转账.
 }
 ```
 

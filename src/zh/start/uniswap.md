@@ -476,14 +476,14 @@ contract UniswapMVMRouter {
 1. 添加流动性
 
 ```js
-const { 
+import { 
   MixinApi, 
   Registry, 
   MVMMainnet, 
   getExtra 
-} = require('@mixin.dev/mixin-node-sdk');
+} from '@mixin.dev/mixin-node-sdk';
 import { v4 as uuid } from 'uuid';
-const keystore = require('./keystore.json');
+import keystore from './keystore.json';
 
 keystore.user_id = keystore.client_id;
 const client = MixinApi({ keystore });
@@ -517,13 +517,13 @@ async function addLiquidity() {
     memo: extra,
     // 多签
     opponent_multisig: {
-      receivers: MVMMainnet.MVMMenbers,
+      receivers: MVMMainnet.MVMMembers,
       threshold: MVMMainnet.MVMThreshold,
     },
   };
   
   const txInput = await client.payment.request(params);
-  const res = await client.transfer.transaction(txInput)
+  const res = await client.transfer.transaction(keystore.pin, txInput)
   console.log(res)
 }
 ```
@@ -531,14 +531,14 @@ async function addLiquidity() {
 2. 兑换
 
 ```js
-const { 
+import { 
   MixinApi,
   Registry, 
   MVMMainnet, 
   getExtra 
-} = require('@mixin.dev/mixin-node-sdk');
+} from '@mixin.dev/mixin-node-sdk';
 import { v4 as uuid } from 'uuid';
-const keystore = require('./keystore.json');
+import keystore from './keystore.json';
 
 keystore.user_id = keystore.client_id;
 const client = MixinApi({ keystore });
@@ -581,12 +581,12 @@ async function swap() {
     memo: extra,
     // 多签
     opponent_multisig: {
-      receivers: MVMMainnet.MVMMenbers,
+      receivers: MVMMainnet.MVMMembers,
       threshold: MVMMainnet.MVMThreshold,
     },
   };
   const txInput = await client.payment.request(params);
-  const res = await client.transfer.toAddress(txInput);
+  const res = await client.transfer.toAddress(keystore.pin, txInput);
   console.log(res);
 }
 ```
@@ -594,14 +594,14 @@ async function swap() {
 3. 移除流动性
 
 ```js
-const {
+import {
   MixinApi,
   Registry, 
   MVMMainnet, 
   getExtra 
-} = require('@mixin.dev/mixin-node-sdk');
+} from '@mixin.dev/mixin-node-sdk';
 import { v4 as uuid } from 'uuid';
-const keystore = require('./keystore.json');
+import keystore from './keystore.json';
 
 keystore.user_id = keystore.client_id;
 const client = MixinApi({ keystore });
@@ -645,13 +645,13 @@ async function main() {
     memo: extra,
     // 多签
     opponent_multisig: {
-      receivers: MVMMainnet.MVMMenbers,
+      receivers: MVMMainnet.MVMMembers,
       threshold: MVMMainnet.MVMThreshold,
     }
   };
   
   const txInput = await client.payment.request(params);
-  const res = await client.transfer.transaction(txInput)
+  const res = await client.transfer.transaction(keystore.pin, txInput)
   console.log(res)
 }
 ```
