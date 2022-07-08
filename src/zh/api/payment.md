@@ -87,7 +87,9 @@ const params = {
 };
 
 const mvmClient = MVMApi(MVMApiTestURI);
-await mvmClient.payments(params);
+mvmClient.payments(params).then(res => {
+  console.log(`mixin://codes/${res.code_id}`);
+});
 ```
 
 跨链桥合约绑定地址方法调用
@@ -127,7 +129,9 @@ const params = {
 };
 
 const mvmClient = MVMApi(MVMApiTestURI);
-await mvmClient.payments(params);
+mvmClient.payments(params).then(res => {
+  console.log(`mixin://codes/${res.code_id}`);
+});
 ```
 
 2. 需要资产的合约调用
@@ -174,7 +178,9 @@ const params = {
 };
 
 const mvmClient = MVMApi(MVMApiTestURI);
-await mvmClient.payments(params);
+mvmClient.payments(params).then(res => {
+  console.log(`mixin://codes/${res.code_id}`);
+});
 ```
 
 3. 复杂的合约调用
@@ -230,7 +236,9 @@ const params = {
 };
 
 const mvmClient = MVMApi(MVMApiTestURI);
-await mvmClient.payments(params);
+mvmClient.payments(params).then(res => {
+  console.log(`mixin://codes/${res.code_id}`);
+});
 ```
 
 4. 需要非 mixin 映射资产的调用.
@@ -293,5 +301,7 @@ const params = {
 };
 
 const mvmClient = MVMApi(MVMApiTestURI);
-await mvmClient.payments(params);
+mvmClient.payments(params).then(res => {
+  console.log(`mixin://codes/${res.code_id}`);
+});
 ```

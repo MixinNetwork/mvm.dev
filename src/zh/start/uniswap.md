@@ -504,13 +504,13 @@ async function addLiquidity() {
     method: 'addLiquidity',
     types: ['address', 'uint256'],
     values: [assetContract, assetAmount * 1e8], 
-  }
+  };
   const extra = getExtra([contract]);
 
   const params = {
     asset_id: roayAssetID,
     // 默认金额
-    amount: String(assetAmoun),
+    amount: String(assetAmount),
     // 唯一标识
     trace_id: uuid(),
     // 备注
@@ -523,8 +523,8 @@ async function addLiquidity() {
   };
   
   const txInput = await client.payment.request(params);
-  const res = await client.transfer.transaction(keystore.pin, txInput)
-  console.log(res)
+  const res = await client.transfer.toAddress(keystore.pin, txInput);
+  console.log(res);
 }
 ```
 
@@ -532,16 +532,15 @@ async function addLiquidity() {
 
 ```js
 import { 
-  MixinApi,
+  MVMApi,
+  MVMApiTestURI,
   Registry, 
   MVMMainnet, 
   getExtra 
 } from '@mixin.dev/mixin-node-sdk';
 import { v4 as uuid } from 'uuid';
-import keystore from './keystore.json';
 
-keystore.user_id = keystore.client_id;
-const client = MixinApi({ keystore });
+const client = MVMApi(MVMApiTestURI);
 const registry = new Registry({
   address: MVMMainnet.Registry.Address,
   uri: MVMMainnet.RPCUri
@@ -551,23 +550,23 @@ const cnbAssetID = '965e5c6e-434c-3fa9-b780-c50f43cd955c';
 const roayAssetID = '69b2d237-1eb2-3b6c-8e1d-3876e507b263';
 
 async function swap() {
-  const tokenA = await getContractByAssetID(roayAssetID);
-  const tokenB = await getContractByAssetID(cnbAssetID);
+  const tokenA = await registry.fetchAssetContract(roayAssetID);
+  const tokenB = await registry.fetchAssetContract(cnbAssetID);
   const _amountA = 0.000001;
   const _amountB = 0.00000005;
   const amountA = (_amountA * 1e8) | 0;
   const amountB = (_amountB * 1e8) | 0;
-  const userContract = await registry.getUserContract('3dbf04fe-afc4-35ca-b686-a174437ccdb5');
+  const userContract = await registry.fetchUserContract('3dbf04fe-afc4-35ca-b686-a174437ccdb5');
   const time = Math.ceil(Date.now() / 1000) + 300;
+  const types = ['uint', 'uint', 'address[]', 'address', 'uint'];
   const values = [amountA, amountB, [tokenA, tokenB], userContract, time];
-  const types = [amountA, amountB, [tokenA, tokenB], userContract, time];
 
   const contract = {
     address: '0xa71E83E79DED8dD19F471dA4Eda58dCc06D5cEb6',
     method: 'swapExactTokensForTokens',
     types,
-    values
-  }
+    values,
+  };
   const extra = getExtra([contract]);
 
   const params = {
@@ -585,9 +584,10 @@ async function swap() {
       threshold: MVMMainnet.MVMThreshold,
     },
   };
-  const txInput = await client.payment.request(params);
-  const res = await client.transfer.toAddress(keystore.pin, txInput);
-  console.log(res);
+
+  // extra.length > 200
+  const txInput = await client.payments(params);
+  console.log(`mixin://codes/${txInput.code_id}`);
 }
 ```
 
@@ -595,16 +595,15 @@ async function swap() {
 
 ```js
 import {
-  MixinApi,
+  MVMApi, 
+  MVMApiTestURI,
   Registry, 
   MVMMainnet, 
   getExtra 
 } from '@mixin.dev/mixin-node-sdk';
 import { v4 as uuid } from 'uuid';
-import keystore from './keystore.json';
 
-keystore.user_id = keystore.client_id;
-const client = MixinApi({ keystore });
+const client = MVMApi(MVMApiTestURI);
 const registry = new Registry({
   address: MVMMainnet.Registry.Address,
   uri: MVMMainnet.RPCUri,
@@ -614,8 +613,8 @@ const cnbAssetID = '965e5c6e-434c-3fa9-b780-c50f43cd955c';
 const roayAssetID = '69b2d237-1eb2-3b6c-8e1d-3876e507b263';
 
 async function main() {
-  const tokenA = await getContractByAssetID(roayAssetID);
-  const tokenB = await getContractByAssetID(cnbAssetID);
+  const tokenA = await registry.fetchAssetContract(roayAssetID);
+  const tokenB = await registry.fetchAssetContract(cnbAssetID);
   const userContract = await registry.fetchUserContract('3dbf04fe-afc4-35ca-b686-a174437ccdb5');
 
   const contract = {
@@ -630,8 +629,8 @@ async function main() {
        (9e-16 * 1e18) | 0,
        0,
        0,
-    ] 
-  }
+    ],
+  };
   const extra = getExtra([contract]);
 
   const params = {
@@ -647,11 +646,11 @@ async function main() {
     opponent_multisig: {
       receivers: MVMMainnet.MVMMembers,
       threshold: MVMMainnet.MVMThreshold,
-    }
+    },
   };
   
-  const txInput = await client.payment.request(params);
-  const res = await client.transfer.transaction(keystore.pin, txInput)
-  console.log(res)
+  // extra.length > 200
+  const txInput = await client.payments(params);
+  console.log(`mixin://codes/${txInput.code_id}`);
 }
 ```
