@@ -45,7 +45,7 @@ function submit(
 
 上面的地址对应可以通过 [Mixin 跟 MVM 地址对应](/zh/resources/qa.html), 里获取。
 
-另外我们提供了 js SDK 来获取相关对应, SDK 地址：https://github.com/MixinNetwork/bot-api-nodejs-client/blob/main/src/mvm/registry.ts
+另外我们提供了 js SDK 来获取相关对应：<https://github.com/MixinNetwork/bot-api-nodejs-client/blob/main/src/mvm/registry.ts>
 
 ## ma 的生成
 
@@ -85,4 +85,4 @@ function submit(
 
 ## withdrawal.sol 完整代码
 
-https://github.com/MixinNetwork/trusted-group/blob/master/mvm/quorum/bridge/contracts/Withdrawal.sol
+<https://github.com/MixinNetwork/trusted-group/blob/master/mvm/quorum/bridge/contracts/Withdrawal.sol>

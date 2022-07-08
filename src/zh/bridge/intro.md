@@ -6,7 +6,7 @@ Bridge 是 MetaMask 跟其它链的一个跨链桥，也就是像 BTC, ETH, TRON
 
 ## 基础概念
 
-* Mixin Asset 是指的 Mixin 中可充值提现的原生资产, 例如 BTC, https://mixin.one/snapshots/c6d0c728-2624-429b-8e0d-d9d19b6592fa
+* Mixin Asset 是指的 Mixin 中可充值提现的原生资产, 例如 [BTC](https://mixin.one/snapshots/c6d0c728-2624-429b-8e0d-d9d19b6592fa)
 * MVM Asset Address 是指的 BTC 在 MVM 中所对应的地址，有点类似于 WBTC 的概念
 * MVM User Address 是指 Mixin user 在 MVM 中的合约地址，类似于普通的帐号
 * MetaMask Address 是指的传统的 ETH 的帐号地址, 跟上面的 MVM User Address 其实是一类都是 MVM 地址
@@ -38,7 +38,7 @@ Bridge 是 MetaMask 跟其它链的一个跨链桥，也就是像 BTC, ETH, TRON
 
 这里有详细的解释, [Mixin user 跟 MVM user address 如何对应](/zh/resources/qa.html)
 
-另外我们提供了 js SDK 来获取用户对应地址：https://github.com/MixinNetwork/bot-api-nodejs-client/blob/main/src/mvm/registry.ts#L51 
+另外我们提供了 js SDK 来获取用户对应地址：<https://github.com/MixinNetwork/bot-api-nodejs-client/blob/main/src/mvm/registry.ts#L51> 
 
 ## pass 方法
 
@@ -94,8 +94,8 @@ Bridge 是 MetaMask 跟其它链的一个跨链桥，也就是像 BTC, ETH, TRON
 到这里应该对 Bridge 合约有基本的了解，我们使用 bridge 合约，作了进一步的开发，然后让开发者更加方便的使用，完成不同链到 MVM 的充值，下一篇，我们会针对开发者的使用做一个详细的介绍，开发者只需要关注下面的内容即可。
 
 ## 完整 bridge.sol 代码
-https://github.com/MixinNetwork/trusted-group/blob/master/mvm/quorum/bridge/contracts/Bridge.sol
+<https://github.com/MixinNetwork/trusted-group/blob/master/mvm/quorum/bridge/contracts/Bridge.sol>
 
 ## Bridge 的开源地址：
 
-https://github.com/MixinNetwork/trusted-group/tree/master/mvm/quorum/bridge
+<https://github.com/MixinNetwork/trusted-group/tree/master/mvm/quorum/bridge>
