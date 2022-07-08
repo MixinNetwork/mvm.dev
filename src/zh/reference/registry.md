@@ -99,21 +99,28 @@
    
    // 3 请求支付链接的 code_id
    // 3.1 通过 sdk 
+   // 需要 keystore；extra 长度超过 200 时需自行将其写入 storage 合约
    keystore.user_id = keystore.client_id
    const mixinClient = MixinApi({ keystore })
    const res1 = mixinClient.payment.request(transactionInput);
    // 3.2 通过 mvmapi
+   // MVMApi 可免费自动处理 extra 超长的问题，24 小时内每个 ip 限 32 次
    const mvmClient = MVMApi(MVMApiTestURI);
    const res2 = mvmClient.payments(transactionInput);
    // 通过下面的支付链接支付
    console.log(`mixin://codes/${res2.code_id}`); 
    ```
 
-4. MVM 收到这个 output 后，解析 memo 成 Event，[代码示例](https://github.com/MixinNetwork/trusted-group/blob/cf3fae2ecacf95e3db7e21c10b7729ab9c11474b/mvm/eos/utils.go#L46)
-5. MVM 把 Event 按格式编码之后，发送给 [Registry](#开源代码) 合约
-6. [Registry](#开源代码) 执行 `function mixin`，并调用相关合约
-7. 执行完成后，通过 `event MixinTransaction(bytes)`  返回给 MVM 相关 Event 信息
-8. MVM 获取到结果后，如果有需要则转帐给用户，不需要则跳过
+   ::: tip 注意 
+   mtg 对 extra 的长度有限制。当 extra 的长度超过 200 时，需要将 extra 的 keccak256 hash 值和 extra 作为键值对写入 Storage 合约。
+   开发者可以选择通过免费的 MVMApi 自动处理该问题，也可以自行将键值对写入合约，详见 [Storage 合约](/zh/reference/storage)。
+   :::
+
+3. MVM 收到这个 output 后，解析 memo 成 Event，[代码示例](https://github.com/MixinNetwork/trusted-group/blob/cf3fae2ecacf95e3db7e21c10b7729ab9c11474b/mvm/eos/utils.go#L46)
+4. MVM 把 Event 按格式编码之后，发送给 [Registry](#开源代码) 合约
+5. [Registry](#开源代码) 执行 `function mixin`，并调用相关合约
+6. 执行完成后，通过 `event MixinTransaction(bytes)`  返回给 MVM 相关 Event 信息
+7. MVM 获取到结果后，如果有需要则转帐给用户，不需要则跳过
 
 开发者只需要在第 2 步，拿到 code_id, 生成支付链接 `https://mixin.one/codes/:code_id` 即可, 剩下的都是 MVM 的执行逻辑。 
 
