@@ -16,7 +16,7 @@ Bridge 是 MetaMask 跟其它链的一个跨链桥，也就是像 BTC, ETH, TRON
 ## Bridge 主要实现的功能
 
 * `bind` 把一个 MVM User Address 跟 MetaMask Address 绑定
-* `pass` 把 MetaMask Address (msg.sender) 里的资产转到绑定的 MVM 地址
+* `pass` 把与 MetaMask Address 绑定的 MVM 地址 (msg.sender) 里的资产转到 MetaMask Address
 * `vault` 把 erc20 XIN 转入到 Bridge 合约
 * bridge 可以接收到原生的 XIN 并给用户转回 erc20 的 XIN
 
@@ -24,7 +24,7 @@ Bridge 是 MetaMask 跟其它链的一个跨链桥，也就是像 BTC, ETH, TRON
 
 ## bind 方法
 
-把一个 MVM 的地址绑定到 MetaMask Address (msg.sender) 上, 其中 receiver 不能为空，实现如下
+把一个 MVM User Address (msg.sender) 绑定到 MetaMask Address (receiver) 上, 其中 receiver 不能为空，实现如下
 
 ```solidty
   function bind(address receiver) public {
@@ -42,10 +42,10 @@ Bridge 是 MetaMask 跟其它链的一个跨链桥，也就是像 BTC, ETH, TRON
 
 ## pass 方法
 
-完成上一步绑定之后, 就可以给 MetaMask Address (msg.sender) 的地址转帐, 主要分为两部分:
+完成上一步绑定之后, 就可以给 MetaMask Address 的地址转帐, 主要分为两部分:
 
-* 普通的 erc20 资产，会直接转到绑定帐号
-* erc20 的 XIN, 会转成 native 的 XIN 转到绑定帐号
+* 普通的 erc20 资产，会直接转到 MetaMask Address
+* erc20 的 XIN, 会转成 native 的 XIN 转到 MetaMask Address
 
 ```solidty
   function pass(address asset, uint256 amount) public {
