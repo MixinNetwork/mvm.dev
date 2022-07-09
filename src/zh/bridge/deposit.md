@@ -29,7 +29,7 @@ Bridge RPC host: https://bridge.mvm.dev
 
 请求参数：
 
-```javascript
+```json
 {"public_key": "0x12266b2Bbd....0CF83c3997Bc8dbAD0be0"}
 ```
 
@@ -52,7 +52,8 @@ Bridge RPC host: https://bridge.mvm.dev
 
 其中请求参数中的 public_key 是一个 eth 的帐号地址，可以在任意的钱包直接使用的，例如 metamask, imtoken 等等。
 
-返回值是一个 Mixin Network User, 通过 `https://api.mixin.one/assets/6eece248-09db-3417-8f70-767896cf5217` 可以拿到具体资产的充值地址, 详细的 API 文档: https://developers.mixin.one/docs/api/assets/asset
+返回值是一个 Mixin Network User, 通过 `https://api.mixin.one/assets/6eece248-09db-3417-8f70-767896cf5217` 可以拿到具体资产的充值地址, 
+详细的 API 文档: <https://developers.mixin.one/docs/api/assets/asset>
 
 ## 充值
 
@@ -66,7 +67,7 @@ Bridge RPC host: https://bridge.mvm.dev
 
 请求参数:
 
-```javascript
+```JSON
 {
   "destination": "0x12266b2Bbd....0CF83c3997Bc8dbAD0be0",
   "tag": "EOS memo",
@@ -88,4 +89,4 @@ Bridge RPC host: https://bridge.mvm.dev
 
 ## Bridge 的开源地址：
 
-https://github.com/MixinNetwork/trusted-group/tree/master/mvm/quorum/bridge
+<https://github.com/MixinNetwork/trusted-group/tree/master/mvm/quorum/bridge>

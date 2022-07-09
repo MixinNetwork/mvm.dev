@@ -6,7 +6,7 @@ Bridge 是 MetaMask 跟其它链的一个跨链桥，也就是像 BTC, ETH, TRON
 
 ## 基础概念
 
-* Mixin Asset 是指的 Mixin 中可充值提现的原生资产, 例如 BTC, https://mixin.one/snapshots/c6d0c728-2624-429b-8e0d-d9d19b6592fa
+* Mixin Asset 是指的 Mixin 中可充值提现的原生资产, 例如 [BTC](https://mixin.one/snapshots/c6d0c728-2624-429b-8e0d-d9d19b6592fa)
 * MVM Asset Address 是指的 BTC 在 MVM 中所对应的地址，有点类似于 WBTC 的概念
 * MVM User Address 是指 Mixin user 在 MVM 中的合约地址，类似于普通的帐号
 * MetaMask Address 是指的传统的 ETH 的帐号地址, 跟上面的 MVM User Address 其实是一类都是 MVM 地址
@@ -16,7 +16,7 @@ Bridge 是 MetaMask 跟其它链的一个跨链桥，也就是像 BTC, ETH, TRON
 ## Bridge 主要实现的功能
 
 * `bind` 把一个 MVM User Address 跟 MetaMask Address 绑定
-* `pass` 把 MetaMask Address (msg.sender) 里的资产转到绑定的 MVM 地址
+* `pass` 把与 MetaMask Address 绑定的 MVM 地址 (msg.sender) 里的资产转到 MetaMask Address
 * `vault` 把 erc20 XIN 转入到 Bridge 合约
 * bridge 可以接收到原生的 XIN 并给用户转回 erc20 的 XIN
 
@@ -24,7 +24,7 @@ Bridge 是 MetaMask 跟其它链的一个跨链桥，也就是像 BTC, ETH, TRON
 
 ## bind 方法
 
-把一个 MVM 的地址绑定到 MetaMask Address (msg.sender) 上, 其中 receiver 不能为空，实现如下
+把一个 MVM User Address (msg.sender) 绑定到 MetaMask Address (receiver) 上, 其中 receiver 不能为空，实现如下
 
 ```solidty
   function bind(address receiver) public {
@@ -38,14 +38,14 @@ Bridge 是 MetaMask 跟其它链的一个跨链桥，也就是像 BTC, ETH, TRON
 
 这里有详细的解释, [Mixin user 跟 MVM user address 如何对应](/zh/resources/qa.html)
 
-另外我们提供了 js SDK 来获取用户对应地址：https://github.com/MixinNetwork/bot-api-nodejs-client/blob/main/src/mvm/registry.ts#L51 
+另外我们提供了 js SDK 来获取用户对应地址：<https://github.com/MixinNetwork/bot-api-nodejs-client/blob/main/src/mvm/registry.ts#L51> 
 
 ## pass 方法
 
-完成上一步绑定之后, 就可以给 MetaMask Address (msg.sender) 的地址转帐, 主要分为两部分:
+完成上一步绑定之后, 就可以给 MetaMask Address 的地址转帐, 主要分为两部分:
 
-* 普通的 erc20 资产，会直接转到绑定帐号
-* erc20 的 XIN, 会转成 native 的 XIN 转到绑定帐号
+* 普通的 erc20 资产，会直接转到 MetaMask Address
+* erc20 的 XIN, 会转成 native 的 XIN 转到 MetaMask Address
 
 ```solidty
   function pass(address asset, uint256 amount) public {
@@ -94,8 +94,8 @@ Bridge 是 MetaMask 跟其它链的一个跨链桥，也就是像 BTC, ETH, TRON
 到这里应该对 Bridge 合约有基本的了解，我们使用 bridge 合约，作了进一步的开发，然后让开发者更加方便的使用，完成不同链到 MVM 的充值，下一篇，我们会针对开发者的使用做一个详细的介绍，开发者只需要关注下面的内容即可。
 
 ## 完整 bridge.sol 代码
-https://github.com/MixinNetwork/trusted-group/blob/master/mvm/quorum/bridge/contracts/Bridge.sol
+<https://github.com/MixinNetwork/trusted-group/blob/master/mvm/quorum/bridge/contracts/Bridge.sol>
 
 ## Bridge 的开源地址：
 
-https://github.com/MixinNetwork/trusted-group/tree/master/mvm/quorum/bridge
+<https://github.com/MixinNetwork/trusted-group/tree/master/mvm/quorum/bridge>
