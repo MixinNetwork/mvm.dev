@@ -191,6 +191,11 @@ module.exports = {
                   directory: false,
                   path: '/zh/reference/registry'
                 },
+                {
+                  title: 'Storage 合约',
+                  directory: false,
+                  path: '/zh/reference/storage'
+                }
               ]
             },
             {

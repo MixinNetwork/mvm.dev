@@ -3,7 +3,7 @@
 在上简介中，我们介绍了 MVM 实现的主要功能，这篇文章我们基于 MVM 开发一个完整的合约。分为以下几部分:
 
 1. 实现 [solidity](https://docs.soliditylang.org/en/v0.8.13/) 合约, 这里我们用 [refund.sol](#refund-sol-源码) 作为示例，其它的合约类似。
-2. 在 [Quorum](/testnet/join) 上部署 [refund](#refund-sol-源码) 合约，这部分跟 EVM 合约的部署一致。
+2. 在 [Quorum](/zh/quorum/join) 上部署 [refund](#refund-sol-源码) 合约，这部分跟 EVM 合约的部署一致。
 3. 在 MVM 上发布合约
 4. Mixin 用户使用合约
 
@@ -36,7 +36,7 @@
 
 开发者可以选择自己熟悉的部署方式，[remix](https://remix-project.org/), [hardhat](https://hardhat.org/) 等。
 
-这里是 [hardhat](https://hardhat.org/) 的部署示例，<https://github.com/MixinNetwork/mvmcontracts>, 已经配置好 [Quorum](/testnet/join) 测试网，可以直接使用。
+这里是 [hardhat](https://hardhat.org/) 的部署示例，<https://github.com/MixinNetwork/mvmcontracts>, 已经配置好 [Quorum](/zh/quorum/join) 测试网，可以直接使用。
 
 配置步骤:
 
@@ -55,8 +55,8 @@
 
 ## 在 MVM 发布合约
 
-智能合约在 [Quorum](/testnet/join) 部署完成后，还需要在 MVM 与 Mixin 机器人绑定 (发布合约)。
-MVM 会基于合约发布请求中携带的 [PID](#refund-合约实现) 来打包数据，并发送到 [Quorum](/testnet/join)。
+智能合约在 [Quorum](/zh/quorum/join) 部署完成后，还需要在 MVM 与 Mixin 机器人绑定 (发布合约)。
+MVM 会基于合约发布请求中携带的 [PID](#refund-合约实现) 来打包数据，并发送到 [Quorum](/zh/quorum/join)。
 
 过程：
 

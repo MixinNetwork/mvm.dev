@@ -476,23 +476,20 @@ contract UniswapMVMRouter {
 1. 添加流动性
 
 ```js
-const { 
+import { 
   MixinApi, 
-  MVMApi, 
-  MVMApiTestURI, 
   Registry, 
   MVMMainnet, 
   getExtra 
-} = require('@mixin.dev/mixin-node-sdk');
+} from '@mixin.dev/mixin-node-sdk';
 import { v4 as uuid } from 'uuid';
-const keystore = require('./keystore.json');
+import keystore from './keystore.json';
 
-const mixinClient = MixinApi({ keystore });
-const mvmClient = MVMApi(MVMApiTestURI);
+keystore.user_id = keystore.client_id;
+const client = MixinApi({ keystore });
 const registry = new Registry({
   address: MVMMainnet.Registry.Address,
   uri: MVMMainnet.RPCUri,
-  secret: keystore.private_key,
 });
 
 const cnbAssetID = '965e5c6e-434c-3fa9-b780-c50f43cd955c';
@@ -502,73 +499,75 @@ async function addLiquidity() {
   const assetAmount = 0.0001;
   const assetContract = await registry.fetchAssetContract(cnbAssetID);
 
-  const contractAddres = '0xD69D54724c6d6B4F071429ED8D562c1F97CDF7f0';
-  const methodName = 'addLiquidity';
-  const types = ['address', 'uint256'];
-  const values = [assetContract, assetAmount * 1e8];
-  const extra = getExtra(contractAddress, methodName, types, values);
+  const contract = {
+    address: '0xD69D54724c6d6B4F071429ED8D562c1F97CDF7f0',
+    method: 'addLiquidity',
+    types: ['address', 'uint256'],
+    values: [assetContract, assetAmount * 1e8], 
+  };
+  const extra = getExtra([contract]);
 
   const params = {
     asset_id: roayAssetID,
     // 默认金额
-    amount: String(assetAmoun),
+    amount: String(assetAmount),
     // 唯一标识
     trace_id: uuid(),
     // 备注
     memo: extra,
     // 多签
     opponent_multisig: {
-      receivers: MVMMainnet.MVMMenbers,
+      receivers: MVMMainnet.MVMMembers,
       threshold: MVMMainnet.MVMThreshold,
     },
   };
-  const txInput = await mvmClient.payments(params);
-
-  const res = await mixinClient.transfer.transaction(txInput)
-  console.log(res)
+  
+  const txInput = await client.payment.request(params);
+  const res = await client.transfer.toAddress(keystore.pin, txInput);
+  console.log(res);
 }
 ```
 
 2. 兑换
 
 ```js
-const { 
-  MixinApi, 
-  MVMApi, 
-  MVMApiTestURI, 
+import { 
+  MVMApi,
+  MVMApiTestURI,
   Registry, 
   MVMMainnet, 
   getExtra 
-} = require('@mixin.dev/mixin-node-sdk');
+} from '@mixin.dev/mixin-node-sdk';
 import { v4 as uuid } from 'uuid';
-const keystore = require('./keystore.json');
 
-const mixinClient = MixinApi({ keystore });
-const mvmClient = MVMApi(MVMApiTestURI);
+const client = MVMApi(MVMApiTestURI);
 const registry = new Registry({
   address: MVMMainnet.Registry.Address,
-  uri: MVMMainnet.RPCUri,
-  secret: keystore.private_key,
+  uri: MVMMainnet.RPCUri
 });
 
 const cnbAssetID = '965e5c6e-434c-3fa9-b780-c50f43cd955c';
 const roayAssetID = '69b2d237-1eb2-3b6c-8e1d-3876e507b263';
 
 async function swap() {
-  const tokenA = await getContractByAssetID(roayAssetID);
-  const tokenB = await getContractByAssetID(cnbAssetID);
+  const tokenA = await registry.fetchAssetContract(roayAssetID);
+  const tokenB = await registry.fetchAssetContract(cnbAssetID);
   const _amountA = 0.000001;
   const _amountB = 0.00000005;
   const amountA = (_amountA * 1e8) | 0;
   const amountB = (_amountB * 1e8) | 0;
-  const userContract = await registry.getUserContract('3dbf04fe-afc4-35ca-b686-a174437ccdb5');
+  const userContract = await registry.fetchUserContract('3dbf04fe-afc4-35ca-b686-a174437ccdb5');
   const time = Math.ceil(Date.now() / 1000) + 300;
+  const types = ['uint', 'uint', 'address[]', 'address', 'uint'];
   const values = [amountA, amountB, [tokenA, tokenB], userContract, time];
-  const types = [amountA, amountB, [tokenA, tokenB], userContract, time];
 
-  const contractAddress = '0xa71E83E79DED8dD19F471dA4Eda58dCc06D5cEb6';
-  const methodName = 'swapExactTokensForTokens';
-  const extra = getExtra(contractAddress, methodName, types, values);
+  const contract = {
+    address: '0xa71E83E79DED8dD19F471dA4Eda58dCc06D5cEb6',
+    method: 'swapExactTokensForTokens',
+    types,
+    values,
+  };
+  const extra = getExtra([contract]);
 
   const params = {
     // 币种
@@ -581,68 +580,58 @@ async function swap() {
     memo: extra,
     // 多签
     opponent_multisig: {
-      receivers: MVMMainnet.MVMMenbers,
+      receivers: MVMMainnet.MVMMembers,
       threshold: MVMMainnet.MVMThreshold,
     },
   };
-  const txInput = await mvmClient.payments(params);
-  const res = await mixinClient.transfer.toAddress(txInput);
-  console.log(res);
+
+  // extra.length > 200
+  const txInput = await client.payments(params);
+  console.log(`mixin://codes/${txInput.code_id}`);
 }
 ```
 
 3. 移除流动性
 
 ```js
-const {
-  MixinApi,
-  MVMApi,
-  MVMApiTestURI, 
+import {
+  MVMApi, 
+  MVMApiTestURI,
   Registry, 
   MVMMainnet, 
   getExtra 
-} = require('@mixin.dev/mixin-node-sdk');
+} from '@mixin.dev/mixin-node-sdk';
 import { v4 as uuid } from 'uuid';
-const keystore = require('./keystore.json');
 
-const mixinClient = MixinApi({ keystore });
-const mvmClient = MVMApi(MVMApiTestURI);
+const client = MVMApi(MVMApiTestURI);
 const registry = new Registry({
   address: MVMMainnet.Registry.Address,
   uri: MVMMainnet.RPCUri,
-  secret: keystore.private_key,
 });
 
 const cnbAssetID = '965e5c6e-434c-3fa9-b780-c50f43cd955c';
 const roayAssetID = '69b2d237-1eb2-3b6c-8e1d-3876e507b263';
 
 async function main() {
-  const tokenA = await getContractByAssetID(roayAssetID);
-  const tokenB = await getContractByAssetID(cnbAssetID);
+  const tokenA = await registry.fetchAssetContract(roayAssetID);
+  const tokenB = await registry.fetchAssetContract(cnbAssetID);
   const userContract = await registry.fetchUserContract('3dbf04fe-afc4-35ca-b686-a174437ccdb5');
 
-  const delegatecall = true;
-  const contractAddress = '0xD69D54724c6d6B4F071429ED8D562c1F97CDF7f0';
-  const methodName = 'removeLiquidity';
-  const types = [
-    'address',
-    'address',
-    'address',
-    'address',
-    'uint256',
-    'uint256',
-    'uint256',
-  ];
-  const values = [
-    '0xc9f4bc2A7afEe68E6e8202fFc2b8d77d7E7B9eC9',
-    tokenA,
-    tokenB,
-    userContract,
-    (9e-16 * 1e18) | 0,
-    0,
-    0,
-  ];
-  const extra = getExtra(contractAddress, methodName, types, values);
+  const contract = {
+    address: '0xD69D54724c6d6B4F071429ED8D562c1F97CDF7f0',
+    method: 'removeLiquidity', 
+    types: ['address', 'address', 'address', 'address', 'uint256', 'uint256', 'uint256'],
+    values: [
+       '0xc9f4bc2A7afEe68E6e8202fFc2b8d77d7E7B9eC9',
+       tokenA,
+       tokenB,
+       userContract,
+       (9e-16 * 1e18) | 0,
+       0,
+       0,
+    ],
+  };
+  const extra = getExtra([contract]);
 
   const params = {
     // 默认币种
@@ -655,14 +644,13 @@ async function main() {
     memo: extra,
     // 多签
     opponent_multisig: {
-      receivers: MVMMainnet.MVMMenbers,
+      receivers: MVMMainnet.MVMMembers,
       threshold: MVMMainnet.MVMThreshold,
     },
-    delegatecall
   };
-  const txInput = await mvmClient.payments(params);
-
-  const res = await client.transfer.transaction(txInput)
-  console.log(res)
+  
+  // extra.length > 200
+  const txInput = await client.payments(params);
+  console.log(`mixin://codes/${txInput.code_id}`);
 }
 ```

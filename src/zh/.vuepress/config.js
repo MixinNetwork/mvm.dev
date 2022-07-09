@@ -88,6 +88,11 @@ module.exports = {
               directory: false,
               path: '/reference/registry'
             },
+            {
+              title: 'Storage 合约',
+              directory: false,
+              path: '/reference/storage'
+            }
           ]
         },
         {
@@ -126,7 +131,7 @@ module.exports = {
             {
               title: '如何加入',
               directory: false,
-              path: '/testnet/join'
+              path: '/quorum/join'
             },
           ]
         },

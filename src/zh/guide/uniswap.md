@@ -2,7 +2,7 @@
 
 在上一篇文章中，我们提到通过 registry, 可以不用做任何修改来迁移 EVM 上的合约，这一章我们就来详细介绍一下，如何部署一个 uniswap 的合约。
 
-我们会用 Uniswap V2 版本来部署。在部署之前需要先用 metamask 配置到 Quorum 的测试网，具体的配置方式可以参考 [加入测试网络](/zh/testnet/join) 章节。
+我们会用 Uniswap V2 版本来部署。在部署之前需要先用 metamask 配置到 Quorum 的测试网，具体的配置方式可以参考 [加入测试网络](/zh/quorum/join) 章节。
 
 核心的 uniswap 代码主要包含 [v2-core](https://github.com/Uniswap/v2-core) 跟 [v2-periphery](https://github.com/Uniswap/v2-periphery) 两部分。 v2-core 是 Uniswap 最核心的功能，v2-periphery 是在核心功能之上的一层简单的封装，给开发者提供更易用的接口。
 

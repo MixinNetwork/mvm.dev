@@ -2,6 +2,12 @@
 
 `POST /payments`
 
+### 介绍
+  当使用 sdk 请求 POST /payments api 时，需要 keystore 对消息签名才可以访问，却有可能暴露 keystore。
+  
+  此时，可以访问本 api 来生成支付链接，参数不变。另外，还有自动处理 extra 超过限制的功能
+  （由于向 Storage 合约写入数据需要消耗 XIN，限制每个 ip 24 小时内请求 32 次超长 extra，长度 200 以内的 extra 不作限制）。
+
 ### 参数
 
 | 参数                |   类型   |  必填   | 说明      |
@@ -9,13 +15,10 @@
 | asset_id          | string | true  | 转账币种    |
 | amount            | string | true  | 转账金额    |
 | trace_id          | string | true  | 转账的唯一标识 |
-| extra             | string | true  | 转账备注    |
+| memo              | string | true  | 转账备注    |
 | opponent_multisig | object | true  | 详情见下文   |
-| delegatecall      |  bool  | false |         |
 
-> 1. `delegatecall` 主要是为了提供让用户调用 `mvm` 中未与 `mixin` 映射的资产.
-
-payment 参数是跟多签相关的参数
+opponent_multisig 参数是跟多签相关的参数
 | 参数 | 类型 | 必填 | 说明 |
 | :----- | :----: | :---: | :-------------------------- |
 | receivers | string[] | true | 参与多签的 user_id 数组 |
@@ -60,24 +63,11 @@ import {
   MVMMainnet 
 } from '@mixin.dev/mixin-node-sdk';
 
-// 合约地址
-const contractAddress = '0x4f31E2eAF25DCDD46651AcE019B61E3E750023E0';
-// 合约方法名
-const methodName = 'addOne';
-// 参数类型列表
-const types = [];
-// 参数值列表
-const value = [];
-// 无需非 mixin 映射资产的调用
-const delegatecall = false;
-
-// step 1: 生成 extra 
-// extra 由三部分构成
-// * 去掉 '0x' 的合约地址
-// * 合约方法声明 KECCAK256 哈希值去掉 '0x' 后的前八位
-//   如 addLiquidity(address,uint256)，中间无空格
-// * 合约方法参数的 ABI 编码
-const extra = getExtra(contractAddress, methodName, types, values);
+const contract = {
+  address: '0x4f31E2eAF25DCDD46651AcE019B61E3E750023E0',
+  method: 'addOne'
+}
+const extra = getExtra([contract]);
 
 // step 2: 发送请求
 const params = {
@@ -91,14 +81,15 @@ const params = {
   memo: extra,
   // 多签
   opponent_multisig: {
-    receivers: MVMMainnet.MVMMenbers,
+    receivers: MVMMainnet.MVMMembers,
     threshold: MVMMainnet.MVMThreshold,  
   },
-  delegatecall
 };
 
 const mvmClient = MVMApi(MVMApiTestURI);
-await mvmClient.payments(params);
+mvmClient.payments(params).then(res => {
+  console.log(`mixin://codes/${res.code_id}`);
+});
 ```
 
 跨链桥合约绑定地址方法调用
@@ -112,24 +103,13 @@ import {
   MVMMainnet 
 } from '@mixin.dev/mixin-node-sdk';
 
-// 合约地址
-const contractAddress = '0x96dC880Ed035CFdd2F334874379bb6A128aca788';
-// 合约方法名
-const methodName = 'bind';
-// 参数类型列表
-const types = ['address'];
-// 参数值列表
-const values = ['0x9A9EE13256416f41a2a499C0d4179663407269A8'];
-// 无需非 mixin 映射资产的调用
-const delegatecall = false;
-
-// step 1: 生成 extra
-// extra 由三部分构成
-// * 去掉 '0x' 的合约地址
-// * 合约方法声明 KECCAK256 哈希值去掉 '0x' 后的前八位
-//   如 addLiquidity(address,uint256)，中间无空格
-// * 合约方法参数的 ABI 编码
-const extra = getExtra(contractAddress, methodName, types, values);
+const contract = {
+  address: '0x96dC880Ed035CFdd2F334874379bb6A128aca788',
+  method: 'bind',
+  types: ['address'],
+  values: ['0x9A9EE13256416f41a2a499C0d4179663407269A8']
+}
+const extra = getExtra([contract]);
 
 // step 2: 发送请求
 const params = {
@@ -146,11 +126,12 @@ const params = {
     receivers: MVMMainnet.MVMMembers,
     threshold: MVMMainnet.MVMThreshold,
   },
-  delegatecall
 };
 
 const mvmClient = MVMApi(MVMApiTestURI);
-await mvmClient.payments(params);
+mvmClient.payments(params).then(res => {
+  console.log(`mixin://codes/${res.code_id}`);
+});
 ```
 
 2. 需要资产的合约调用
@@ -170,23 +151,13 @@ import {
 const asset_id = "965e5c6e-434c-3fa9-b780-c50f43cd955c";
 // 转账金额
 const amount = "1";
-// 合约地址
-const contractAddress = '0x96dC880Ed035CFdd2F334874379bb6A128aca788';
-// 合约方法名
-const methodName = 'deposit';
-// 参数类型列表
-const types = ["address", "uint256"];
-// 参数值列表
-const value = ["0x001fB10b1bFede8505AB138c2Bb2E239CB3b50dC", "100000000"];
-// 无需非 mixin 映射资产的调用
-const delegatecall = false;
 
-// step 1: 生成 extra
-// extra 由三部分构成
-// * 去掉 '0x' 的合约地址
-// * 合约方法声明 KECCAK256 哈希值去掉 '0x' 后的前八位
-//   如 addLiquidity(address,uint256)，中间无空格
-// * 合约方法参数的 ABI 编码
+const contract = {
+  address: '0x96dC880Ed035CFdd2F334874379bb6A128aca788',
+  method: 'deposit',
+  types: ["address", "uint256"],
+  values: ["0x001fB10b1bFede8505AB138c2Bb2E239CB3b50dC", "100000000"]
+}
 const extra = getExtra(contractAddress, methodName, types, values);
 
 // step 2: 发送请求
@@ -203,12 +174,13 @@ const params = {
   opponent_multisig: {
     receivers: MVMMainnet.MVMMembers,
     threshold: MVMMainnet.MVMThreshold,
-  },
-  delegatecall
+  }
 };
 
 const mvmClient = MVMApi(MVMApiTestURI);
-await mvmClient.payments(params);
+mvmClient.payments(params).then(res => {
+  console.log(`mixin://codes/${res.code_id}`);
+});
 ```
 
 3. 复杂的合约调用
@@ -228,33 +200,23 @@ import {
 const asset_id = "965e5c6e-434c-3fa9-b780-c50f43cd955c";
 // 转账金额
 const amount = "1";
-// 合约地址
-const contractAddress = '0xe4aeAc26BCd161aFAEea468AC22F45FE5a35737F';
-// 合约方法名
-const methodName = 'swapExactTokensForTokens';
-// 参数类型列表
-const types = ["uint256", "uint256", "address[]", "address", "uint256"];
-// 参数值列表
-const value = [
-  100000000,
-  12400948731547,
-  [
-    "0x001fB10b1bFede8505AB138c2Bb2E239CB3b50dC",
-    "0x71c1C2D82b39C0e952751c9BEA39c28c70c47Ff4"
-  ],
-  "0xa192D5856A9a7c07731bc13559Da7489C7829C74",
-  1652262893
-];
-// 无需非 mixin 映射资产的调用
-const delegatecall = false;
 
-// step 1: 生成 extra 
-// extra 由三部分构成
-// * 去掉 '0x' 的合约地址
-// * 合约方法声明 KECCAK256 哈希值去掉 '0x' 后的前八位
-//   如 addLiquidity(address,uint256)，中间无空格
-// * 合约方法参数的 ABI 编码
-const extra = getExtra(contractAddress, methodName, types, values);
+const contract = {
+  address: '0xe4aeAc26BCd161aFAEea468AC22F45FE5a35737F',
+  method: 'swapExactTokensForTokens',
+  types: ["uint256", "uint256", "address[]", "address", "uint256"],
+  values: [
+    100000000,
+    12400948731547,
+    [
+      "0x001fB10b1bFede8505AB138c2Bb2E239CB3b50dC",
+      "0x71c1C2D82b39C0e952751c9BEA39c28c70c47Ff4"
+    ],
+    "0xa192D5856A9a7c07731bc13559Da7489C7829C74",
+    1652262893
+  ]
+}
+const extra = getExtra([contract]);
 
 // step 2: 发送请求
 const params = {
@@ -271,18 +233,15 @@ const params = {
     receivers: MVMMainnet.MVMMembers,
     threshold: MVMMainnet.MVMThreshold,
   },
-  delegatecall
 };
 
 const mvmClient = MVMApi(MVMApiTestURI);
-await mvmClient.payments(params);
+mvmClient.payments(params).then(res => {
+  console.log(`mixin://codes/${res.code_id}`);
+});
 ```
 
 4. 需要非 mixin 映射资产的调用.
-
-> 如 uniswap 合约, 当添加流动性的时候, 会生成一个 uniswap 的流动性凭证, 该凭证也是一个 erc20 的资产, 但不是 mixin 内的资产, 此时, 这个资产会到 mixin 映射的用户合约地址内. 并不会直接发送到 mixin. 当要花费这类资产时, 就需要使用 `delegatecall` 方法来调用.
->
-> [delegatecall 相关信息可以查看]()
 
 uniswap 的移除流动性方法调用
 
@@ -299,40 +258,30 @@ import {
 const asset_id = "965e5c6e-434c-3fa9-b780-c50f43cd955c";
 // 转账金额
 const amount = "1";
-// 合约地址
-const contractAddress = '0x774A9E576f14d81d7fB439efB1Eb14973a7144Fb';
-// 合约方法名
-const methodName = 'removeLiquidity';
-// 参数类型列表
-const types = [
-  "address",
-  "address",
-  "address",
-  "address",
-  "uint256",
-  "uint256",
-  "uint256"
-];
-// 参数值列表
-const value = [
-  "0x5EFDe32C3857fe54b152D3ffa7DCE31e28b83aC6", 
-  "0x001fB10b1bFede8505AB138c2Bb2E239CB3b50dC",
-  "0x71c1C2D82b39C0e952751c9BEA39c28c70c47Ff4",
-  "0xa192D5856A9a7c07731bc13559Da7489C7829C74",
-  44,
-  0,
-  0
-];
-// 需要非 mixin 映射资产的调用
-const delegatecall = true;
 
-// step 1: 生成 extra
-// extra 由三部分构成
-// * 去掉 '0x' 的合约地址
-// * 合约方法声明 KECCAK256 哈希值去掉 '0x' 后的前八位
-//   如 addLiquidity(address,uint256)，中间无空格
-// * 合约方法参数的 ABI 编码
-const extra = getExtra(contractAddress, methodName, types, values);
+const contract = {
+  address: '0x774A9E576f14d81d7fB439efB1Eb14973a7144Fb',
+  method: 'removeLiquidity',
+  types: [
+    "address",
+    "address",
+    "address",
+    "address",
+    "uint256",
+    "uint256",
+    "uint256"
+  ],
+  values: [
+    "0x5EFDe32C3857fe54b152D3ffa7DCE31e28b83aC6",
+    "0x001fB10b1bFede8505AB138c2Bb2E239CB3b50dC",
+    "0x71c1C2D82b39C0e952751c9BEA39c28c70c47Ff4",
+    "0xa192D5856A9a7c07731bc13559Da7489C7829C74",
+    44,
+    0,
+    0
+  ]
+};
+const extra = getExtra([contract]);
 
 // step 2: 发送请求
 const params = {
@@ -348,11 +297,11 @@ const params = {
   opponent_multisig: {
     receivers: MVMMainnet.MVMMembers,
     threshold: MVMMainnet.MVMThreshold,
-  },
-  delegatecall
+  }
 };
-axios.post('/payments', params);
 
 const mvmClient = MVMApi(MVMApiTestURI);
-await mvmClient.payments(params);
+mvmClient.payments(params).then(res => {
+  console.log(`mixin://codes/${res.code_id}`);
+});
 ```
