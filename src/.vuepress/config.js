@@ -219,6 +219,23 @@ module.exports = {
               ]
             },
             {
+              title: "Bridge 合约",
+              children: [
+                {
+                  title: "简介",
+                  path: "/zh/bridge/intro"
+                },
+                {
+                  title: "多链充值",
+                  path: "/zh/bridge/deposit"
+                },
+                {
+                  title: "多链提现",
+                  path: "/zh/bridge/withdrawal"
+                },
+              ]
+            },
+            {
               title: 'NodeJS 教程',
               children: [
                 {
@@ -258,23 +275,6 @@ module.exports = {
                   title: "mixin 和 mvm 用户及资产映射",
                   path: "/zh/api/map"
                 }
-              ]
-            },
-            {
-              title: "Bridge 合约",
-              children: [
-                {
-                  title: "简介",
-                  path: "/zh/bridge/intro"
-                },
-                {
-                  title: "多链充值",
-                  path: "/zh/bridge/deposit"
-                },
-                {
-                  title: "多链提现",
-                  path: "/zh/bridge/withdrawal"
-                },
               ]
             },
             {
