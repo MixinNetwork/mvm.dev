@@ -127,37 +127,6 @@ const extra = getExtra(contracts);
    
    ```
 
-### 通过 [MVMApi](/zh/api/payment)：
-
-可以通过 MVMApi 来处理 extra 超长的问题。由于向合约内写入数据需要消耗代币，每个 ip 24 小时内可请求 32 次；
-若 extra 不超过 200 则不作限制。代码示例：
-
-```javascript
-import { MVMApi, MVMApiTestURI } from '@mixin.dev/mixin-node-sdk';
-
-// 构造 post /payments 的请求参数
-const transactionInput = {
-  asset_id: 'c94ac88f-4671-3976-b60a-09064f1811e8', // XIN
-  amount: '0.00000001',
-  trace_id: uuid(),
-  memo: extra,
-  opponent_multisig: {
-    receivers: MVMMainnet.MVMMembers,
-    threshold: MVMMainnet.MVMThreshold,
-  },
-};
-
-const client = MVMApi(MVMApiTestURI);
-// extra 长度超过 200 时，免费处理，每个 ip 24 小时内可响应 32 次
-// extra 长度不超过 200 时，不作限制
-const res = client.payments(transactionInput);
-// 请求支付的 code_id
-// post /transactions 支付或使用下面的支付链接
-console.log(`mixin://codes/${res.code_id}`);
-```
-
-
-
 ## 总结
 
 本章介绍了 Storage 合约的原理，及如何利用 Storage 合约处理 extra 过长的问题。
