@@ -4,11 +4,11 @@
 
 1. 开发者部署 EVM 智能合约，部署完成后拿到合约地址。
 
-2. 开发者根据合约地址和要调用的合约函数及参数，生成 extra，详见 [上一节](/zh/encoding)
+2. 开发者根据合约地址和要调用的合约函数及参数，生成 `extra`，详见 [上一节](/zh/encoding)
 
-3. 生成 memo，memo 为 Operation 的 base64 编码
+3. 生成 `memo`，`memo` 为 `Operation` 的 base64 编码
 
-   Operation 结构
+   `Operation` 结构
    ```golang
    op := &encoding.Operation{
     Purpose: encoding.OperationPurposeGroupEvent, // 固定值 1
@@ -45,12 +45,12 @@
    
 5. 用户获取支付参数后，有两种方式进行支付：
 
-   一：通过 POST /payments API 返回的 code_id，生成支付链接 `https://mixin.one/codes/:code_id`，然后在 Mixin Messenger 中支付。
+   一：通过 POST /payments 返回的 code_id，生成支付链接 `https://mixin.one/codes/:code_id`，然后在 Mixin Messenger 中支付。
    ::: tip
    这个支付地址的生成没有限制，任何人只需知道合约地址都可以生成，相关文档：<https://developers.mixin.one/zh-CN/docs/api/transfer/payment>
    :::
 
-   二：通过 POST /transactions 进行支付，该消息需要签名且有余额支付。
+   二：通过 POST /transactions 进行支付，该消息需要签名。
 
 8. MVM 收到这个 output 后，解析 memo 成 Event，[代码示例](https://github.com/MixinNetwork/trusted-group/blob/cf3fae2ecacf95e3db7e21c10b7729ab9c11474b/mvm/eos/utils.go#L46)
 9. MVM 把 Event 按格式编码之后，发送给 [Registry](#开源代码) 合约
@@ -93,7 +93,7 @@ const extra = getExtra(contracts);
    
 // 2 构造生成支付链接的请求参数
 const transactionInput = {
-  // 测试网用 CNB，asset_id: '965e5c6e-434c-3fa9-b780-c50f43cd955c'
+  // CNB asset_id: '965e5c6e-434c-3fa9-b780-c50f43cd955c'
   asset_id: 'c94ac88f-4671-3976-b60a-09064f1811e8', // XIN asset_id
   amount: '0.00000001',
   trace_id: uuid(),
