@@ -6,9 +6,8 @@ MVM 可以让其它网络上的开发者（几乎）不需要做任何修改，�
 
 ## 接下来，我们主要会详细介绍以下内容
 
-1. MVM 中 Registry 合约的原理跟使用
-2. Storage 合约的实现跟实现
-3. 如何部署 Uniswap 合约，如何在 MVM 中使用
-4. MVM Bridge 的实现
+1. Registry 合约的原理和通过 Registry 调用其他合约
+2. 如何通过 Bridge 合约进行充值和提现
+3. Storage 合约的原理跟实现
+4. MVM 的 API 接口
 5. 如何加入 Quorum
-6. MVM 的 API 接口
