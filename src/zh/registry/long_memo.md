@@ -51,7 +51,6 @@ console.log(extra);
    ```javascript
    import { StorageContract, MVMMainnet } from '@mixin.dev/mixin-node-sdk';
    import { keccak256 } from 'ethers/lib/utils';
-   import { v4 as uuid } from 'uuid';
    
    const storage = new StorageContract({
      address: MVMMainnet.Storage.Contract,
@@ -76,6 +75,7 @@ console.log(extra);
 
    ```javascript
    import { MVMMainnet, getExtraWithStorageKey, MixinApi } from '@mixin.dev/mixin-node-sdk';
+   import { v4 as uuid } from 'uuid';
    import keystore from './keystore.json';
    
    // 获得新的 extra
