@@ -30,9 +30,14 @@
     ...user.key
   };
   const mixinClient = MixinApi({ keystore });
-  const res = await mixinClient.asset.fetch(
-    'c94ac88f-4671-3976-b60a-09064f1811e8' // XIN 的充值地址
+  // 查看所有资产的信息
+  const assets = mixinClient.asset.fetchList();
+  console.log(assets);
+  // 获取特定资产的充值地址
+  const asset = await mixinClient.asset.fetch(
+    'c94ac88f-4671-3976-b60a-09064f1811e8' // XIN 的 asset_id
   );
+  console.log(asset.destination);
   ```
 
 * ### 充值
