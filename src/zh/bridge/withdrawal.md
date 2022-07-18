@@ -59,13 +59,13 @@ function submit(
 {
   "destination": "0x12266b2Bbd....0CF83c3997Bc8dbAD0be0",
   "tag": "EOS memo",
-  "extra": "blahblahblah"
+  "extra": "ae69252d-a197-4b91-b578-3fb472769179:A"
 }
 ```
 
 * `destination` 为提现地址
 * `tag` 为部分链所需要的 `memo`，如 EOS
-
+* 提现资产的 `extra` 为 `<trace_id>:A`，支付手续费的资产的 `extra` 为 `<trace_id>:B`，且两处 `<trace_id>` 应相同。
 
 ## 给 Mixin User 转帐
 
@@ -82,7 +82,7 @@ function submit(
 }
 ```
 
-* `receivers` 为转账的账户，给单个 Mixin User 转账时只填该用户的 `client_id` 即可
+* `receivers` 为转账的账户，给 Mixin User 转账时只填一个该用户的 `client_id` 即可
 
 ## withdrawal.sol 完整代码
 
