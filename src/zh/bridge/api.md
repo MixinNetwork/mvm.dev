@@ -113,5 +113,5 @@ const storage = StorageContract({ privateKey: '' }); // 钱包的私钥
 await storage.writeValue(value, key);
 
 // 写入 Storage 合约后，生成对应格式的 extra：process || storage || key
-const extra = '0x' + res.slice(0, 106);
+const extra = '0x' + res.slice(0, 138);
 ```
