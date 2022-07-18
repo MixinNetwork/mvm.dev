@@ -106,12 +106,12 @@ const action = {
 const res = await client.generateExtra(action);
 
 // 获得 key value
-const key = res.slice(72, 104);
-const value = res.slice(104);
+const key = res.slice(74, 138);
+const value = res.slice(138);
 // 写入 Storage 合约
 const storage = StorageContract({ privateKey: '' }); // 钱包的私钥
 await storage.writeValue(value, key);
 
 // 写入 Storage 合约后，生成对应格式的 extra：process || storage || key
-const extra = '0x' + res.slice(0, 104);
+const extra = '0x' + res.slice(0, 106);
 ```
