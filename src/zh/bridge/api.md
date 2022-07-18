@@ -45,7 +45,7 @@ Bridge 服务的源码等。访问 [https://bridge.mvm.dev/](https://bridge.mvm.
     "session_id":  "ee234f3c-56c2-42d0-9816-29104cd8d3a8",
     "private_key": "12345..abcde"
   },
-  "contract": "0x12266b2Bbd....0CF83c3997Bc8dbAD0be0",
+  "contract": "0x12266b2Bbd....0CF83c3997Bc8dbAD0be0"
 }
 ```
 
@@ -55,7 +55,7 @@ API 文档: <https://developers.mixin.one/docs/api/assets/asset>
 
 ### 3. POST `/extra`
 
-这个 API 可以加密用户提现过程中涉及到的信息，起到保护用户隐私的作用。
+这个 API 用于生成提现或转账时的 extra。
 
 请求参数:
 
@@ -68,15 +68,15 @@ API 文档: <https://developers.mixin.one/docs/api/assets/asset>
       "58099349-b159-4662-ad51-c18e809c9035"
     ],
     "threshold": 1,
-    "extra": "blahblahblah"
-  },
-  "public_key": "49418e68591cc61481576f3b4f5ef7b52959ce50ab14e7c4f7c416eaeb670a42"
+    "extra": "extra"
+  }
 }
 ```
 
-* `action` 的 `destination` 跟 `tag` 是给多链提现使用，`receivers` 跟 `threshold` 是给 Mixin User 转帐使用。
+* `action` 的 `destination` 跟 `tag` 是给多链提现使用，`extra` 可以不填。
 
-* `public_key` 是客户端本地生成的 ed25519 公钥，服务端会用该公钥和服务端的私钥对 `action` 进行加密。
+* `receivers` 跟 `threshold` 是给 Mixin User 转帐使用，提现资产的 `extra` 为 `<trace_id>:A`，
+支付手续费的资产的 `extra` 为 `<trace_id>:B`，且两处 `<trace_id>` 应相同。
 
 返回值:
 
@@ -87,10 +87,10 @@ API 文档: <https://developers.mixin.one/docs/api/assets/asset>
 返回值为 `process || storage || public_key || encrypted_action` 格式的 extra：
 * `bd67087276ce3263b9333aa337e212a4` 为 `Registry` 的 `PID`
 * `ef241988d19892fe4eff4935256087f4fdc5ecaa` 为 `Storage` 合约的地址
-* `49418e68591cc61481576f3b4f5ef7b52959ce50ab14e7c4f7c416eaeb670a42` 为 ed25519 公钥
-* 之后的部分为加密后的 `action `
+* 之后的部分为 `action` 的 keccak256 hash 和 `action`
 
 公钥和加密后的 `action` 必须写入到 Storage 合约内，代码示例：
+
 ```javascript
 import { BridgeApi, StorageContract } from '@mixin.dev/mixin-node-sdk';
 import { keccak256 } from 'ethers/libs/utils';
@@ -105,39 +105,13 @@ const action = {
 };
 const res = await client.generateExtra(action);
 
-// 获得 public_key || encrypted_action
-const value = res.slice(72);
+// 获得 key value
+const key = res.slice(72, 104);
+const value = res.slice(104);
 // 写入 Storage 合约
-const key = keccak256('0x' + value);
 const storage = StorageContract({ privateKey: '' }); // 钱包的私钥
 await storage.writeValue(value, key);
 
 // 写入 Storage 合约后，生成对应格式的 extra：process || storage || key
-const extra = '0x' + res.slice(0, 72) + key;
-```
-
-开发者也可以在本地生成 extra，代码示例：
-
-```javascript
-import { getBridgeExtra, getExtraWithStorageKey, StorageContract } from '@mixin.dev/mixin-node-sdk';
-import { keccak256 } from 'ethers/libs/utils';
-
-// 请求参数
-const action = {
-  "receivers": ["58099349-b159-4662-ad51-c18e809c9035"],
-  "threshold": 1,
-  "extra": "blahblahblah"
-};
-// 生成 ed25519 密钥对
-// 用私钥和服务端的公钥对 action 进行加密
-// 并返回 public_key || encrypted_action
-const value = getBridgeExtra(action);
-
-// 写入 Storage 合约
-const key = keccak256(value);
-const storage = StorageContract({ privateKey: '' }); // 钱包的私钥
-await storage.writeValue(value, key);
-
-// 写入 Storage 合约后，生成对应格式的 extra：process || storage || key
-const extra = getExtraWithStorageKey(key);
+const extra = '0x' + res.slice(0, 104);
 ```
