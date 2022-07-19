@@ -74,7 +74,7 @@ console.log(extra);
    * keccak256 hash（去掉 `0x`）
 
    ```javascript
-   import { MVMMainnet, getExtraWithStorageKey, MixinApi } from '@mixin.dev/mixin-node-sdk';
+   import { MVMMainnet, getExtraWithStorageKey, MixinApi, encodeMemo } from '@mixin.dev/mixin-node-sdk';
    import { v4 as uuid } from 'uuid';
    import keystore from './keystore.json';
    
@@ -93,7 +93,7 @@ console.log(extra);
      asset_id: 'c94ac88f-4671-3976-b60a-09064f1811e8', // XIN
      amount: '0.00000001',
      trace_id: uuid(),
-     memo: finalExtra,
+     memo: encodeMemo(finalExtra, MVMMainnet.Registry.Contract),
      opponent_multisig: {
        receivers: MVMMainnet.MVMMembers,
        threshold: MVMMainnet.MVMThreshold,
@@ -113,7 +113,6 @@ console.log(extra);
 ### 使用 MVMApi 处理
 
 MVMApi 可以免费帮助写入 Storage 合约，不过每个请求 IP 有 24 小时内 32 次的限制，若 `extra` 不超过 200 则不作限制。
-目前正式网的 MVMApi 还未部署，这里仅做演示。
 
 代码示例：
 

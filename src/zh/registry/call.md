@@ -68,9 +68,10 @@
 import { 
   MVMMainnet, 
   getExtra, 
+  encodeMemo,
   MixinApi, 
   MVMApi, 
-  MVMApiURI // 正式网的 api 还未部署，仅显示用法，请勿使用
+  MVMApiURI
 } from '@mixin.dev/mixin-node-sdk'; 
 import { v4 as uuid } from 'uuid'; 
 import keystore from './keystore.json';
@@ -97,7 +98,7 @@ const transactionInput = {
   asset_id: 'c94ac88f-4671-3976-b60a-09064f1811e8', // XIN asset_id
   amount: '0.00000001',
   trace_id: uuid(),
-  memo: extra, // memo 的编码会在请求的函数中处理
+  memo: encodeMemo(extra, MVMMainnet.Registry.Contract),
   opponent_multisig: {
     receivers: MVMMainnet.MVMMembers,
     threshold: MVMMainnet.MVMThreshold,
@@ -117,7 +118,6 @@ const payment = async () => {
 
   // 3.2 通过 mvmapi post /payments
   // MVMApi 可免费自动处理 extra 超长的问题，24 小时内每个 ip 限 32 次
-  // 正式网的 api 还未部署，仅显示用法，请勿使用
   const mvmClient = MVMApi(MVMApiURI);
   const res2 = await mvmClient.payments(transactionInput);
   // 通过下面的支付链接支付
