@@ -2,7 +2,7 @@
 
 ## 浏览器日志
 
-在浏览器的交易日志中，如果 memo 编码格式正确，即能看到 `ProcessCalled` 事件。
+在浏览器的交易日志中，如果 `memo` 编码格式正确，即能看到 `ProcessCalled` 事件。
 如果调用合约后，日志中没有 `ProcessCalled`，很可能是 memo 格式存在问题。
 
 若 `ProcessCalled` 事件中的 `result` 为 `true` 时调用成功，`output` 为合约调用的返回；

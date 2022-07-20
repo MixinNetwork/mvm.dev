@@ -4,9 +4,9 @@
 
 ### 介绍
 当开发者通过 Registry 调用合约时，有可能遇到 `memo has too many characters, maximum is 200` 错误。
-此时，开发者需要将原本的 extra 写入 Storage 合约，并生成一个新的 extra 来调用合约。
+此时，开发者需要将原本的 `extra` 写入 Storage 合约，并生成一个新的 `extra` 来调用合约。
 
-本 api 免费提供了将过长的 extra 写入 Storage 合约的服务，限制每个 ip 24 小时内请求 32 次。
+本 API 免费提供了将过长的 `extra` 写入 Storage 合约的服务，限制每个 ip 24 小时内请求 32 次。
 
 ### 参数
 

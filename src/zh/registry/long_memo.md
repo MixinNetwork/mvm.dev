@@ -8,7 +8,7 @@
 
 ## 处理 extra 过长问题
 
-例：依次进行 5 个合约调用，`extra` 的长度为 330，超过 200。这里使用 官方 js sdk 演示如何处理该问题。
+例：依次进行 5 个合约调用，`extra` 的长度为 330，超过 200。这里使用 [官方 js sdk](https://github.com/MixinNetwork/bot-api-nodejs-client) 演示如何处理该问题。
 
 ```javascript
 import { getExtra } from '@mixin.dev/mixin-node-sdk';
@@ -46,7 +46,7 @@ console.log(extra);
 1. 调用 `write` 函数将 `extra` 保存在 [storage 合约](https://github.com/MixinNetwork/trusted-group/blob/master/mvm/quorum/contracts/storage.sol) 中。
    注意：此方法将会消耗一部分的 XIN，请确保使用的钱包有一定余额。
 
-   代码示例：
+   [官方 js sdk](https://github.com/MixinNetwork/bot-api-nodejs-client) 代码示例：
 
    ```javascript
    import { StorageContract, MVMMainnet } from '@mixin.dev/mixin-node-sdk';
@@ -114,7 +114,7 @@ console.log(extra);
 
 MVMApi 可以免费帮助写入 Storage 合约，不过每个请求 IP 有 24 小时内 32 次的限制，若 `extra` 不超过 200 则不作限制。
 
-js sdk 代码示例：
+[官方 js sdk](https://github.com/MixinNetwork/bot-api-nodejs-client) 代码示例：
 
 ```javascript
 import { MVMApi, MVMApiURI, encodeMemo, MVMMainnet } from '@mixin.dev/mixin-node-sdk';
@@ -144,7 +144,7 @@ pay();
 
 开发者也可以通过 MVMApi 的 `post /values` API，将过长的 extra 免费写入 Storage 合约。该接口同样有访问次数限制。
 
-代码示例：
+[官方 js sdk](https://github.com/MixinNetwork/bot-api-nodejs-client) 代码示例：
 
 ```javascript
 import { MixinApi, MVMApi, MVMApiURI, MVMMainnet, getExtraWithStorageKey, encodeMemo } from '@mixin.dev/mixin-node-sdk';

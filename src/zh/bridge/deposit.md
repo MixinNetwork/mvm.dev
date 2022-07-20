@@ -9,27 +9,30 @@
 * ### 获取 MetaMask 的私钥
 * ### POST `/users` 获取 MetaMask 对应的 Mixin Network User 信息
 
-  js sdk 代码示例：
+  [官方 js sdk](https://github.com/MixinNetwork/bot-api-nodejs-client) 代码示例：
   ```javascript
   import { BridgeApi } from '@mixin.dev/mixin-node-sdk';
   import { Wallet } from 'ethers';
   
   const bridgeClient = BridgeApi();
-  const wallet = new Wallet(''); // 填入钱包对应的私钥，以对消息签名
-  const user = await bridgeClient.register(wallet);
+  const user = await bridgeClient.register({
+    public_key: '', // 钱包地址
+  });
   ```
 
 * ### 通过 Mixin Network User 信息获取不同链的充值地址
 
-  js sdk 代码示例：
+  [官方 js sdk](https://github.com/MixinNetwork/bot-api-nodejs-client) 代码示例：
   ```javascript
   import { MixinApi } from '@mixin.dev/mixin-node-sdk'; 
+  
   // 接上节
   const keystore = {
     ...user,
     ...user.key
   };
   const mixinClient = MixinApi({ keystore });
+  
   // 查看所有资产的信息
   const assets = mixinClient.asset.fetchList();
   console.log(assets);

@@ -83,6 +83,9 @@ function submit(
 ```
 
 * `receivers` 为转账的账户，给 Mixin User 转账时只填一个该用户的 `client_id` 即可
+* 如果转账的代币是 XIN，调用 [Bridge](https://github.com/MixinNetwork/trusted-group/blob/master/mvm/quorum/bridge/contracts/Bridge.sol)
+合约的 `release` 函数；其他代币调用对应 [Asset](https://github.com/MixinNetwork/trusted-group/blob/master/mvm/quorum/registry/contracts/Asset.sol) 
+合约的 `transferWithExtra` 方法
 
 ## withdrawal.sol 完整代码
 

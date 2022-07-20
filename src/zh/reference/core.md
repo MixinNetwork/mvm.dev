@@ -2,7 +2,7 @@
 
 ## MTG
 
-[MTG](https://github.com/MixinNetwork/trusted-group) 多重签名托管节点，是一个开源协议，所有者可以选择一些可信任的节点来，实现并运行这个程序。
+[MTG](https://github.com/MixinNetwork/trusted-group) 多重签名托管节点，是一个开源协议，所有者可以选择一些可信任的节点来实现并运行这个程序。
 
 ## Quorum 网络
 
@@ -32,3 +32,8 @@ PID 是 process id 的缩写，MVM 将 Mixin 中机器人的 client_id (或者�
 ## Bridge 
 [Bridge](https://github.com/MixinNetwork/trusted-group/blob/master/mvm/quorum/bridge/contracts/Bridge.sol) 
 合约是 MVM 的跨链桥，用户可以通过该合约进行多链充值和多链转账。
+
+## Storage
+[Storage](https://github.com/MixinNetwork/trusted-group/blob/master/mvm/quorum/registry/contracts/Storage.sol) 
+合约可以读写键值对，解决合约调用过程中会遇到的一些问题。
+
