@@ -2,9 +2,9 @@
 
 为了更方便开发者使用, 在开发过程中, 可以使用 `mvm-api` 提供的 API 服务.
 
-| Domain                     | Type   |
-|:---------------------------| :----- |
-| <https://api.test.mvm.dev> | Global |
+| Domain                    | Type   |
+|:--------------------------| :----- |
+| <https://api.mvm.dev>     | Global |
 
 主要封装了以下功能:
 
