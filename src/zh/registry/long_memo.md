@@ -14,25 +14,25 @@
 import { getExtra } from '@mixin.dev/mixin-node-sdk';
 
 const contractReadCount = {
-   address: '0x2E8f70631208A2EcFC6FA47Baf3Fde649963baC7', // contract address
-   method: 'count', // contract function
+  address: '0x2E8f70631208A2EcFC6FA47Baf3Fde649963baC7', // contract address
+  method: 'count', // contract function
 };
 const contractAddAnyCount = {
-   address: '0x2E8f70631208A2EcFC6FA47Baf3Fde649963baC7', // contract address
-   method: 'addAny', // contract function
-   types: ['uint256'], // function parameters type array
-   values: [2], // function parameters value array
+  address: '0x2E8f70631208A2EcFC6FA47Baf3Fde649963baC7', // contract address
+  method: 'addAny', // contract function
+  types: ['uint256'], // function parameters type array
+  values: [2], // function parameters value array
 };
 const contractAddOneCount = {
-   address: '0x2E8f70631208A2EcFC6FA47Baf3Fde649963baC7', // contract address
-   method: 'addOne', // contract function
+  address: '0x2E8f70631208A2EcFC6FA47Baf3Fde649963baC7', // contract address
+  method: 'addOne', // contract function
 };
 const contracts = [
-   contractReadCount,
-   contractAddOneCount,
-   contractReadCount,
-   contractAddAnyCount,
-   contractReadCount,
+  contractReadCount,
+  contractAddOneCount,
+  contractReadCount,
+  contractAddAnyCount,
+  contractReadCount,
 ];
 
 const extra = getExtra(contracts);
@@ -134,10 +134,10 @@ const transactionInput = {
 
 const client = MVMApi(MVMApiURI);
 const pay = async () => {
-   // extra 长度超过 200 时，免费处理，每个 ip 24 小时内可响应 32 次
-   // extra 长度不超过 200 时，不作限制
-   const res = await client.payments(transactionInput);
-   console.log(`mixin://codes/${res.code_id}`);
+  // extra 长度超过 200 时，免费处理，每个 ip 24 小时内可响应 32 次
+  // extra 长度不超过 200 时，不作限制
+  const res = await client.payments(transactionInput);
+  console.log(`mixin://codes/${res.code_id}`);
 }
 pay();
 ```
@@ -159,43 +159,43 @@ const mvmClient = MVMApi(MVMApiURI);
 const main = async () => {
   // 上一步得到的过长 extra
   const key = keccak256(extra);
-   // 每个 IP 24 小时内限制访问 32 次
-   const { error } = await mvmClient.writeValue(key, extra, MVMMainnet.Storage.Contract);
-   if (error) throw new Error();
+  // 每个 IP 24 小时内限制访问 32 次
+  const { error } = await mvmClient.writeValue(key, extra, MVMMainnet.Storage.Contract);
+  if (error) throw new Error();
 
-   // 写入 Storage 合约后生成新的 extra
-   const storageExtra = getExtraWithStorageKey(key);
-   // 构造支付请求参数
-   const transactionInput = {
-     asset_id: 'c94ac88f-4671-3976-b60a-09064f1811e8', // XIN
-     amount: '0.00000001',
-     trace_id: uuid(),
-     memo: encodeMemo(storageExtra, MVMMainnet.Registry.PID),
-     opponent_multisig: {
-       receivers: MVMMainnet.MVMMembers,
-       threshold: MVMMainnet.MVMThreshold,
-     },
-   };
+  // 写入 Storage 合约后生成新的 extra
+  const storageExtra = getExtraWithStorageKey(key);
+  // 构造支付请求参数
+  const transactionInput = {
+    asset_id: 'c94ac88f-4671-3976-b60a-09064f1811e8', // XIN
+    amount: '0.00000001',
+    trace_id: uuid(),
+    memo: encodeMemo(storageExtra, MVMMainnet.Registry.PID),
+    opponent_multisig: {
+      receivers: MVMMainnet.MVMMembers,
+      threshold: MVMMainnet.MVMThreshold,
+    },
+  };
 
-   // 选择一种方式支付
-   // 1 通过 sdk post /payments
-   const res1 = await mixinClient.payment.request(transactionInput);
-   // 通过下面的支付链接支付
-   console.log(`mixin://codes/${res1.code_id}`);
+  // 选择一种方式支付
+  // 1 通过 sdk post /payments
+  const res1 = await mixinClient.payment.request(transactionInput);
+  // 通过下面的支付链接支付
+  console.log(`mixin://codes/${res1.code_id}`);
 
-   // 2 通过 mvmapi post /payments
-   // 新的 extra 长度在允许范围内，此时该 api 没有访问限制
-   const res2 = await mvmClient.payments(transactionInput);
-   // 通过下面的支付链接支付
-   console.log(`mixin://codes/${res2.code_id}`);
+  // 2 通过 mvmapi post /payments
+  // 新的 extra 长度在允许范围内，此时该 api 没有访问限制
+  const res2 = await mvmClient.payments(transactionInput);
+  // 通过下面的支付链接支付
+  console.log(`mixin://codes/${res2.code_id}`);
 
-   // 3 通过 sdk post /transactions
-   // keystore 对应的账户中需要有余额支付
-   const res3 = await mixinClient.transfer.toAddress(
-     keystore.pin,
-     transactionInput
-   );
-   console.log(res3);
+  // 3 通过 sdk post /transactions
+  // keystore 对应的账户中需要有余额支付
+  const res3 = await mixinClient.transfer.toAddress(
+    keystore.pin,
+    transactionInput
+  );
+  console.log(res3);
 };
 
 main();
