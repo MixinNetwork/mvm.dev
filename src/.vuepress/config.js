@@ -256,6 +256,10 @@ module.exports = {
                   path: "/zh/api/intro"
                 },
                 {
+                  title: "免费写入 Storage",
+                  path: "/zh/api/values"
+                },
+                {
                   title: "获取支付链接",
                   path: "/zh/api/payment"
                 },
