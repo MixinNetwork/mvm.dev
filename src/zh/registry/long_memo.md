@@ -114,17 +114,18 @@ console.log(extra);
 
 MVMApi 可以免费帮助写入 Storage 合约，不过每个请求 IP 有 24 小时内 32 次的限制，若 `extra` 不超过 200 则不作限制。
 
-代码示例：
+js sdk 代码示例：
 
 ```javascript
-import { MVMApi, MVMApiURI } from '@mixin.dev/mixin-node-sdk';
+import { MVMApi, MVMApiURI, encodeMemo, MVMMainnet } from '@mixin.dev/mixin-node-sdk';
+import { v4 as uuid } from 'uuid';
 
-// 构造 post /payments 的请求参数
+// 构造支付请求参数
 const transactionInput = {
   asset_id: 'c94ac88f-4671-3976-b60a-09064f1811e8', // XIN
   amount: '0.00000001',
   trace_id: uuid(),
-  memo: extra,
+  memo: encodeMemo(extra, MVMMainnet.Registry.PID),
   opponent_multisig: {
     receivers: MVMMainnet.MVMMembers,
     threshold: MVMMainnet.MVMThreshold,
@@ -141,3 +142,61 @@ const pay = async () => {
 pay();
 ```
 
+开发者也可以通过 MVMApi 的 `post /values` API，将过长的 extra 免费写入 Storage 合约。该接口同样有访问次数限制。
+
+代码示例：
+
+```javascript
+import { MixinApi, MVMApi, MVMApiURI, MVMMainnet, getExtraWithStorageKey, encodeMemo } from '@mixin.dev/mixin-node-sdk';
+import { v4 as uuid } from 'uuid';
+import { keccak256 } from 'ethers/lib/utils';
+import keystore from './keystore.json';
+
+keystore.user_id = keystore.client_id;
+const mixinClient = MixinApi({ keystore });
+const mvmClient = MVMApi(MVMApiURI);
+
+const main = async () => {
+  // 上一步得到的过长 extra
+  const key = keccak256(extra);
+   // 每个 IP 24 小时内限制访问 32 次
+   const { error } = await mvmClient.writeValue(key, extra, MVMMainnet.Storage.Contract);
+   if (error) throw new Error();
+
+   // 写入 Storage 合约后生成新的 extra
+   const storageExtra = getExtraWithStorageKey(key);
+   // 构造支付请求参数
+   const transactionInput = {
+     asset_id: 'c94ac88f-4671-3976-b60a-09064f1811e8', // XIN
+     amount: '0.00000001',
+     trace_id: uuid(),
+     memo: encodeMemo(storageExtra, MVMMainnet.Registry.PID),
+     opponent_multisig: {
+       receivers: MVMMainnet.MVMMembers,
+       threshold: MVMMainnet.MVMThreshold,
+     },
+   };
+
+   // 选择一种方式支付
+   // 1 通过 sdk post /payments
+   const res1 = await mixinClient.payment.request(transactionInput);
+   // 通过下面的支付链接支付
+   console.log(`mixin://codes/${res1.code_id}`);
+
+   // 2 通过 mvmapi post /payments
+   // 新的 extra 长度在允许范围内，此时该 api 没有访问限制
+   const res2 = await mvmClient.payments(transactionInput);
+   // 通过下面的支付链接支付
+   console.log(`mixin://codes/${res2.code_id}`);
+
+   // 3 通过 sdk post /transactions
+   // keystore 对应的账户中需要有余额支付
+   const res3 = await mixinClient.transfer.toAddress(
+     keystore.pin,
+     transactionInput
+   );
+   console.log(res3);
+};
+
+main();
+```
