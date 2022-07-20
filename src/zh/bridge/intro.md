@@ -34,11 +34,11 @@ Bridge 是 MetaMask 跟其它链的一个跨链桥，也就是像 BTC, ETH, TRON
   }
 ```
 
-在 Bridge 当中，这里是指 Mixin Network user 对应的 MVM User Address. 
+在 Bridge 当中，这里是指 Mixin Network user 对应的 MVM User Address.
 
 这里有详细的解释, [Mixin user 跟 MVM user address 如何对应](/zh/resources/qa.html)
 
-另外我们提供了 js SDK 来获取用户对应地址：<https://github.com/MixinNetwork/bot-api-nodejs-client/blob/main/src/mvm/registry.ts#L51> 
+另外我们提供了 js SDK 来获取用户对应地址：<https://github.com/MixinNetwork/bot-api-nodejs-client/blob/main/src/mvm/registry.ts#L51>
 
 ## pass 方法
 

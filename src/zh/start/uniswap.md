@@ -480,7 +480,8 @@ import {
   MixinApi, 
   Registry, 
   MVMMainnet, 
-  getExtra 
+  getExtra,
+  encodeMemo
 } from '@mixin.dev/mixin-node-sdk';
 import { v4 as uuid } from 'uuid';
 import keystore from './keystore.json';
@@ -514,7 +515,7 @@ async function addLiquidity() {
     // 唯一标识
     trace_id: uuid(),
     // 备注
-    memo: extra,
+    memo: encodeMemo(extra, MVMMainnet.Registry.Contract),
     // 多签
     opponent_multisig: {
       receivers: MVMMainnet.MVMMembers,

@@ -165,7 +165,8 @@ client.payment.request(params).then((payment) => {
 import { 
   MixinApi,
   Registry, 
-  MVMMainnet 
+  MVMMainnet,
+  encodeMemo
 } from '@mixin.dev/mixin-node-sdk';
 import { v4 as uuid } from 'uuid';
 import keystore from './keystore.json';
@@ -204,7 +205,7 @@ async function main() {
     // 唯一标识
     trace_id: uuid(),
     // 备注
-    memo: extra,
+    memo: encodeMemo(extra, MVMMainnet.Registry.Contract),
     // 多签
     opponent_multisig: {
       receivers: MVMMainnet.MVMMembers,

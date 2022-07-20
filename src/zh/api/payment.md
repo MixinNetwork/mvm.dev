@@ -158,7 +158,7 @@ const contract = {
   types: ["address", "uint256"],
   values: ["0x001fB10b1bFede8505AB138c2Bb2E239CB3b50dC", "100000000"]
 }
-const extra = getExtra(contractAddress, methodName, types, values);
+const extra = getExtra([contract]);
 
 // step 2: 发送请求
 const params = {
