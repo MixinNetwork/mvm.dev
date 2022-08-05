@@ -1,6 +1,6 @@
 ### API
 
-`POST /payments`
+`POST https://api.mvm.dev/payments`
 
 ### 介绍
   当使用 sdk 请求 POST /payments api 时，需要 keystore 对消息签名才可以访问，却有可能暴露 keystore。

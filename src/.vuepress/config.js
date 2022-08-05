@@ -230,11 +230,11 @@ module.exports = {
                   path: "/zh/bridge/api"
                 },
                 {
-                  title: "多链充值",
+                  title: "跨链充值",
                   path: "/zh/bridge/deposit"
                 },
                 {
-                  title: "多链提现",
+                  title: "跨链提现",
                   path: "/zh/bridge/withdrawal"
                 },
               ]
@@ -256,7 +256,7 @@ module.exports = {
                   path: "/zh/api/intro"
                 },
                 {
-                  title: "免费写入 Storage",
+                  title: "使用 Storage",
                   path: "/zh/api/values"
                 },
                 {

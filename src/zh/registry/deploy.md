@@ -12,8 +12,6 @@
 
 2. Metamask 如何添加 [Quorum 网](/zh/quorum/join)
 
-3. 在 [https://catkin.pando.im/faucet/mvm](https://catkin.pando.im/faucet/mvm) 领取 Quorum 正式网代币
-
 ## 准备合约
 
 以一个简单的 Counter 合约为例：

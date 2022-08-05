@@ -4,8 +4,7 @@
 
 ## 介绍
 [Registry](#开源代码) 是 MVM 代理合约，原有的智能合约不需要做修改，在 [Quorum](/zh/quorum/join) 上部署后，
-可以直接通过 Registry 来执行。在 [MVM 正式网](/zh/quorum/join.html####正式网) 中，[Registry](#开源代码) 还支持批量执行多个合约
-（[MVM 测试网](/zh/quorum/join.html####测试网) 暂不支持）。
+可以直接通过 Registry 来执行。
 
 ### function mixin 
 

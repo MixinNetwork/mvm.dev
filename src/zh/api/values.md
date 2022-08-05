@@ -1,6 +1,6 @@
 ### API
 
-`POST /values`
+`POST https://api.mvm.dev/values`
 
 ### 介绍
 当开发者通过 Registry 调用合约时，有可能遇到 `memo has too many characters, maximum is 200` 错误。

@@ -27,13 +27,12 @@ PID 是 process id 的缩写，MVM 将 Mixin 中机器人的 client_id (或者�
 ## Registry
 
 [Registry](https://github.com/MixinNetwork/trusted-group/blob/master/mvm/quorum/registry/contracts/Registry.sol) 
-合约是 MVM 的代理合约，用来帮助 EVM 合约开发者迁移合约。我们将在下一章详细介绍 Registry 合约。
+合约是 MVM 的代理合约，用来帮助 EVM 合约开发者迁移合约。是 MVM 最核心的内容，我们将在下一章详细介绍 Registry 合约。
 
 ## Bridge 
 [Bridge](https://github.com/MixinNetwork/trusted-group/blob/master/mvm/quorum/bridge/contracts/Bridge.sol) 
-合约是 MVM 的跨链桥，用户可以通过该合约进行多链充值和多链转账。
+合约是 MVM 的跨链桥，用户可以通过该合约进行跨链充值和跨链转账。
 
 ## Storage
 [Storage](https://github.com/MixinNetwork/trusted-group/blob/master/mvm/quorum/registry/contracts/Storage.sol) 
-合约可以读写键值对，解决合约调用过程中会遇到的一些问题。
-
+合约可以读写键值对，MVM 是基于 MTG 来实现的，多签转帐的备注 (memo) 长度有限，storage 主要是用来存放调用数据

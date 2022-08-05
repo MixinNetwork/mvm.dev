@@ -13,7 +13,12 @@
 `Extra` 是执行合约时最重要的值，它以要执行的合约数量的十六进制开头，之后是每个合约调用的编码。
 上一节我们部署了 Counter 合约，合约地址为 `0x2E8f70631208A2EcFC6FA47Baf3Fde649963baC7`。
 
-如果我们想多次调用该合约，如：1 给计数器加 2；2 读取计数器增加后的值，此时将会调用两次合约，即 `extra` 要以 `0002` 开头。
+如果我们想多次调用该合约，如：
+
+1. 给计数器加 2
+2. 读取计数器增加后的值
+
+此时将会调用两次合约，即 `extra` 要以 `0002` 开头。
 
 之后是每个合约调用的编码，由 合约地址 + （转化成 byte 后的）合约输入长度的十六进制 + 合约输入 构成，合约输入由 函数签名的 ABI 编码的前 8 位 + 函数输入的 ABI 编码 构成（[代码示例](https://github.com/MixinNetwork/mvm-contracts/blob/main/contracts/mixin/User.sol#L52)）：
 1. 给计数器加 2 这一步需要执行合约中的 `function addAny(uint256 num)` 函数， 函数签名 `addAny(uint256)` 的 ABI 编码前 8 位为 `77ad0aab`
@@ -70,7 +75,7 @@ func (o *Operation) Encode() []byte {
 
 1. Purpose: 这笔转帐的用处，`11` 发布合约，`1` 执行合约, 大部分情况下，开发者只需要关注 `1` 就行。
 2. Process: PID 大部分情况下是 registry 的 PID。
-3. Platform: `quorum` 或 `eos`, 目前只支持 `quorum`。
+3. Platform: `quorum`
 4. Address: 只有 发布合约的时候需要用到，大部分开发者不需要。
 5. Extra: 执行合约最重要的值
 
