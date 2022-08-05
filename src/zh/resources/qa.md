@@ -9,6 +9,8 @@ mapping(address => bytes) public users;
 mapping(uint => address) public contracts;
 ```
 
+registry 的合约代码：<https://github.com/MixinNetwork/trusted-group/tree/master/mvm/quorum/contracts>
+
 ## 如何获取到 Mixin Asset 跟 MVM 资产的对应关系?
 
 同样在 registry.sol 里有两个公开的 map

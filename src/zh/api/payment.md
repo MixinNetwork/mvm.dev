@@ -1,6 +1,6 @@
 ### API
 
-`POST /payments`
+`POST https://api.mvm.dev/payments`
 
 ### 介绍
   当使用 sdk 请求 POST /payments api 时，需要 keystore 对消息签名才可以访问，却有可能暴露 keystore。
@@ -158,7 +158,7 @@ const contract = {
   types: ["address", "uint256"],
   values: ["0x001fB10b1bFede8505AB138c2Bb2E239CB3b50dC", "100000000"]
 }
-const extra = getExtra(contractAddress, methodName, types, values);
+const extra = getExtra([contract]);
 
 // step 2: 发送请求
 const params = {

@@ -181,100 +181,102 @@ module.exports = {
                   directory: false,
                   path: '/zh/reference/core'
                 },
-                {
-                  title: 'Refund 合约',
-                  directory: false,
-                  path: '/zh/reference/refund'
-                },
-                {
-                  title: 'Registry 合约',
-                  directory: false,
-                  path: '/zh/reference/registry'
-                },
-                {
-                  title: 'Storage 合约',
-                  directory: false,
-                  path: '/zh/reference/storage'
-                }
               ]
             },
             {
-              title: '开发及部署',
+              title: 'Registry 合约',
               children: [
                 {
-                  title: '部署 uniswap',
+                  title: '原理',
                   directory: false,
-                  path: '/zh/guide/uniswap'
+                  path: '/zh/registry/registry'
                 },
                 {
-                  title: '调用合约',
+                  title: '部署合约',
                   directory: false,
-                  path: '/zh/guide/usage'
+                  path: '/zh/registry/deploy'
                 },
                 {
                   title: 'MVM 编码',
                   directory: false,
-                  path: '/zh/guide/encoding'
+                  path: '/zh/registry/encoding'
                 },
+                {
+                  title: '调用合约',
+                  directory: false,
+                  path: '/zh/registry/call'
+                },
+                {
+                  title: 'memo 过长错误',
+                  directory: false,
+                  path: '/zh/registry/long_memo'
+                },
+                {
+                  title: '错误定位',
+                  directory: false,
+                  path: '/zh/registry/debug'
+                }
               ]
             },
             {
               title: "Bridge 合约",
               children: [
                 {
-                  title: "简介",
+                  title: "原理",
                   path: "/zh/bridge/intro"
                 },
                 {
-                  title: "多链充值",
+                  title: "Bridge API 服务",
+                  path: "/zh/bridge/api"
+                },
+                {
+                  title: "跨链充值",
                   path: "/zh/bridge/deposit"
                 },
                 {
-                  title: "多链提现",
+                  title: "跨链提现",
                   path: "/zh/bridge/withdrawal"
                 },
               ]
             },
             {
-              title: 'NodeJS 教程',
+              title: 'Storage 合约',
               children: [
                 {
-                  title: '快速开始',
-                  path: '/zh/start/guide',
+                  title: '原理与使用',
+                  path: '/zh/storage/intro',
                 },
-                {
-                  title: '计数器合约',
-                  path: '/zh/start/counter'
-                },
-                {
-                  title: '转账合约',
-                  path: '/zh/start/transfer'
-                },
-                {
-                  title: '错误定位',
-                  path: '/zh/start/trycatch'
-                },
-                {
-                  title: 'uniswap迁移',
-                  path: '/zh/start/uniswap'
-                }
               ]
             },
             {
-              title: "API 服务",
+              title: "MVM API 服务",
               children: [
                 {
                   title: "简介",
                   path: "/zh/api/intro"
                 },
                 {
-                  title: "合约调用",
+                  title: "使用 Storage",
+                  path: "/zh/api/values"
+                },
+                {
+                  title: "获取支付链接",
                   path: "/zh/api/payment"
                 },
                 {
-                  title: "mixin 和 mvm 用户及资产映射",
+                  title: "获取用户、资产与合约的映射",
                   path: "/zh/api/map"
                 }
+              ]
+            },
+            {
+              title: 'RPC 接口',
+              children: [
+                {
+                  title: 'MVM RPC 接口',
+                  directory: false,
+                  path: '/zh/rpc/intro'
+                },
               ]
             },
             {
@@ -298,16 +300,6 @@ module.exports = {
               ]
             },
             {
-              title: 'RPC 接口',
-              children: [
-                {
-                  title: 'MVM RPC 接口',
-                  directory: false,
-                  path: '/zh/rpc/intro'
-                },
-              ]
-            },
-            {
               title: '资源',
               children: [
                 {
@@ -321,6 +313,26 @@ module.exports = {
                 },
               ]
             },
+            // {
+            //   title: '开发及部署',
+            //   children: [
+            //     {
+            //       title: '部署 uniswap',
+            //       directory: false,
+            //       path: '/zh/guide/uniswap'
+            //     },
+            //     {
+            //       title: '调用合约',
+            //       directory: false,
+            //       path: '/zh/guide/usage'
+            //     },
+            //     {
+            //       title: 'MVM 编码',
+            //       directory: false,
+            //       path: '/zh/guide/encoding'
+            //     },
+            //   ]
+            // },
           ]
         }
       },
