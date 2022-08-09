@@ -45,7 +45,7 @@
 
    1：Get `code_id` by POST /payments，and pay in Mixin Messenger through `https://mixin.one/codes/:code_id`
    ::: tip
-   No restriction for this [POST /payments api]<https://developers.mixin.one/zh-CN/docs/api/transfer/payment>
+   No restriction for [post /payments](<https://developers.mixin.one/zh-CN/docs/api/transfer/payment>) api
    :::
 
    2：POST /transactions, signature needed。
@@ -60,7 +60,7 @@ Developers can call contract function after finishing the first 5 steps, and the
 
 ## Official js sdk example
 
-We will show how to call Counter Contract functions using [Official js sdk](https://github.com/MixinNetwork/bot-api-nodejs-client)
+We will show how to call Counter Contract functions using [official js sdk](https://github.com/MixinNetwork/bot-api-nodejs-client)
 
 ```javascript
 import { 
@@ -132,8 +132,8 @@ const payment = async () => {
 }
 ```
 
-::: tip 注意
-There's length limitation for memo. When the length of memo exceed 200，an error will be returned。
+::: tip Notice
+There's length limitation for memo. When the length of memo exceed 200，an error will be returned.
 We will demonstrate how to deal with the memo that has invalid length.
 :::
 
@@ -141,7 +141,7 @@ You can learn the encoding of event from [here](/registry/encoding.html#Encode-F
 
 ## Map MVM contract to Messenger user and asset
 
-You can obtain the corresponding info from the other by these three public state variable:
+You can obtain the map between contract and Mixin user and asset by these three public state variable:
 
 ```solidity
 mapping(address => bytes) public users;
@@ -153,7 +153,7 @@ mapping(uint => address) public contracts;
 
 Registry Contract saves the map between Mixin user and [Quorum](/quorum/join) user account, 
 the map between mixin asset and [Quorum](/quorum/join) asset contract,
-contracts calling and return the results of contracts。EVM smart contract can directly migrate without any modification.
+contracts calling and return the results of contracts. EVM smart contract can directly migrate without any modification.
 
 However, since the length restriction for memo, `extra` need to be shortened when the length of exceeds 200.
 We will introduce how to solve this problem by Storage contract.

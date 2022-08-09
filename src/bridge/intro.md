@@ -1,24 +1,26 @@
 # MVM bridge 简介
 
-Bridge 是 MetaMask 跟其它链的一个跨链桥，也就是像 BTC, ETH, TRON, SOL, LTC 等等，只要是 Mixin 支持的所有主链都可以直接转入 MetaMask，来使用智能合约。这里的 MetaMask 可以是所有的 ETH 钱包, 比如 imtoken 等，这里我们只是以 MetaMask 为例。
+Bridge is the Cross-Chain Bridge, assets from any chain Mixin supports can be transfer to Mixin to use smart contract, like BTC, ETH, TRON, SOL, LTC .etc
+You can use any ETH wallet here, for example, imtoken and MetaMask
 
-整个的实现用到的概念相对比较多，需要一些时间去理解，大部分开发者其实只需要关注如何使用即可，所以接下来的内容，我们会以如何使用 Bridge 来把资产转到 MVM 为主，具体的实现可以看最后的开源代码。
+Most developers only need to focus on how to use Bridge, since the implementation of it involves many concepts and it takes time to understand them.
+We will demonstrate how to transfer asset to MVM next.
 
-## 基础概念
+## Basic Concepts
 
-* Mixin Asset 是指的 Mixin 中可充值提现的原生资产, 例如 [BTC](https://mixin.one/snapshots/c6d0c728-2624-429b-8e0d-d9d19b6592fa)
-* MVM Asset Address 是指的 BTC 在 MVM 中所对应的地址，有点类似于 WBTC 的概念
-* MVM User Address 是指 Mixin user 在 MVM 中的合约地址，类似于普通的帐号
-* MetaMask Address 是指的传统的 ETH 的帐号地址, 跟上面的 MVM User Address 其实是一类都是 MVM 地址
+* Mixin Asset means the native asset in Mixin, which can deposit or withdraw, like [BTC](https://mixin.one/snapshots/c6d0c728-2624-429b-8e0d-d9d19b6592fa)
+* MVM Asset Address means the asset contract address in MVM，similar to the concept of WBTC
+* MVM User Address means the user contract address of Mixin user in MVM
+* MetaMask Address means the traditional address in chain like ETH, and it's the same as MVM User Address
 
-了解了这几个名词概念以后我们对理解接下来的操作会更容易一些
+It is easier for us to understand the next practice after having brief about these concepts
 
-## Bridge 主要实现的功能
+## Main Functions
 
-* `bind` 把一个 MVM User Address 跟 MetaMask Address 绑定
-* `pass` 把与 MetaMask Address 绑定的 MVM 地址 (msg.sender) 里的资产转到 MetaMask Address
-* `vault` 把 erc20 XIN 转入到 Bridge 合约
-* bridge 可以接收到原生的 XIN 并给用户转回 erc20 的 XIN
+* `bind`: bind a MVM User Address to a MetaMask Address
+* `pass`: transfer asset from MVM User Address (msg.sender) bound with MetaMask Address to MetaMask Address
+* `vault` Transfer erc20 XIN to Bridge Contract
+* bridge 可以接收到原生的 ETH 并给用户转回 erc20 的 XIN
 
 接下来我们详细的解读一下每个的合约方法
 

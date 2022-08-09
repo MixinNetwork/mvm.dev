@@ -97,6 +97,7 @@ module.exports = {
                 },
               ]
             },
+
             {
               title: 'Registry Contract',
               children: [
@@ -133,63 +134,22 @@ module.exports = {
               ]
             },
             {
-              title: "Bridge Contract",
+              title: 'Guides',
               children: [
                 {
-                  title: "Principle",
-                  path: "/bridge/intro"
-                },
-                {
-                  title: "Bridge API",
-                  path: "/bridge/api"
-                },
-                {
-                  title: "Cross-Chain Deposit",
-                  path: "/bridge/deposit"
-                },
-                {
-                  title: "Cross-Chain Withdrawal",
-                  path: "/bridge/withdrawal"
-                },
-              ]
-            },
-            {
-              title: 'Storage Contract',
-              children: [
-                {
-                  title: 'Principle & Usage',
-                  path: '/storage/intro',
-                },
-              ]
-            },
-            {
-              title: "MVM API",
-              children: [
-                {
-                  title: "Introduction",
-                  path: "/api/intro"
-                },
-                {
-                  title: "Call Storage",
-                  path: "/api/values"
-                },
-                {
-                  title: "Get Payment Url",
-                  path: "/api/payment"
-                },
-                {
-                  title: "Get Mapping Between Contract and User | asset",
-                  path: "/api/map"
-                }
-              ]
-            },
-            {
-              title: 'RPC Interface',
-              children: [
-                {
-                  title: 'MVM RPC Interface',
+                  title: 'Deploy uniswap',
                   directory: false,
-                  path: '/rpc/intro'
+                  path: '/guide/uniswap'
+                },
+                {
+                  title: 'Usage',
+                  directory: false,
+                  path: '/guide/usage'
+                },
+                {
+                  title: 'Encoding',
+                  directory: false,
+                  path: '/guide/encoding'
                 },
               ]
             },

@@ -5,8 +5,9 @@
 You will find `ProcessCalled` event in a transaction log if `memo` is encoded correctly.
 That is to say that it is probably the cause of `memo` if contract execution failed and there's no `ProcessCalled` event in the log.
 
-The contract execution successes when `result` is `true` in `ProcessCalled` event, and `output` is the result of contract；
-The contract execution fails when `result` is `false` in `ProcessCalled` event, and `output` is error, which you parse through `xxd`；
+The contract execution successes when `result` is `true` in `ProcessCalled` event, and `output` is the result of contract.
+
+The contract execution fails when `result` is `false` in `ProcessCalled` event, and `output` is error, which you parse through `xxd`.
 
 example：
 
@@ -72,7 +73,7 @@ The steps are:
 3. call addLiquidity function of `router` contract.
 4. return the extra `token` to user.
 
-This function fails frequently but not fails every time.
+This function fails frequently but success sometimes.
 We can debug following these steps:
 1. set public state
 2. add `try` `catch` when calling other function

@@ -1,6 +1,6 @@
 # MVM Encoding
 
-Previously we talked about how to deploy a contract, before continuing to call contract，
+Previously we talked about how to deploy a contract, before continuing to call contract,
 some specifications should be known to transmit data. Hereby we introduce the data encoding part. 
 
 There are three parts in total:
@@ -19,7 +19,7 @@ it starts with the hexadecimal number of contracts to be called，and followed b
 Each contract encode consists of contract address, the hexadecimal length of contract input and the contract input.
 
 The contract input is formed by the first 8 ABI encoding of function signature
-and the ABI encoding of function input（[code example](https://github.com/MixinNetwork/mvm-contracts/blob/main/contracts/mixin/User.sol#L52)）：
+and the ABI encoding of function input, [code example](https://github.com/MixinNetwork/mvm-contracts/blob/main/contracts/mixin/User.sol#L52).
 
 Here, take the previously deployed Counter Contract for example, its address is `0x2E8f70631208A2EcFC6FA47Baf3Fde649963baC7`.
 
@@ -88,7 +88,7 @@ func (o *Operation) Encode() []byte {
 }
 ```
 
-1. Purpose represents the usage of transfer: `11` for publishing contract，`1` for calling contract, developers only use `1` here。
+1. Purpose represents the usage of transfer: `11` for publishing contract, `1` for calling contract, developers only use `1` here。
 2. Process: most circumstances the is PID of Registry。
 3. Platform: `quorum`
 4. Address: only needed when publishing contract
@@ -245,5 +245,5 @@ open source code：<https://github.com/MixinNetwork/trusted-group/blob/07473dac2
 
 ## 总结
 
-MVM accomplish the most work for encoding，developers only need to focus on the generation of `memo`. 
+MVM accomplish the most work for encoding, developers only need to focus on the generation of `memo`. 
 We will introduce how to call contract function in next chapter.

@@ -4,8 +4,8 @@ We will talk about the principle of Registry Contract in this chapter.
 Besides, we will show you how to deploy a contract in MVM and call it using Registry Contract.
 Finally, some problems you may face in practice will be introduced.
 
-## 介绍
-The [Registry](#Source Code) is the proxy contract in MVM. 
+## Introduction
+The [Registry](#source-code) is the proxy contract in MVM. 
 The original smart contract can be executed directly through Registry after being deployed on [Quorum](/quorum/join) without any modification.
 
 ### function mixin 
@@ -77,7 +77,7 @@ function mixin(bytes memory raw) public returns (bool) {
 ### event ProcessCalled
 
 [ProcessCalled event](https://github.com/MixinNetwork/mvm-contracts/blob/main/contracts/mixin/User.sol#L11) 
-reveals the result of the contract called by Registry, each executed contract has a related `ProcessCalled` event。
+reveals the result of the contract called by Registry, each executed contract has a related `ProcessCalled` event.
 `process` is the address of the contract, `input` is the function signature and encoded input parameters,
 `result` tells whether the function executed successfully, `output` is the result.
 
@@ -91,11 +91,11 @@ event ProcessCalled(
 );
 ```
 
-## Open Source Code
+## Source Code
 
 registry.sol open source address: <https://github.com/MixinNetwork/trusted-group/tree/master/mvm/quorum/contracts>
 
 ## Summary
 
 We introduced the principle of Registry Contract in this article. We will show you how to deploy a contract in [Quorum](/quorum/join),
-and how to call a deployed contract by Registry Contract in the following chapters。
+and how to call a deployed contract by Registry Contract in the following chapters.

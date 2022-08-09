@@ -12,7 +12,7 @@ Storage Contract is detailed in [this chapter](/reference/storage)。
 
 ## Handle Error
 
-Example：call 5 contract functions in turn，the length of `extra` will be 330。
+Example：call five contract functions in turn，the length of `extra` would be 330.
 We show how to shorten the extra using [official js sdk](https://github.com/MixinNetwork/bot-api-nodejs-client) here。
 
 ```javascript
@@ -48,7 +48,7 @@ console.log(extra);
 
 ### Handle on your own
 
-1. Call `write` function to save `extra` in public variable `values` of [Storage](https://github.com/MixinNetwork/trusted-group/blob/master/mvm/quorum/contracts/storage.sol) 中。
+1. Call `write` function to save `extra` in public variable `values` of [Storage](https://github.com/MixinNetwork/trusted-group/blob/master/mvm/quorum/contracts/storage.sol).
    It costs gas to write to a contract, make sure you have enough balance in you wallet.
 
    [official js sdk](https://github.com/MixinNetwork/bot-api-nodejs-client) example：
@@ -118,7 +118,7 @@ console.log(extra);
    
 ### Handle with MVMApi
 
-MVMApi can help you with gas-freely writing your extra to Storage contract，
+MVMApi can help you with gas-freely writing your extra to Storage contract,
 and there's a limitation that you can access 32 times in 24h each ip.
 It doesn't count if the length of `extra` is smaller than 200.
 

@@ -36,10 +36,10 @@ is a proxy contract for MVM to help EVM contract developers migrate contracts.
 
 ## Bridge
 [Bridge](https://github.com/MixinNetwork/trusted-group/blob/master/mvm/quorum/bridge/contracts/Bridge.sol)
-Contract is the Cross-Chain bridge，you can deposit and withdraw assets through it。
+Contract is the Cross-Chain bridge, you can deposit and withdraw assets through it.
 
 ## Storage
 [Storage](https://github.com/MixinNetwork/trusted-group/blob/master/mvm/quorum/registry/contracts/Storage.sol)
 Contract is used to write and read key-value pair.
 MVM is based on MTG and memo has length limitation in multi signature transfer. 
-You can use Storage Contract to save memo that its length exceeds 200.
+You can use Storage Contract to save memo when then length of it exceeds 200.
