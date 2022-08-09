@@ -1,32 +1,30 @@
-# 如何使用 Registry 合约
+# The Usage of Registry Contract
 
-## 步骤
+## Steps
 
-1. 开发者部署 EVM 智能合约，部署完成后拿到合约地址。
+1. Deploy the smart contract and note down the contract address。
 
-2. 开发者根据合约地址和要调用的合约函数及参数，生成 `extra`，详见 [上一节](/zh/encoding)
+2. Generate `extra` according to contract address and parameters, details in [previous chapter](/zh/encoding)
 
-3. 生成 `memo`，`memo` 为 `Operation` 的 base64 编码
+3. Generate `memo`，which is the base63 encode of `Operation`
 
-   `Operation` 结构
+   `Operation`:
    ```golang
    op := &encoding.Operation{
-    Purpose: encoding.OperationPurposeGroupEvent, // 固定值 1
-    Process: c.String("process"), // Registry 合约的机器人的 client_id，主网为 bd67087276ce3263b9333aa337e212a4
-    Extra: extra, // 合约执行的内容
+    Purpose: encoding.OperationPurposeGroupEvent, // fixed value: 1
+    Process: c.String("process"), // PID of Registry Contract: bd67087276ce3263b9333aa337e212a4 for mainnet
+    Extra: extra, // information about contract calling
    }
    ```
    
-4. 构造交易参数，例：
+4. Build Generate payment request, for example：
    ```json
    {
-     // XIN 的 asset_id
-     "asset_id": "965e5c6e-434c-3fa9-b780-c50f43cd955c", 
-     // 支付的金额
+     // asset_id of XIN
+     "asset_id": "965e5c6e-434c-3fa9-b780-c50f43cd955c",
      "amount": "0.00000001",
-     // uuid
+     // random uuid
      "trace_id": "8c120f19-752a-402a-a47d-ca626f71938d", 
-     // 上一步生成的 memo
      "memo": "AAG9Zwhyds4yY7kzOqM34hKkAAAAAAAcAAGq0XNgkKEmaHwxjLZ7Npox68_BmgAEBmYavQ",
      "opponent_multisig": {
        "threshold": 5,
@@ -43,26 +41,26 @@
    }
    ```
    
-5. 用户获取支付参数后，有两种方式进行支付：
+5. Two ways to pay the transaction：
 
-   一：通过 POST /payments 返回的 code_id，生成支付链接 `https://mixin.one/codes/:code_id`，然后在 Mixin Messenger 中支付。
+   1：Get `code_id` by POST /payments，and pay in Mixin Messenger through `https://mixin.one/codes/:code_id`
    ::: tip
-   这个支付地址的生成没有限制，任何人只需知道合约地址都可以生成，相关文档：<https://developers.mixin.one/zh-CN/docs/api/transfer/payment>
+   No restriction for this [POST /payments api]<https://developers.mixin.one/zh-CN/docs/api/transfer/payment>
    :::
 
-   二：通过 POST /transactions 进行支付，该消息需要签名。
+   2：POST /transactions, signature needed。
 
-8. MVM 收到这个 output 后，解析 memo 成 Event，[代码示例](https://github.com/MixinNetwork/trusted-group/blob/cf3fae2ecacf95e3db7e21c10b7729ab9c11474b/mvm/eos/utils.go#L46)
-9. MVM 把 Event 按格式编码之后，发送给 [Registry](#开源代码) 合约
-10. [Registry](#开源代码) 执行 `function mixin`，并调用相关合约
-11. 执行完成后，通过 `event MixinTransaction(bytes)`  返回给 MVM 相关 Event 信息
-12. MVM 获取到结果后，如果有需要则转帐给用户，不需要则跳过
+6. MVM will parse memo into Event after receives the transaction output，[code](https://github.com/MixinNetwork/trusted-group/blob/cf3fae2ecacf95e3db7e21c10b7729ab9c11474b/mvm/eos/utils.go#L46)
+7. MVM will encode the Event and send to Registry
+8. Registry executes `function mixin` and call the corresponding contracts
+9. Information will be returned to MVM through `event MixinTransaction(bytes)` after contracts calling
+10. MVM will transfer asset to related user if needed after receiving outputs
 
-开发者只需要完成前五步支付，即可调用合约, 剩下的都是 MVM 的执行逻辑。
+Developers can call contract function after finishing the first 5 steps, and the rest steps is accomplished by MVM
 
-## 官方 js sdk 示例
+## Official js sdk example
 
-这里我们用 [官方 js sdk](https://github.com/MixinNetwork/bot-api-nodejs-client) 演示调用 Counter 合约
+We will show how to call Counter Contract functions using [Official js sdk](https://github.com/MixinNetwork/bot-api-nodejs-client)
 
 ```javascript
 import { 
@@ -76,23 +74,23 @@ import {
 import { v4 as uuid } from 'uuid'; 
 import keystore from './keystore.json';
  
-// 合约调用信息
+// information about contract call
 const contract1 = {
-  address: '0x2E8f70631208A2EcFC6FA47Baf3Fde649963baC7', // Counter 合约地址
-  method: 'addAny',   // 调用的函数
-  types: ['uint256'], // 函数参数类型数组
-  values: [2],        // 函数参数数组
+  address: '0x2E8f70631208A2EcFC6FA47Baf3Fde649963baC7', // Counter address
+  method: 'addAny',   // called function
+  types: ['uint256'], // function parameters' type array
+  values: [2],        // function parameters array
 };
 const contract2 = {
-  address: '0x2E8f70631208A2EcFC6FA47Baf3Fde649963baC7', // Counter 合约地址
-  method: 'count',    // 调用的函数
+  address: '0x2E8f70631208A2EcFC6FA47Baf3Fde649963baC7', // Counter address
+  method: 'count',    // called function
 };
 const contracts = [contract1, contract2];
    
-// 1 生成 extra
+// 1 generate extra
 const extra = getExtra(contracts);
    
-// 2 构造生成支付链接的请求参数
+// 2 build request to pay the transaction
 const transactionInput = {
   // CNB asset_id: '965e5c6e-434c-3fa9-b780-c50f43cd955c'
   asset_id: 'c94ac88f-4671-3976-b60a-09064f1811e8', // XIN asset_id
@@ -109,22 +107,23 @@ keystore.user_id = keystore.client_id
 const mixinClient = MixinApi({ keystore })
 
 const payment = async () => {
-  // 3 选择一种方式支付
-  // 3.1 通过 sdk post /payments
-  // 需要 keystore；extra 长度超过 200 时需自行将其写入 storage 合约
+  // 3 choose a way to pay the transaction
+  // 3.1: post /payments to get code_id by mixin api
+  // keystore needed；cannot directly use when your extra length exceeds 200
   const res1 = await mixinClient.payment.request(transactionInput);
-  // 通过下面的支付链接支付
+  // pay throught link
   console.log(`mixin://codes/${res1.code_id}`);
 
-  // 3.2 通过 mvmapi post /payments
-  // MVMApi 可免费自动处理 extra 超长的问题，24 小时内每个 ip 限 32 次
+  // 3.2: post /payments to get code_id by mvm api
+  // automatically handle memo when its length exceeds 200, each ip can access 32 times every 24h
   const mvmClient = MVMApi(MVMApiURI);
   const res2 = await mvmClient.payments(transactionInput);
-  // 通过下面的支付链接支付
+  // pay throught link
   console.log(`mixin://codes/${res2.code_id}`);
 
-  // 3.3 通过 sdk post /transactions
-  // keystore 对应的账户中需要有余额支付；extra 长度超过 200 时需自行将其写入 storage 合约
+  // 3.3: post /transactions
+  // keystore needed and the corresponding bot must have balance to pay；
+  // cannot directly use when your extra length exceeds 200
   const res3 = await mixinClient.transfer.toAddress(
     keystore.pin,
     transactionInput
@@ -134,14 +133,15 @@ const payment = async () => {
 ```
 
 ::: tip 注意
-mtg 对 memo 的长度有限制。当 memo 的长度超过 200 时，请求会报错，无法进行支付。我们将在下一节介绍如何处理 memo/extra。
+There's length limitation for memo. When the length of memo exceed 200，an error will be returned。
+We will demonstrate how to deal with the memo that has invalid length.
 :::
 
-关于 Event 的编码，可以从[这篇文章](/zh/guide/encoding.html#mtg-到-mvm-的编码格式)了解。
+You can learn the encoding of event from [here](/registry/encoding.html#Encode-Format-from-MTG-to-MVM)。
 
-## Messenger 用户、资产跟 MVM 合约中如何对应
+## Map MVM contract to Messenger user and asset
 
-Messenger 用户、资产都需要跟 MVM 里的帐号跟资产对应，对应方式都在以下三个公开的 map 里获取:
+You can obtain the corresponding info from the other by these three public state variable:
 
 ```solidity
 mapping(address => bytes) public users;
@@ -149,8 +149,11 @@ mapping(address => uint128) public assets;
 mapping(uint => address) public contracts;
 ```
 
-## 总结
+## Summary
 
-Registry 合约辅助实现了：Mixin 用户与 [Quorum](/zh/quorum/join) 帐户的映射、mixin 资产与 [Quorum](/zh/quorum/join) 资产的映射、合约调用以及执行结果返回的工作。EVM 合约也可以直接迁移不需要作修改。
+Registry Contract saves the map between Mixin user and [Quorum](/quorum/join) user account, 
+the map between mixin asset and [Quorum](/quorum/join) asset contract,
+contracts calling and return the results of contracts。EVM smart contract can directly migrate without any modification.
 
-但是，由于 mtg 对 extra 的长度有限制，当 extra 的长度超过 200 时，需要进行额外的处理，我们将在下一节介绍 Storage 合约的原理和使用以解决这个问题。
+However, since the length restriction for memo, `extra` need to be shortened when the length of exceeds 200.
+We will introduce how to solve this problem by Storage contract.

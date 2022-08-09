@@ -4,7 +4,7 @@
 但当要调用的合约较多或输入的参数较多时，你可能会遇到 `memo has too many characters, maximum is 200` 错误。
 
 此时，开发者需要将 `extra` 的 keccak256 hash 值和 `extra` 作为键值对写入 Storage 合约。
-开发者可以选择通过免费的 MVM Api 写入 Storage 合约，也可以自行将键值对写入，[Storage 合约实现参考](/zh/reference/storage)。
+开发者可以选择通过免费的 MVM Api 写入 Storage 合约，也可以自行将键值对写入，[Storage 合约实现参考](/zh/storage/intro)。
 
 ## 处理 extra 过长问题
 

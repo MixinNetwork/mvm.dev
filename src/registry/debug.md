@@ -1,14 +1,14 @@
-# 错误定位 
+# Debug 
 
-## 浏览器日志
+## Browser Logs
 
-在浏览器的交易日志中，如果 `memo` 编码格式正确，即能看到 `ProcessCalled` 事件。
-如果调用合约后，日志中没有 `ProcessCalled`，很可能是 memo 格式存在问题。
+You will find `ProcessCalled` event in a transaction log if `memo` is encoded correctly.
+That is to say that it is probably the cause of `memo` if contract execution failed and there's no `ProcessCalled` event in the log.
 
-若 `ProcessCalled` 事件中的 `result` 为 `true` 时调用成功，`output` 为合约调用的返回；
-若 `result` 为 `false` 时合约调用失败，output 为提示，可以通过 xxd 命令解析。
+The contract execution successes when `result` is `true` in `ProcessCalled` event, and `output` is the result of contract；
+The contract execution fails when `result` is `false` in `ProcessCalled` event, and `output` is error, which you parse through `xxd`；
 
-示例：
+example：
 
 ```shell
 # result: false
@@ -19,8 +19,7 @@ echo 08c379a00000000000000000000000000000000000000000000000000000000000000020000
 #     not registry    
 ```
 
-
-## 真实的案例
+## True Case
 ```sol
 function addLiquidity(address asset, uint256 amount) public {
     IERC20(asset).transferFrom(msg.sender, address(this), amount);
@@ -65,31 +64,29 @@ function addLiquidity(address asset, uint256 amount) public {
 }
 ```
 
-上面的合约是一个对 `uniswap` 添加流动性的改造.
+It is a modified contract of `addLiquidity` function in `uniswap`.
 
-代码逻辑并不复杂,
-1. 首先将用户转过来的资产, 先暂存到合约, 并结束.
-2. 用户第二次转移另外的资产, 跟第一次转过来的资产, 一并授权给 `router` 合约.
-3. 直接调用 `router` 合约的添加流动性方法.
-4. 将多余的 `token` 还给用户.
+The steps are:
+1. temporarily save the asset transferred by user to contract.
+2. approve the two assets transferred by user to `router` contract.
+3. call addLiquidity function of `router` contract.
+4. return the extra `token` to user.
 
-经过实际测试, 发现经常不能使用, 所以合约内部肯定存在问题. 有意思的是, 这个问题并不是100%复现的.即有时候是成功调用的, 但有的时候就失败了.
-
-由于失败的时候, registry 合约并没有反映出任何有价值的错误信息(只知道合约执行失败了) ,从而并不知道具体是哪一行出问题了.
-
-我们可以采用以下思路来排查错误.
-1. 建立对外可读的全局状态
-2. 在所有调用其他函数的地方加上 `try` `catch`
-3. 在 `catch` 中改变全局状态
-4. 当合约出现问题的时候, 直接从 `mvm` 上查看全局状态, 就能知道是哪个函数出现问题了.
+This function fails frequently but not fails every time.
+We can debug following these steps:
+1. set public state
+2. add `try` `catch` when calling other function
+3. change the public state in `catch`
+4. check public state when error occurs
 
 ```sol
-// 我们向外部暴露 3 个全局变量
+// expose 3 public state
 uint256 public errorStatus = 10000;
 string public errorMsg = "test msg";
 bytes public errorBytes;
+
 function addLiquidity(address asset, uint256 amount) public {
-    // 在每一处函数的调用的地方加上 try catch 并指定唯一的 errorStatus
+    // add try + catch when calling other function and specify the unique errorStatus
     try IERC20(asset).transferFrom(msg.sender, address(this), amount){
     } catch Error(string memory error) {
         errorStatus = 1;
@@ -182,18 +179,10 @@ function addLiquidity(address asset, uint256 amount) public {
 }
 ```
 
-加上了全局状态 和 `try` `catch` 之后, 我们就可以重新部署合约了.
+### success
+After redeploying, successfully find errorStatus is `8`, which means the problem happens when `approve`.
 
-然后用新的合约再去复现之前的问题. 一旦复现成功, 然后我们再去读取合约的错误状态码就肯定有变化了.
-
-从而能够帮助我们更快速的定位错误.
-
-修复了之后, 可以直接把所有的 `try` `catch` 都移除即可.
-
-### 定位成功
-通过上述的思路和方法, 成功定位到错误代码为 `8`, 即 `approve` 的时候出问题了.
-
-再仔细查看 `erc20` 标准的 `approve` 的代码, 就一目了然了.
+This is standard `approve` function of `erc20`:
 
 ```sol
 function approve(address _spender, uint256 _value) public override returns (bool) {
@@ -208,15 +197,16 @@ function approve(address _spender, uint256 _value) public override returns (bool
 }
 ```
 
-问题就在于我们返还用户资产的时候, `_value` 和 `allowed[msg.sender][_spender]` 均不为 0. 此时如果直接修改 `allowed[msg.sender][_spender]` 的状态, 将会引起另外的一个问题.
+When return user's asset, `_value` and `allowed[msg.sender][_spender]` are both not 0. If we change `allowed[msg.sender][_spender]`, a problem will be caused:
 
-> 当被授权的用户检测到了这笔交易后, 可以有机会在这笔交易之前转走 `allowed[msg.sender][_spender]` 剩余的 `token`, 然后再转走新增 `_value` 的 `token`. 导致授权的用户可能会有额外的损失.
+> when approved contract detects the transaction, it has the chance to transfer the rest token in `allowed[msg.sender][_spender]`,
+> then transfer the token from new `_value`. User may have extra loss.
 
-知道了这个信息之后, 代码就很容易修复了.
+Way to fix:
 
-> 即在返还用户余额的时候, 把 `approve` `router` 的金额重新设置为 `0` 即可.
+> Before return asset to user, set `approve` of `router` to `0`.
 
-最终修复完成的代码如下
+The final code is
 ```sol
 function addLiquidity(address asset, uint256 amount) public {
     IERC20(asset).transferFrom(msg.sender, address(this), amount);
@@ -253,11 +243,11 @@ function addLiquidity(address asset, uint256 amount) public {
 
     if (op.amount > amountA) {
         IERC20(op.asset).transfer(msg.sender, op.amount - amountA);
-        IERC20(op.asset).approve(router, 0); // 新增本行
+        IERC20(op.asset).approve(router, 0); // new line
     }
     if (amount > amountB) {
         IERC20(asset).transfer(msg.sender, amount - amountB);
-        IERC20(asset).approve(router, 0); // 新增本行
+        IERC20(asset).approve(router, 0); // new line
     }
     operations[msg.sender].asset = address(0);
 }

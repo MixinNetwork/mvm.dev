@@ -1,14 +1,19 @@
-# Memo 过长错误
+# Memo Error
 
-上一节我们介绍了如何通过 Registry 合约来调用合约，其核心是根据要调用的合约来生成 extra。
-但当要调用的合约较多或输入的参数较多时，你可能会遇到 `memo has too many characters, maximum is 200` 错误。
+In previous chapter, we talked about the way to execute contract by Registry, the core of which is the generation of extra.
+However, when multiple contracts are called or a contract function has many parameters, 
+you may face `memo has too many characters, maximum is 200` error.
 
-此时，开发者需要将 `extra` 的 keccak256 hash 值和 `extra` 作为键值对写入 Storage 合约。
-开发者可以选择通过免费的 MVM Api 写入 Storage 合约，也可以自行将键值对写入，[Storage 合约实现参考](/zh/reference/storage)。
+To solve this error, you need to write the keccak256 hash of `extra` as key and `extra` as value
+to the public state variable `values` in Storage Contract.
+You can use gas-free MVM Api to write to Storage Contract with access times limitation, or finish this job on your own.
 
-## 处理 extra 过长问题
+Storage Contract is detailed in [this chapter](/reference/storage)。
 
-例：依次进行 5 个合约调用，`extra` 的长度为 330，超过 200。这里使用 [官方 js sdk](https://github.com/MixinNetwork/bot-api-nodejs-client) 演示如何处理该问题。
+## Handle Error
+
+Example：call 5 contract functions in turn，the length of `extra` will be 330。
+We show how to shorten the extra using [official js sdk](https://github.com/MixinNetwork/bot-api-nodejs-client) here。
 
 ```javascript
 import { getExtra } from '@mixin.dev/mixin-node-sdk';
@@ -41,12 +46,12 @@ console.log(extra);
 ```
 
 
-### 自行处理
+### Handle on your own
 
-1. 调用 `write` 函数将 `extra` 保存在 [storage 合约](https://github.com/MixinNetwork/trusted-group/blob/master/mvm/quorum/contracts/storage.sol) 中。
-   注意：此方法将会消耗一部分的 XIN，请确保使用的钱包有一定余额。
+1. Call `write` function to save `extra` in public variable `values` of [Storage](https://github.com/MixinNetwork/trusted-group/blob/master/mvm/quorum/contracts/storage.sol) 中。
+   It costs gas to write to a contract, make sure you have enough balance in you wallet.
 
-   [官方 js sdk](https://github.com/MixinNetwork/bot-api-nodejs-client) 代码示例：
+   [official js sdk](https://github.com/MixinNetwork/bot-api-nodejs-client) example：
 
    ```javascript
    import { StorageContract, MVMMainnet } from '@mixin.dev/mixin-node-sdk';
@@ -55,12 +60,12 @@ console.log(extra);
    const storage = new StorageContract({
      address: MVMMainnet.Storage.Contract,
      uri: MVMMainnet.RPCUri,
-     privateKey: '' // 钱包对应的私钥
+     privateKey: '' // the private key of the wallet to pay gas
    });
 
    const write = async () => {
-     // 保存至 Storage 合约
-     // 如果 Storage 中已存在 key 且 value 与 extra 相等，将不会消耗 XIN 再写入一次
+     // If the public variable `values` in Storage contract already has the key and the value of it is the same as extra,
+     // it would not write again.
      const key = keccak256(extra);
      const { error } = await storage.writeValue(extra, key);
      if (error) throw new Error(error);
@@ -68,17 +73,18 @@ console.log(extra);
    write()
    ```
 
-2. `extra` 写入 Storage 合约后，需要根据规则构造一个新的 `extra`，由以下三部分组成：
-   * Registry 合约对应的 PID（去掉 `-`）
-   * Storage 合约的地址（去掉 `0x`）
-   * keccak256 hash（去掉 `0x`）
+2. After `extra` being written，a new `extra` is still needed to pay the transaction.
+   It consists of：
+   * PID od Registry Contract
+   * Address of Storage Contract
+   * Keccak256 hash of `extra`
 
    ```javascript
    import { MVMMainnet, getExtraWithStorageKey, MixinApi, encodeMemo } from '@mixin.dev/mixin-node-sdk';
    import { v4 as uuid } from 'uuid';
    import keystore from './keystore.json';
    
-   // 获得新的 extra
+   // Generate new extra
    finalExtra = getExtraWithStorageKey(key, MVMMainnet.Registry.PID, MVMMainnet.Storage.Contract);
    // bd67087276ce3263b9333aa337e212a4ef241988D19892fE4efF4935256087F4fdc5ecAa3179976b4babd610973b16996df33c1ecd13a3ddff436d4734d3c3862a2c3fe9
    // * bd67087276ce3263b9333aa337e212a4 为 Registry PID bd670872-76ce-3263-b933-3aa337e212a4 去掉 -
@@ -88,7 +94,7 @@ console.log(extra);
    keystore.user_id = keystore.client_id;
    const client = MixinApi({ keystore })
    
-   // 构造支付请求参数
+   // Build payment request
    const transactionInput = {
      asset_id: 'c94ac88f-4671-3976-b60a-09064f1811e8', // XIN
      amount: '0.00000001',
@@ -101,26 +107,28 @@ console.log(extra);
    };
    
    const pay = async () => {
-     // 生成支付链接支付
+     // Get payment link and pay in mixin messenger
      const res = await client.payment.request(transactionInput);
      console.log(`mixin://codes/${res.code_id}`);
-     // 或用 keystore 对应账户的余额支付
+     // Or pay using the balance of the acount of keystore
      await client.transfer.toAddress(keystore.pin, transactionInput);
    }
    pay()
    ```
    
-### 使用 MVMApi 处理
+### Handle with MVMApi
 
-MVMApi 可以免费帮助写入 Storage 合约，不过每个请求 IP 有 24 小时内 32 次的限制，若 `extra` 不超过 200 则不作限制。
+MVMApi can help you with gas-freely writing your extra to Storage contract，
+and there's a limitation that you can access 32 times in 24h each ip.
+It doesn't count if the length of `extra` is smaller than 200.
 
-[官方 js sdk](https://github.com/MixinNetwork/bot-api-nodejs-client) 代码示例：
+[official js sdk](https://github.com/MixinNetwork/bot-api-nodejs-client) example：
 
 ```javascript
 import { MVMApi, MVMApiURI, encodeMemo, MVMMainnet } from '@mixin.dev/mixin-node-sdk';
 import { v4 as uuid } from 'uuid';
 
-// 构造支付请求参数
+// Build payment request
 const transactionInput = {
   asset_id: 'c94ac88f-4671-3976-b60a-09064f1811e8', // XIN
   amount: '0.00000001',
@@ -134,17 +142,15 @@ const transactionInput = {
 
 const client = MVMApi(MVMApiURI);
 const pay = async () => {
-  // extra 长度超过 200 时，免费处理，每个 ip 24 小时内可响应 32 次
-  // extra 长度不超过 200 时，不作限制
   const res = await client.payments(transactionInput);
   console.log(`mixin://codes/${res.code_id}`);
 }
 pay();
 ```
 
-开发者也可以通过 MVMApi 的 `post /values` API，将过长的 extra 免费写入 Storage 合约。该接口同样有访问次数限制。
+You can use `post /values` API of MVMApi only to write value to Storage Contract, it shares the limitation with `post /payment` of MVMApi
 
-[官方 js sdk](https://github.com/MixinNetwork/bot-api-nodejs-client) 代码示例：
+[official js sdk](https://github.com/MixinNetwork/bot-api-nodejs-client) example：
 
 ```javascript
 import { MixinApi, MVMApi, MVMApiURI, MVMMainnet, getExtraWithStorageKey, encodeMemo } from '@mixin.dev/mixin-node-sdk';
@@ -157,15 +163,13 @@ const mixinClient = MixinApi({ keystore });
 const mvmClient = MVMApi(MVMApiURI);
 
 const main = async () => {
-  // 上一步得到的过长 extra
   const key = keccak256(extra);
-  // 每个 IP 24 小时内限制访问 32 次
+  // free access 32 times in 24h each ip
   const { error } = await mvmClient.writeValue(key, extra, MVMMainnet.Storage.Contract);
   if (error) throw new Error();
 
-  // 写入 Storage 合约后生成新的 extra
-  const storageExtra = getExtraWithStorageKey(key);
-  // 构造支付请求参数
+  // generate new extra
+  const storageExtra = getExtraWithStorageKey(key);\
   const transactionInput = {
     asset_id: 'c94ac88f-4671-3976-b60a-09064f1811e8', // XIN
     amount: '0.00000001',
@@ -177,20 +181,16 @@ const main = async () => {
     },
   };
 
-  // 选择一种方式支付
-  // 1 通过 sdk post /payments
+  // choose a way to pay
+  // 1: post /payments 
   const res1 = await mixinClient.payment.request(transactionInput);
-  // 通过下面的支付链接支付
   console.log(`mixin://codes/${res1.code_id}`);
 
-  // 2 通过 mvmapi post /payments
-  // 新的 extra 长度在允许范围内，此时该 api 没有访问限制
+  // 2: post /payments of MVMApi
   const res2 = await mvmClient.payments(transactionInput);
-  // 通过下面的支付链接支付
   console.log(`mixin://codes/${res2.code_id}`);
 
-  // 3 通过 sdk post /transactions
-  // keystore 对应的账户中需要有余额支付
+  // 3: post /transactions
   const res3 = await mixinClient.transfer.toAddress(
     keystore.pin,
     transactionInput

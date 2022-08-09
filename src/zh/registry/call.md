@@ -52,11 +52,11 @@
 
    二：通过 POST /transactions 进行支付，该消息需要签名。
 
-8. MVM 收到这个 output 后，解析 memo 成 Event，[代码示例](https://github.com/MixinNetwork/trusted-group/blob/cf3fae2ecacf95e3db7e21c10b7729ab9c11474b/mvm/eos/utils.go#L46)
-9. MVM 把 Event 按格式编码之后，发送给 [Registry](#开源代码) 合约
-10. [Registry](#开源代码) 执行 `function mixin`，并调用相关合约
-11. 执行完成后，通过 `event MixinTransaction(bytes)`  返回给 MVM 相关 Event 信息
-12. MVM 获取到结果后，如果有需要则转帐给用户，不需要则跳过
+6. MVM 收到这个 output 后，解析 memo 成 Event，[代码示例](https://github.com/MixinNetwork/trusted-group/blob/cf3fae2ecacf95e3db7e21c10b7729ab9c11474b/mvm/eos/utils.go#L46)
+7. MVM 把 Event 按格式编码之后，发送给 [Registry](#开源代码) 合约
+8. [Registry](#开源代码) 执行 `function mixin`，并调用相关合约
+9. 执行完成后，通过 `event MixinTransaction(bytes)`  返回给 MVM 相关 Event 信息
+10. MVM 获取到结果后，如果有需要则转帐给用户，不需要则跳过
 
 开发者只需要完成前五步支付，即可调用合约, 剩下的都是 MVM 的执行逻辑。
 
@@ -137,7 +137,7 @@ const payment = async () => {
 mtg 对 memo 的长度有限制。当 memo 的长度超过 200 时，请求会报错，无法进行支付。我们将在下一节介绍如何处理 memo/extra。
 :::
 
-关于 Event 的编码，可以从[这篇文章](/zh/guide/encoding.html#mtg-到-mvm-的编码格式)了解。
+关于 Event 的编码，可以从[这篇文章](/zh/registry/encoding.html#mtg-到-mvm-的编码格式)了解。
 
 ## Messenger 用户、资产跟 MVM 合约中如何对应
 
