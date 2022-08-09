@@ -101,7 +101,7 @@ module.exports = {
               title: 'Registry Contract',
               children: [
                 {
-                  title: 'Theory',
+                  title: 'Principle',
                   directory: false,
                   path: '/registry/registry'
                 },
@@ -136,7 +136,7 @@ module.exports = {
               title: "Bridge Contract",
               children: [
                 {
-                  title: "Theory",
+                  title: "Principle",
                   path: "/bridge/intro"
                 },
                 {
@@ -157,7 +157,7 @@ module.exports = {
               title: 'Storage Contract',
               children: [
                 {
-                  title: 'Theory & Usage',
+                  title: 'Principle & Usage',
                   path: '/storage/intro',
                 },
               ]
