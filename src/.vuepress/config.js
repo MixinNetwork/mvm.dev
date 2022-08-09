@@ -95,35 +95,101 @@ module.exports = {
                   directory: false,
                   path: '/reference/core'
                 },
-                {
-                  title: 'Refund Contract',
-                  directory: false,
-                  path: '/reference/refund'
-                },
-                {
-                  title: 'Registry Contract',
-                  directory: false,
-                  path: '/reference/registry'
-                },
               ]
             },
             {
-              title: 'Guides',
+              title: 'Registry Contract',
               children: [
                 {
-                  title: 'Deploy uniswap',
+                  title: 'Theory',
                   directory: false,
-                  path: '/guide/uniswap'
+                  path: '/registry/registry'
                 },
                 {
-                  title: 'Usage',
+                  title: 'Deploy Contract',
                   directory: false,
-                  path: '/guide/usage'
+                  path: '/registry/deploy'
                 },
                 {
                   title: 'Encoding',
                   directory: false,
-                  path: '/guide/encoding'
+                  path: '/registry/encoding'
+                },
+                {
+                  title: 'Call Contract',
+                  directory: false,
+                  path: '/registry/call'
+                },
+                {
+                  title: 'Handle Memo Error',
+                  directory: false,
+                  path: '/registry/long_memo'
+                },
+                {
+                  title: 'Debug',
+                  directory: false,
+                  path: '/registry/debug'
+                }
+              ]
+            },
+            {
+              title: "Bridge Contract",
+              children: [
+                {
+                  title: "Theory",
+                  path: "/bridge/intro"
+                },
+                {
+                  title: "Bridge API",
+                  path: "/bridge/api"
+                },
+                {
+                  title: "Cross-Chain Deposit",
+                  path: "/bridge/deposit"
+                },
+                {
+                  title: "Cross-Chain Withdrawal",
+                  path: "/bridge/withdrawal"
+                },
+              ]
+            },
+            {
+              title: 'Storage Contract',
+              children: [
+                {
+                  title: 'Theory & Usage',
+                  path: '/storage/intro',
+                },
+              ]
+            },
+            {
+              title: "MVM API",
+              children: [
+                {
+                  title: "Introduction",
+                  path: "/api/intro"
+                },
+                {
+                  title: "Call Storage",
+                  path: "/api/values"
+                },
+                {
+                  title: "Get Payment Url",
+                  path: "/api/payment"
+                },
+                {
+                  title: "Get Mapping Between Contract and User | asset",
+                  path: "/api/map"
+                }
+              ]
+            },
+            {
+              title: 'RPC Interface',
+              children: [
+                {
+                  title: 'MVM RPC Interface',
+                  directory: false,
+                  path: '/rpc/intro'
                 },
               ]
             },
