@@ -164,6 +164,16 @@ module.exports = {
               ]
             },
             {
+              title: 'RPC Interface',
+              children: [
+                {
+                  title: 'MVM RPC Interface',
+                  directory: false,
+                  path: '/rpc/intro'
+                }
+              ]
+            },
+            {
               title: 'ABI Spec',
               children: [
                 {
