@@ -534,14 +534,14 @@ async function addLiquidity() {
 ```js
 import { 
   MVMApi,
-  MVMApiTestURI,
+  MVMApiURI,
   Registry, 
   MVMMainnet, 
   getExtra 
 } from '@mixin.dev/mixin-node-sdk';
 import { v4 as uuid } from 'uuid';
 
-const client = MVMApi(MVMApiTestURI);
+const client = MVMApi(MVMApiURI);
 const registry = new Registry({
   address: MVMMainnet.Registry.Address,
   uri: MVMMainnet.RPCUri
@@ -578,7 +578,7 @@ async function swap() {
     // 唯一标识
     trace_id: uuid(),
     // 备注
-    memo: extra,
+    memo: encodeMemo(extra, MVMMainnet.Registry.PID),
     // 多签
     opponent_multisig: {
       receivers: MVMMainnet.MVMMembers,
@@ -597,14 +597,14 @@ async function swap() {
 ```js
 import {
   MVMApi, 
-  MVMApiTestURI,
+  MVMApiURI,
   Registry, 
   MVMMainnet, 
   getExtra 
 } from '@mixin.dev/mixin-node-sdk';
 import { v4 as uuid } from 'uuid';
 
-const client = MVMApi(MVMApiTestURI);
+const client = MVMApi(MVMApiURI);
 const registry = new Registry({
   address: MVMMainnet.Registry.Address,
   uri: MVMMainnet.RPCUri,
@@ -642,7 +642,7 @@ async function main() {
     // 唯一标识
     trace_id: uuid(),
     // 备注
-    memo: extra,
+    memo: encodeMemo(extra, MVMMainnet.Registry.PID),
     // 多签
     opponent_multisig: {
       receivers: MVMMainnet.MVMMembers,

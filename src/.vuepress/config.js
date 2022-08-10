@@ -164,6 +164,27 @@ module.exports = {
               ]
             },
             {
+              title: "MVM API Service",
+              children: [
+                {
+                  title: "Introduction",
+                  path: "/api/intro"
+                },
+                {
+                  title: "Write to Storage",
+                  path: "/api/values"
+                },
+                {
+                  title: "Get Payment Link",
+                  path: "/api/payment"
+                },
+                {
+                  title: "Get Map",
+                  path: "/api/map"
+                }
+              ]
+            },
+            {
               title: 'RPC Interface',
               children: [
                 {
