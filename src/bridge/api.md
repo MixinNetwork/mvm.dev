@@ -1,38 +1,37 @@
-# API 服务
+# API Service
 
-为了更方便开发者使用, 在开发过程中, 可以使用 bridge-api 提供的 API 服务.
+For the convenience of developers, we provide bridge-api service to make deposit and withdrawal simple.
 
 | Domain                     | Type   |
 |:---------------------------| :----- |
 | <https://bridge.mvm.dev> | Global |
 
-主要有以下 API：
-
 ### 1. GET `/`
 
-这个 API 会返回 Registry、Storage、Bridge 和 withdrawal 合约的部署地址，Registry 合约对应的 pid，
-Bridge 服务的源码等。访问 [https://bridge.mvm.dev/](https://bridge.mvm.dev/) 即可以看到相关信息。
+This API returns the deployed address of Registry, Storage, Bridge and withdrawal Contract，the pid of Registry，
+the address of Bridge source code。
 
 
 ### 2. POST `/users`
 
-这个 API 会返回钱包（如 MetaMask）地址所绑定的 Mixin Network User 的信息；
-如果这个钱包地址还没有绑定的 Mixin Network User，会创建 Mixin Network User 和对应的 MVM User Contract 与其绑定并返回。
+This API returns the information of Mixin Network User bound to current wallet address.
+If there's Mixin Network User bound to wallet，a Mixin Network User will be created and return, 
+MVM User Contract will be bound to it at the same time.
 
-请求参数：
+Request：
 
 ```json
 {
   "public_key": "0xE2aD78Fdf6C29338f5E2434380740ac889457256",
-  "signature": "0xee8b45ee93f56f6bbbb0949b48bf1695083e1d9916b381b29e460541e607f34519759c93ddb6de6fd1b04c4d3c6f598d3e2e977185cf467c087918e108ce49691c"
 }
 ```
 
-* `public_key` 是一个 eth 的帐号地址，可以在任意的钱包直接使用的，例如 metamask, imtoken 等等。
+* `public_key` is the address of a wallet like metamask, imtoken
 
-* `signature` 是钱包对字符串 `MVM:Bridge:Proxy:8MfEmL3g8s-PoDpZ4OcDCUDQPDiH4u1_OmxB0Aaknzg:<public_key>` keccak256 hash 的签名
+[//]: # ("signature": "0xee8b45ee93f56f6bbbb0949b48bf1695083e1d9916b381b29e460541e607f34519759c93ddb6de6fd1b04c4d3c6f598d3e2e977185cf467c087918e108ce49691c")
+[//]: # (* `signature` 是钱包对字符串 `MVM:Bridge:Proxy:8MfEmL3g8s-PoDpZ4OcDCUDQPDiH4u1_OmxB0Aaknzg:<public_key>` keccak256 hash 的签名)
 
-返回值:
+Response:
 
 ```json
 {
@@ -49,15 +48,16 @@ Bridge 服务的源码等。访问 [https://bridge.mvm.dev/](https://bridge.mvm.
 }
 ```
 
-返回值是一个 Mixin Network User 信息。在充值时，可通过 GET `https://api.mixin.one/assets/:asset_Id` 可以获取具体资产的充值地址，
+Response is the information of a Mixin Network User. You can use `GET https://api.mixin.one/assets/:asset_Id` api to 
+request the deposit address of a specific asset.
 
-API 文档: <https://developers.mixin.one/docs/api/assets/asset>
+API Document: <https://developers.mixin.one/docs/api/assets/asset>
 
 ### 3. POST `/extra`
 
-这个 API 用于生成提现或转账时的 extra。
+This API is used to generate `extra` when transferring or withdrawing
 
-请求参数:
+Request:
 
 ```JSON
 {
@@ -73,23 +73,25 @@ API 文档: <https://developers.mixin.one/docs/api/assets/asset>
 }
 ```
 
-* `action` 的 `destination` 跟 `tag` 是给多链提现使用，`extra` 可以不填。
+* `destination` and `tag` is for cross-chain withdrawal, `tag` could be empty
 
-* `receivers` 跟 `threshold` 是给 Mixin User 转帐使用，提现资产的 `extra` 为 `<trace_id>:A`，
-支付手续费的资产的 `extra` 为 `<trace_id>:B`，且两处 `<trace_id>` 应相同。
+* `receivers` and `threshold` is for transferring asset to a Mixin User.
 
-返回值:
+* `extra` of withdrawal asset should be `<trace_id>:A`, `extra` of fee asset should be `<trace_id>:B`
+and the both `<trace_id>` should be same
+
+Response:
 
 ```
 {"extra": "bd67087276ce3263b9333aa337e212a4ef241988d19892fe4eff4935256087f4fdc5ecaa49418e68591cc61481576f3b4f5ef7b52959ce50ab14e7c4f7c416eaeb670a42e6185dd2af0df71763bad5b1909db4f9aeb7a87eed8a06640fb94d35563a0d23feb1c682e3618b34c6889e0bf55786de958dcce4f53da1bbf89cc76f3e970d46085a57053a2b621c393dfd06bcd45ed143d4250d61be6e79cd50a41ed38d40c21b7ccf4623fc14e1ef62bcf12f76d7b4"}
 ```
 
-返回值为 `process || storage || public_key || encrypted_action` 格式的 extra：
-* `bd67087276ce3263b9333aa337e212a4` 为 `Registry` 的 `PID`
-* `ef241988d19892fe4eff4935256087f4fdc5ecaa` 为 `Storage` 合约的地址
-* 之后的部分为 `action` 的 keccak256 hash 和 `action`
+Response is `extra` in the format of `process || storage || public_key || encrypted_action`：
+* `bd67087276ce3263b9333aa337e212a4` is the PID of Registry Contract
+* `ef241988d19892fe4eff4935256087f4fdc5ecaa` is the address of Storage Contract
+* The final part is the keccak256 hash of `action` and `action` itself
 
-公钥和加密后的 `action` 必须写入到 Storage 合约内，代码示例：
+The encrypted `action` must be written to Storage Contract, example：
 
 ```javascript
 import { BridgeApi, StorageContract } from '@mixin.dev/mixin-node-sdk';
@@ -97,7 +99,6 @@ import { keccak256 } from 'ethers/libs/utils';
 
 const client = BridgeApi();
 
-// 请求参数
 const action = {
   "receivers": ["58099349-b159-4662-ad51-c18e809c9035"],
   "threshold": 1,
@@ -105,13 +106,12 @@ const action = {
 };
 const res = await client.generateExtra(action);
 
-// 获得 key value
+// parse keccak256 hash and encrypted action
 const key = res.slice(74, 138);
 const value = res.slice(138);
-// 写入 Storage 合约
+
 const storage = StorageContract({ privateKey: '' }); // 钱包的私钥
 await storage.writeValue(value, key);
-
-// 写入 Storage 合约后，生成对应格式的 extra：process || storage || key
+// new action
 const extra = '0x' + res.slice(0, 138);
 ```

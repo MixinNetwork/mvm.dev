@@ -20,13 +20,13 @@ It is easier for us to understand the next practice after having brief about the
 * `bind`: bind a MVM User Address to a MetaMask Address
 * `pass`: transfer asset from MVM User Address (msg.sender) bound with MetaMask Address to MetaMask Address
 * `vault` Transfer erc20 XIN to Bridge Contract
-* bridge 可以接收到原生的 ETH 并给用户转回 erc20 的 XIN
+* Accepts native XIN and return erc20 XIN
 
-接下来我们详细的解读一下每个的合约方法
+We will introduce every function in contract next.
 
-## bind 方法
+## bind 
 
-把一个 MVM User Address (msg.sender) 绑定到 MetaMask Address (receiver) 上, 其中 receiver 不能为空，实现如下
+Bind a MVM User Address (msg.sender) to a MetaMask Address (receiver), `receiver` cannot be empty
 
 ```solidty
   function bind(address receiver) public {
@@ -36,18 +36,16 @@ It is easier for us to understand the next practice after having brief about the
   }
 ```
 
-在 Bridge 当中，这里是指 Mixin Network user 对应的 MVM User Address.
+MVM User Address is the contract address bound to a mixin user. For more details see [Q & A](/resources/qa.html)
 
-这里有详细的解释, [Mixin user 跟 MVM user address 如何对应](/zh/resources/qa.html)
+Besides, we provide js SDK get the user address：<https://github.com/MixinNetwork/bot-api-nodejs-client/blob/main/src/mvm/registry.ts#L51>
 
-另外我们提供了 js SDK 来获取用户对应地址：<https://github.com/MixinNetwork/bot-api-nodejs-client/blob/main/src/mvm/registry.ts#L51>
+## pass
 
-## pass 方法
+After address binding, you can transfer asset to MetaMask Address:
 
-完成上一步绑定之后, 就可以给 MetaMask Address 的地址转帐, 主要分为两部分:
-
-* 普通的 erc20 资产，会直接转到 MetaMask Address
-* erc20 的 XIN, 会转成 native 的 XIN 转到 MetaMask Address
+* normal erc20 asset will be directly transferred to MetaMask Address
+* erc20 XIN will be switched to native XIN first and then transferred to MetaMask Address
 
 ```solidty
   function pass(address asset, uint256 amount) public {
@@ -80,9 +78,9 @@ It is easier for us to understand the next practice after having brief about the
   }
 ```
 
-## vault 合约
+## vault
 
-把 erc20 的 XIN 转到 Bridge 合约，请注意，这里只支持 erc20 的 XIN
+Only for transferring erc20 XIN to Bridge Contract
 
 ```
   function vault(address asset, uint256 amount) public {
@@ -93,11 +91,13 @@ It is easier for us to understand the next practice after having brief about the
   }
 ```
 
-到这里应该对 Bridge 合约有基本的了解，我们使用 bridge 合约，作了进一步的开发，然后让开发者更加方便的使用，完成不同链到 MVM 的充值，下一篇，我们会针对开发者的使用做一个详细的介绍，开发者只需要关注下面的内容即可。
+You may have a basic understanding of Bridge Contract so far. 
+For the convenience of developers, we provide the bridge api service to make cross-chain deposit to MVM available.
+We will explain the usage of api in the next chapter.
 
-## 完整 bridge.sol 代码
+## Open Code source
 <https://github.com/MixinNetwork/trusted-group/blob/master/mvm/quorum/bridge/contracts/Bridge.sol>
 
-## Bridge 的开源地址：
+## Bridge Api
 
 <https://github.com/MixinNetwork/trusted-group/tree/master/mvm/quorum/bridge>
