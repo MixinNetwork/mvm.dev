@@ -1,21 +1,25 @@
-# Storage 合约原理及使用
+# The Principle and Usage of Storage Contract
 
-在 [Registry](/zh/Registry/call) 中，我们介绍了如何通过代理合约 [Registry](https://github.com/MixinNetwork/trusted-group/blob/master/mvm/quorum/contracts/registry.sol)，
-来执行部署在 [Quorum](/zh/quorum/join) 上的其他合约。
+In [Registry Storage](/Registry/call)，we introduce the way to call other contracts deployed on [Quorum](/quorum/join)
+through [Registry Contract](https://github.com/MixinNetwork/trusted-group/blob/master/mvm/quorum/contracts/registry.sol)，
 
-目前 MVM 支持通过 [Registry](https://github.com/MixinNetwork/trusted-group/blob/master/mvm/quorum/contracts/registry.sol) 调用多个合约，
-只需根据要调用的合约函数签名等信息生成 `extra`，并将其编码后作为交易的 `memo` 付款即可。
-但 [mtg](https://github.com/MixinNetwork/trusted-group) 中对 `extra` 的长度有限制，当 `extra` 的长度超过 200 时，
-需计算 `extra` 的 `keccak256` 哈希值，并把哈希值和 `extra` 作为一组键值对写入 Storage 合约中。
+So far, you can call multiple contract functions through
+[Registry](https://github.com/MixinNetwork/trusted-group/blob/master/mvm/quorum/contracts/registry.sol)
+on MVM by generate `extra` based on the information of the contract functions to be called and pay transactions with
+`memo` based on it.
 
-## Storage 合约实现
-Storage 合约实现了两个函数，[read](https://github.com/MixinNetwork/mvm-contracts/blob/main/contracts/mixin/Storage.sol#L7) 
-和 [write](https://github.com/MixinNetwork/mvm-contracts/blob/main/contracts/mixin/Storage.sol#L11)，
-可以将键值对写入公开的 mapping 或从中读取键所对应的值。
+It is a remarkable fact that there's a length restriction of `extra` in [mtg](https://github.com/MixinNetwork/trusted-group).
+Before pay the transaction with more than 200 characters in `extra`, you should first calculate the `keccak256` hash of
+`extra` and write hash and `extra` itself to public state in Storage Contract, then pay the transaction with a new `extra`.
 
-`write` 函数会将一组键值对存在 mapping 类型的 `state` 变量中，且键必须是值的 `keccak256 hash`；`read` 函数可以通过传入的键在该变量中取相应的值。
+## Implementation
+There are two functions implemented in Storage Contract:
+[read](https://github.com/MixinNetwork/mvm-contracts/blob/main/contracts/mixin/Storage.sol#L7) and
+[write](https://github.com/MixinNetwork/mvm-contracts/blob/main/contracts/mixin/Storage.sol#L11).
+They are simply used to read and write key-value pair, in which the key must be the `keccak256` hash。
 
-### 源码
+### Source Code
+
 ```solidity
 // SPDX-License-Identifier: GPL-3.0
 pragma solidity >=0.8.0 <0.9.0;
@@ -35,6 +39,7 @@ contract Storage {
 }
 ```
 
-## 总结
+## Summary
 
-本章介绍了 Storage 合约的原理，及如何利用 Storage 合约处理 extra 过长的问题。
+We talk about the principle of Storage Contract in this chapter and its usage to handle extra with long length.
+For more details, refer to [this chapter](/registry/long_memo/).

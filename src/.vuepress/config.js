@@ -134,6 +134,16 @@ module.exports = {
               ]
             },
             {
+              title: 'Storage Contract',
+              children: [
+                {
+                  title: 'Introduction',
+                  directory: false,
+                  path: '/storage/intro'
+                }
+              ]
+            },
+            {
               title: 'Guides',
               children: [
                 {
