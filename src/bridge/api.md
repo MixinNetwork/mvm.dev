@@ -22,7 +22,7 @@ Request：
 
 ```json
 {
-  "public_key": "0xE2aD78Fdf6C29338f5E2434380740ac889457256",
+  "public_key": "0xE2aD78Fdf6C29338f5E2434380740ac889457256"
 }
 ```
 
@@ -91,11 +91,10 @@ Response is `extra` in the format of `process || storage || public_key || encryp
 * `ef241988d19892fe4eff4935256087f4fdc5ecaa` is the address of Storage Contract
 * The final part is the keccak256 hash of `action` and `action` itself
 
-The encrypted `action` must be written to Storage Contract, example：
+Example：
 
 ```javascript
-import { BridgeApi, StorageContract } from '@mixin.dev/mixin-node-sdk';
-import { keccak256 } from 'ethers/libs/utils';
+import { BridgeApi } from '@mixin.dev/mixin-node-sdk';
 
 const client = BridgeApi();
 
@@ -104,14 +103,5 @@ const action = {
   "threshold": 1,
   "extra": "blahblahblah"
 };
-const res = await client.generateExtra(action);
-
-// parse keccak256 hash and encrypted action
-const key = res.slice(74, 138);
-const value = res.slice(138);
-
-const storage = StorageContract({ privateKey: '' }); // private key of wallet 
-await storage.writeValue(value, key);
-// new action
-const extra = '0x' + res.slice(0, 138);
+const extra = await client.generateExtra(action);
 ```
