@@ -19,8 +19,7 @@ It is easier for us to understand the next practice after having brief about the
 
 * `bind`: bind a MVM User Address to a MetaMask Address
 * `pass`: transfer asset from MVM User Address (msg.sender) bound with MetaMask Address to MetaMask Address
-* `vault` Transfer erc20 XIN to Bridge Contract
-* Accepts native XIN and return erc20 XIN
+* `vault` Transfer erc20 ETH to Bridge Contract, and it returns erc20 ETH
 
 We will introduce every function in contract next.
 
@@ -45,7 +44,7 @@ Besides, we provide js SDK get the user address：<https://github.com/MixinNetwo
 After address binding, you can transfer asset to MetaMask Address:
 
 * normal erc20 asset will be directly transferred to MetaMask Address
-* erc20 XIN will be switched to native XIN first and then transferred to MetaMask Address
+* erc20 ETH will be switched to native ETH first and then transferred to MetaMask Address
 
 ```solidty
   function pass(address asset, uint256 amount) public {
@@ -80,7 +79,7 @@ After address binding, you can transfer asset to MetaMask Address:
 
 ## vault
 
-Only for transferring erc20 XIN to Bridge Contract
+Only for transferring erc20 ETH to Bridge Contract
 
 ```
   function vault(address asset, uint256 amount) public {

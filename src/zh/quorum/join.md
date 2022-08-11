@@ -25,7 +25,7 @@ RPC 链接：<https://geth.mvm.dev>
 
 ChainID：73927
 
-符号：XIN
+符号：ETH
 
 区块链浏览器：<https://scan.mvm.dev>
 

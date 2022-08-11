@@ -44,7 +44,7 @@ console.log(extra);
 ### 自行处理
 
 1. 调用 `write` 函数将 `extra` 保存在 [storage 合约](https://github.com/MixinNetwork/trusted-group/blob/master/mvm/quorum/contracts/storage.sol) 中。
-   注意：此方法将会消耗一部分的 XIN，请确保使用的钱包有一定余额。
+   注意：此方法将会消耗一部分的 gas，请确保使用的钱包有一定余额。
 
    [官方 js sdk](https://github.com/MixinNetwork/bot-api-nodejs-client) 代码示例：
 
@@ -60,7 +60,7 @@ console.log(extra);
 
    const write = async () => {
      // 保存至 Storage 合约
-     // 如果 Storage 中已存在 key 且 value 与 extra 相等，将不会消耗 XIN 再写入一次
+     // 如果 Storage 中已存在 key 且 value 与 extra 相等，将不会消耗 gas 再写入一次
      const key = keccak256(extra);
      const { error } = await storage.writeValue(extra, key);
      if (error) throw new Error(error);

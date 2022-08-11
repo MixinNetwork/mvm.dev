@@ -6,7 +6,7 @@
   当使用 sdk 请求 POST /payments api 时，需要 keystore 对消息签名才可以访问，却有可能暴露 keystore。
   
   此时，可以访问本 api 来生成支付链接，参数不变。另外，还有自动处理 extra 超过限制的功能
-  （由于向 Storage 合约写入数据需要消耗 XIN，限制每个 ip 24 小时内请求 32 次超长 extra，长度 200 以内的 extra 不作限制）。
+  （由于向 Storage 合约写入数据需要消耗 gas，限制每个 ip 24 小时内请求 32 次超长 extra，长度 200 以内的 extra 不作限制）。
 
 ### 参数
 
