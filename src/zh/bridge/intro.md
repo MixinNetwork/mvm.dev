@@ -17,7 +17,7 @@ Bridge 是 MetaMask 跟其它链的一个跨链桥，也就是像 BTC, ETH, TRON
 
 * `bind` 把一个 MVM User Address 跟 MetaMask Address 绑定
 * `pass` 把与 MetaMask Address 绑定的 MVM 地址 (msg.sender) 里的资产转到 MetaMask Address
-* `vault` 把 erc20 ETH 转入到 Bridge 合约并获取 erc20 的 ETH
+* `vault` 把 ERC20 ETH 转入到 Bridge 合约并获取 ERC20 的 ETH
 
 接下来我们详细的解读一下每个的合约方法
 
@@ -43,8 +43,8 @@ Bridge 是 MetaMask 跟其它链的一个跨链桥，也就是像 BTC, ETH, TRON
 
 完成上一步绑定之后, 就可以给 MetaMask Address 的地址转帐, 主要分为两部分:
 
-* 普通的 erc20 资产，会直接转到 MetaMask Address
-* erc20 的 ETH 会先被转换成 native 的 ETH 转到 MetaMask Address
+* 普通的 ERC20 资产，会直接转到 MetaMask Address
+* ERC20 的 ETH 会先被转换成 native 的 ETH 转到 MetaMask Address
 
 ```solidty
   function pass(address asset, uint256 amount) public {
@@ -79,7 +79,7 @@ Bridge 是 MetaMask 跟其它链的一个跨链桥，也就是像 BTC, ETH, TRON
 
 ## vault 合约
 
-把 erc20 的 ETH 转到 Bridge 合约，请注意，这里只支持 erc20 的 ETH
+把 ERC20 的 ETH 转到 Bridge 合约，请注意，这里只支持 ERC20 的 ETH
 
 ```
   function vault(address asset, uint256 amount) public {

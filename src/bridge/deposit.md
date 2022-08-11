@@ -45,7 +45,7 @@ We will talk about how to cross-chain deposit with MVM Bridge Contract
 
   When having the deposit address of a specific asset, 
   you can accomplish the deposit by transferring asset to the address on the chain that the asset belongs to.
-  Then, the erc20 asset will show in your wallet on MVM.
+  Then, the ERC20 asset will show in your wallet on MVM.
 
   The crucial part of deposit is to get the deposit addresses of bound Mixin Network User on different chains.
 

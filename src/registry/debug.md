@@ -183,7 +183,7 @@ function addLiquidity(address asset, uint256 amount) public {
 ### success
 After redeploying, successfully find errorStatus is `8`, which means the problem happens when `approve`.
 
-This is standard `approve` function of `erc20`:
+This is standard `approve` function of ERC20 contract:
 
 ```sol
 function approve(address _spender, uint256 _value) public override returns (bool) {

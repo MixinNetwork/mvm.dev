@@ -193,7 +193,7 @@ function addLiquidity(address asset, uint256 amount) public {
 ### 定位成功
 通过上述的思路和方法, 成功定位到错误代码为 `8`, 即 `approve` 的时候出问题了.
 
-再仔细查看 `erc20` 标准的 `approve` 的代码, 就一目了然了.
+再仔细查看 `ERC20` 标准的 `approve` 的代码, 就一目了然了.
 
 ```sol
 function approve(address _spender, uint256 _value) public override returns (bool) {
