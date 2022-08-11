@@ -134,6 +134,27 @@ module.exports = {
               ]
             },
             {
+              title: "Bridge Contract",
+              children: [
+                {
+                  title: "Introduction",
+                  path: "/bridge/intro"
+                },
+                {
+                  title: "Bridge API Service",
+                  path: "/bridge/api"
+                },
+                {
+                  title: "Cross-Chain Deposit",
+                  path: "/bridge/deposit"
+                },
+                {
+                  title: "Cross-Chain Withdrawal",
+                  path: "/bridge/withdrawal"
+                },
+              ]
+            },
+            {
               title: 'Storage Contract',
               children: [
                 {

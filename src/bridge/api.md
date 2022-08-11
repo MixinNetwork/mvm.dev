@@ -110,7 +110,7 @@ const res = await client.generateExtra(action);
 const key = res.slice(74, 138);
 const value = res.slice(138);
 
-const storage = StorageContract({ privateKey: '' }); // 钱包的私钥
+const storage = StorageContract({ privateKey: '' }); // private key of wallet 
 await storage.writeValue(value, key);
 // new action
 const extra = '0x' + res.slice(0, 138);

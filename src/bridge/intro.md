@@ -1,6 +1,6 @@
-# MVM bridge 简介
+# Introduction
 
-Bridge is the Cross-Chain Bridge, assets from any chain Mixin supports can be transfer to Mixin to use smart contract, like BTC, ETH, TRON, SOL, LTC .etc
+Bridge is the Cross-Chain Bridge, assets from any chain Mixin supports can be transfer to Mixin to use smart contract, like BTC, ETH, TRON, SOL, LTC .etc.
 You can use any ETH wallet here, for example, imtoken and MetaMask
 
 Most developers only need to focus on how to use Bridge, since the implementation of it involves many concepts and it takes time to understand them.
