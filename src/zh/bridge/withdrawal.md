@@ -75,6 +75,64 @@ function transferWithExtra(
 * 提现到 ETH（TRON） 网络时，以 usdt 为例, 钱包里需要同时有 usdt 跟 ETH（TRON）, 其中 ETH（TRON） 是 feeAsset
 :::
 
+提现代码示例：
+
+```javascript
+import { Wallet, ethers } from 'ethers';
+import { StaticJsonRpcProvider } from '@ethersproject/providers';
+import { v4 } from 'uuid';
+import { MVMMainnet, BridgeABI, BridgeApi, MixinApi } from '@mixin.dev/mixin-node-sdk';
+
+const destination = ''; // 提现地址
+const tag = '';
+const amount = 0.1;
+
+const publicKey = ''; // 钱包地址
+const privateKey = ''; // 钱包私钥
+const provider = new StaticJsonRpcProvider(MVMMainnet.RPCUri);
+const signer = new Wallet(privateKey, provider);
+const bridge = new ethers.Contract(
+  '0x0915EaE769D68128EEd9711A0bc4097831BE57F3', // Bridge 合约地址
+  BridgeABI,
+  signer
+);
+
+const bridgeClient = BridgeApi();
+const mixinClient = MixinApi({});
+
+const main = async () => {
+  const traceId = v4();
+  const action1 = {
+    destination,
+    tag,
+    extra: `${traceId}:A`
+  };
+  const action2 = {
+    destination,
+    tag,
+    extra: `${traceId}:B`
+  };
+  const extra1 = await bridgeClient.generateExtra(action1);
+  const extra2 = await bridgeClient.generateExtra(action2);
+  
+  const { contract } = await bridgeClient.register({
+    public_key: publicKey
+  });
+  const res1 = await bridge.release(contract, extra1, {
+    gasPrice: 10000000, // 0.01 Gwei
+    gasLimit: 350000,
+    value: ethers.utils.parseEther(Number(amount).toFixed(8))
+  });
+
+  const asset = await mixinClient.network.fetchAsset("43d61dcd-e413-450d-80b8-101d5e903357"); // ETH
+  const res2 = await bridge.release(contract, extra2, {
+    gasPrice: 10000000, // 0.01 Gwei
+    gasLimit: 350000,
+    value: ethers.utils.parseEther(Number(asset.fee).toFixed(8)) // ETH 手续费
+  });
+};
+```
+
 ## 给 Mixin User 转帐
 
 除了实现了链上提现的功能，Bridge 还实现了 MetaMask 给 Mixin User 和多签帐号免费转帐的功能。这个流程跟提现基本一致，只是 input 的参数不同。
