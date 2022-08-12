@@ -46,9 +46,6 @@
 5. 用户获取支付参数后，有两种方式进行支付：
 
    一：通过 POST /payments 返回的 code_id，生成支付链接 `https://mixin.one/codes/:code_id`，然后在 Mixin Messenger 中支付。
-   ::: tip
-   这个支付地址的生成没有限制，任何人只需知道合约地址都可以生成，相关文档：<https://developers.mixin.one/zh-CN/docs/api/transfer/payment>
-   :::
 
    二：通过 POST /transactions 进行支付，该消息需要签名。
 

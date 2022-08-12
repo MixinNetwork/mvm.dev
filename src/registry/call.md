@@ -44,9 +44,6 @@
 5. Two ways to pay the transaction：
 
    1：Get `code_id` by POST /payments，and pay in Mixin Messenger through `https://mixin.one/codes/:code_id`
-   ::: tip
-   No restriction for [post /payments](<https://developers.mixin.one/zh-CN/docs/api/transfer/payment>) api
-   :::
 
    2：POST /transactions, signature needed。
 

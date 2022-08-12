@@ -19,7 +19,7 @@ We will introduce you how to cross-chain deposit with MVM Bridge Contract
 
 * ### Get this Mixin Network User's deposit addresses for different assets on different chains
 
-  [official js sdk](https://github.com/MixinNetwork/bot-api-nodejs-client) 代码示例：
+  [official js sdk](https://github.com/MixinNetwork/bot-api-nodejs-client) example：
   ```javascript
   import { MixinApi } from '@mixin.dev/mixin-node-sdk'; 
   

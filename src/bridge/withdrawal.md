@@ -76,8 +76,8 @@ The arguments we need prepare：
   ```
 
 ::: warning Notice
-* When withdraw token to ETH(TRON), for example usdt, you must have balance for usdt and ETH(TRON) at the same time,
-  the ETH(TRON) is withdrawal cost.
+* When withdraw tokens to a specific chain, the asset as withdrawal cost is determined by this chain. 
+The asset_id must be the same as chain_id in Mixin.
 :::
 
 Withdrawal Code Example：
