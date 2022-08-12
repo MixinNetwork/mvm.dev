@@ -3,7 +3,6 @@
 We will show you how deploy a contract to [Quorum network](/quorum/join) here.
 You can choose the way you familiar with: [remix](https://remix-project.org/) or [hardhat](https://hardhat.org/).
 
-
 ## Prepare
 
 1. Install Metamask in browser
@@ -40,8 +39,8 @@ contract Counter {
 
 ### hardhat
 
-We already prepared the [hardhat](https://hardhat.org/) [deploy example](<https://github.com/MixinNetwork/mvmcontracts>), 
-[Quorum](/quorum/join) mainnet and testnet settings are provided to use.
+We already prepared the [hardhat](https://hardhat.org/) [deploy examples](<https://github.com/MixinNetwork/mvmcontracts>), 
+[Quorum](/quorum/join) mainnet and testnet settings are provided.
 
 run to deploy：
 ```shell
@@ -49,7 +48,7 @@ PRIVATE_KEY=privateKey yarn hardhat run --network quorum scripts/counter.ts
 ```
 
 ::: tip Notice 
-Gas is needed to deploy contract, you should fill privateKey of your wallet in.
+Gas is needed to deploy contract, you should fill the private key of your wallet in.
 :::
 
 ### remix
@@ -58,6 +57,6 @@ Deploy details in <https://developers.mixin.one/zh-CN/docs/mainnet/mvm/remix>
 
 ## Summary
 
-We introduced how to deploy a contract in [Quorum network](/quorum/join).
-You should save the deployed contract address, which will be used in [Call Contract](/registry/call).
+We introduced how to deploy a contract on [Quorum](/quorum/join) in this chapter.
+You should save the deployed contract address, which will be used in chapter [Call Contract](/registry/call).
 

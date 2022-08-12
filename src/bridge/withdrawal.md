@@ -11,7 +11,8 @@ twice to withdraw native currency ETH in MVM;
 Or call `transferWithExtra` function of
 [Asset Contract](https://github.com/MixinNetwork/trusted-group/blob/master/mvm/quorum/registry/contracts/Asset.sol)
 twice to withdraw other ERC20 token.
-One for asset to be withdrawn and one for asset for withdrawal cost.
+
+The two transactions are for asset to be withdrawn and for asset as withdrawal cost.
 
 `release` function:
 
@@ -42,7 +43,7 @@ function transferWithExtra(
 }
 ```
 
-These are arguments we need prepare：
+The arguments we need prepare：
 
 * `receiver` in function `release` and `to` in function `transferWithExtra` are the same.
   It is the MVM User Contract Address of Mixin Network User bound to wallet address.
@@ -152,4 +153,4 @@ Transfer `action`:
 ```
 
 * `receivers` is an array of `client_id` of Mixin User if you want to transfer asset to a multi-signature account.
-Or you can put one `client_id` in it to transfer asset to regular Mixin User.
+Or you can put one `client_id` in it to transfer asset to a regular Mixin User.

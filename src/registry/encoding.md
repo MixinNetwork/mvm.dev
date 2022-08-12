@@ -1,7 +1,8 @@
 # MVM Encoding
 
-Previously we talked about how to deploy a contract, before continuing to call contract,
-some specifications should be known to transmit data. Hereby we introduce the data encoding part. 
+Previously we talked about how to deploy a contract on [Quorum](/quorum/join).
+Before continuing to introduce how to call a contract function through Registry Contract,
+some specifications should be noticed to transmit data. Hereby we introduce the data encoding part for preparation. 
 
 There are three parts in total:
 
@@ -13,53 +14,60 @@ Developers only need to focus on part 1 and part 2 to generate `memo`，and we w
 
 ## Generate Extra
 
-`Extra` is the most important value when you want to call a contract function，
-it starts with the hexadecimal number of contracts to be called，and followed by each contract encode.
+`extra` is the most important value when you want to call a contract function.
+It starts with the hexadecimal number of contracts to be called, and is followed by the encoding of each contract function.
 
-Each contract encode consists of contract address, the hexadecimal length of contract input and the contract input.
+The encoding of each contract function consists of contract address, the hexadecimal length of bytes of function input and the encoded function input.
 
 The contract input is formed by the first 8 ABI encoding of function signature
 and the ABI encoding of function input, [code example](https://github.com/MixinNetwork/mvm-contracts/blob/main/contracts/mixin/User.sol#L52).
 
-Here, take the previously deployed Counter Contract for example, its address is `0x2E8f70631208A2EcFC6FA47Baf3Fde649963baC7`.
+Here, take the previously deployed Counter Contract for example, the address of which is `0x2E8f70631208A2EcFC6FA47Baf3Fde649963baC7`.
 
-If we want call the contract twice：
+If we want call two contract functions：
 
-1. counter + 2;
-2. read the current value of counter;
+1. counter + 2
+2. read the current value of counter
 
-then the contract will be called twice so that `extra` should start with `0002`.
+the `extra` should start with `0002`.
 
-1. First step need to call `function addAny(uint256 num)`, 
+1. First step calls `function addAny(uint256 num)`, 
    the first 8 characters of the ABI encode of its signature `addAny(uint256)` is `77ad0aab`
 
-   the ABI encode of uint256 2 is `0000000000000000000000000000000000000000000000000000000000000002`，
+   the ABI encode of uint256 `2` is `0000000000000000000000000000000000000000000000000000000000000002`,
 
-   so the hexadecimal length of contract input is `0024`，
+   so the hexadecimal length of bytes of contract input is `0024`.
 
-   the contract encode is `2e8f70631208a2ecfc6fa47baf3fde649963bac7002477ad0aab0000000000000000000000000000000000000000000000000000000000000002`
+   Finally, the encoding of contract function is `2e8f70631208a2ecfc6fa47baf3fde649963bac7002477ad0aab0000000000000000000000000000000000000000000000000000000000000002`
 
-   example code：
+   example：
 
    ```javascript
    // use ethers.js
    let contractExtra = '0x2E8f70631208A2EcFC6FA47Baf3Fde649963baC7'.slice(2);
-   contractExtra += utils.id('addAny(uint256)').slice(2, 10)
+      
+   let input = utils.id('addAny(uint256)').slice(2, 10)
    const abiCoder = new ethers.utils.AbiCoder();
-   contractExtra += abiCoder.encode(['uint256'], [2]).slice(2);
+   input += abiCoder.encode(['uint256'], [2]).slice(2);
+   
+   const inputLength = Buffer.from([0, input.length / 2]).toString('hex');
+   
+   contractExtra += inputLength + input;
    ```
 
-2. Second step need to call `function count()`, the first 8 characters of the ABI encode of its signature `count()` is `06661abd`,
-   it has no parameters, so the hexadecimal length of contract input is `0004`，
+2. Second step calls `function count()`, the first 8 characters of the ABI encode of its signature `count()` is `06661abd`,
+   it has no parameters, so the hexadecimal length of bytes of contract input is `0004`，
 
    the contract encode is `2e8f70631208a2ecfc6fa47baf3fde649963bac7000406661abd`
 
-   example code：
+   example：
 
    ```javascript
    // use ethers.js
    let contractExtra = '0x2E8f70631208A2EcFC6FA47Baf3Fde649963baC7'.slice(2);
-   contractExtra += utils.id('count()').slice(2, 10)
+   const input = utils.id('count()').slice(2, 10);
+   const inputLength = Buffer.from([0, input.length / 2]).toString('hex');
+   contractExtra += inputLength + input;
    ```
 
 The final `extra` is `00022e8f70631208a2ecfc6fa47baf3fde649963bac7002477ad0aab00000000000000000000000000000000000000000000000000000000000000022e8f70631208a2ecfc6fa47baf3fde649963bac7000406661abd`
@@ -245,5 +253,5 @@ open source code：<https://github.com/MixinNetwork/trusted-group/blob/07473dac2
 
 ## 总结
 
-MVM accomplish the most work for encoding, developers only need to focus on the generation of `memo`. 
+MVM accomplishes the most work for encoding so that developers just need to focus on the generation of `memo`. 
 We will introduce how to call contract function in next chapter.

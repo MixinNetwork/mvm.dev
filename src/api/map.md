@@ -10,7 +10,7 @@
 | threshold |  int   |  false   | multi-signature threshold |
 | address   | string |  false   | Registry Contract address |
 
-Fetch the user contract based on mixin user_id
+Fetch the user contract based on mixin `user_id`
 
 #### Example
 

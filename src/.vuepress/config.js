@@ -97,12 +97,11 @@ module.exports = {
                 },
               ]
             },
-
             {
               title: 'Registry Contract',
               children: [
                 {
-                  title: 'Principle',
+                  title: 'Introduction',
                   directory: false,
                   path: '/registry/registry'
                 },
@@ -162,26 +161,6 @@ module.exports = {
                   directory: false,
                   path: '/storage/intro'
                 }
-              ]
-            },
-            {
-              title: 'Guides',
-              children: [
-                {
-                  title: 'Deploy uniswap',
-                  directory: false,
-                  path: '/guide/uniswap'
-                },
-                {
-                  title: 'Usage',
-                  directory: false,
-                  path: '/guide/usage'
-                },
-                {
-                  title: 'Encoding',
-                  directory: false,
-                  path: '/guide/encoding'
-                },
               ]
             },
             {

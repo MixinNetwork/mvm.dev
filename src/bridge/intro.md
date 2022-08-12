@@ -1,19 +1,20 @@
 # Introduction
 
-Bridge is the Cross-Chain Bridge, assets from any chain Mixin supports can be transfer to Mixin to use smart contract, like BTC, ETH, TRON, SOL, LTC .etc.
-You can use any ETH wallet here, for example, imtoken and MetaMask
+Bridge is the Cross-Chain bridge, assets from any chain Mixin supports can be transferred to Mixin or withdrawn from Mixin,
+like BTC, ETH, TRON, SOL, LTC .etc.
+You can use any ETH wallet here, for example: imtoken and MetaMask.
 
-Most developers only need to focus on how to use Bridge, since the implementation of it involves many concepts and it takes time to understand them.
-We will demonstrate how to transfer asset to MVM next.
+Most developers only need to focus on the way to use Bridge, since the implementation of it involves many concepts and it takes time to understand them.
+We will demonstrate how to transfer and withdraw in the following chapters.
 
 ## Basic Concepts
 
-* Mixin Asset means the native asset in Mixin, which can deposit or withdraw, like [BTC](https://mixin.one/snapshots/c6d0c728-2624-429b-8e0d-d9d19b6592fa)
+* Mixin Asset means the native asset in Mixin, which can be deposited or withdrawn, like [BTC](https://mixin.one/snapshots/c6d0c728-2624-429b-8e0d-d9d19b6592fa)
 * MVM Asset Address means the asset contract address in MVM，similar to the concept of WBTC
 * MVM User Address means the user contract address of Mixin user in MVM
-* MetaMask Address means the traditional address in chain like ETH, and it's the same as MVM User Address
+* MetaMask Address means the address in a chain like ETH, and it's the same kind of address as MVM User Address
 
-It is easier for us to understand the next practice after having brief about these concepts
+It is easier for us to understand the next practices after having a general knowing about these concepts.
 
 ## Main Functions
 
@@ -28,11 +29,11 @@ We will introduce every function in contract next.
 Bind a MVM User Address (msg.sender) to a MetaMask Address (receiver), `receiver` cannot be empty
 
 ```solidty
-  function bind(address receiver) public {
-      require(receiver != address(0), "invalid address");
-      bridges[msg.sender] = receiver;
-      emit Bound(msg.sender, receiver);
-  }
+function bind(address receiver) public {
+    require(receiver != address(0), "invalid address");
+    bridges[msg.sender] = receiver;
+    emit Bound(msg.sender, receiver);
+}
 ```
 
 MVM User Address is the contract address bound to a mixin user. For more details see [Q & A](/resources/qa.html)
@@ -91,7 +92,7 @@ Only for transferring ERC20 ETH to Bridge Contract
 ```
 
 You may have a basic understanding of Bridge Contract so far. 
-For the convenience of developers, we provide the bridge api service to make cross-chain deposit to MVM available.
+For the convenience of developers, we provide the bridge api service to make cross-chain deposit and withdrawal to MVM available.
 We will explain the usage of api in the next chapter.
 
 ## Open Code source

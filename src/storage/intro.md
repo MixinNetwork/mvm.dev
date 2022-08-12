@@ -1,12 +1,12 @@
-# The Principle and Usage of Storage Contract
+# Introduction
 
-In [Registry Storage](/Registry/call)，we introduce the way to call other contracts deployed on [Quorum](/quorum/join)
+In [Registry Storage](/Registry/call), we introduce the way to call other contract function deployed on [Quorum](/quorum/join)
 through [Registry Contract](https://github.com/MixinNetwork/trusted-group/blob/master/mvm/quorum/contracts/registry.sol)，
 
 So far, you can call multiple contract functions through
 [Registry](https://github.com/MixinNetwork/trusted-group/blob/master/mvm/quorum/contracts/registry.sol)
-on MVM by generate `extra` based on the information of the contract functions to be called and pay transactions with
-`memo` based on it.
+on MVM by generating `extra` based on the information of the contract functions to be called and pay transactions with
+`memo` encoded by it.
 
 It is a remarkable fact that there's a length restriction of `extra` in [mtg](https://github.com/MixinNetwork/trusted-group).
 Before pay the transaction with more than 200 characters in `extra`, you should first calculate the `keccak256` hash of

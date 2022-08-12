@@ -1,13 +1,13 @@
 # Debug 
 
-## Browser Logs
+## Blockchain Browser Logs
 
 You will find `ProcessCalled` event in a transaction log if `memo` is encoded correctly.
-That is to say that it is probably the cause of `memo` if contract execution failed and there's no `ProcessCalled` event in the log.
+That is to say that it is probably the cause of `memo` if a contract does not execute and there's no `ProcessCalled` event in the log.
 
-The contract execution successes when `result` is `true` in `ProcessCalled` event, and `output` is the result of contract.
+When contract execution successes, `result` is `true` in `ProcessCalled` event, and `output` is the result of contract.
 
-The contract execution fails when `result` is `false` in `ProcessCalled` event, and `output` is error, which you parse through `xxd`.
+When contract execution fails, `result` is `false` in `ProcessCalled` event, and `output` is the error, which you could parse through `xxd`.
 
 example：
 
@@ -20,7 +20,7 @@ echo 08c379a00000000000000000000000000000000000000000000000000000000000000020000
 #     not registry    
 ```
 
-## True Case
+## Real Case
 ```sol
 function addLiquidity(address asset, uint256 amount) public {
     IERC20(asset).transferFrom(msg.sender, address(this), amount);
@@ -67,13 +67,13 @@ function addLiquidity(address asset, uint256 amount) public {
 
 It is a modified contract of `addLiquidity` function in `uniswap`.
 
-The steps are:
+The procedures of it are:
 1. temporarily save the asset transferred by user to contract.
 2. approve the two assets transferred by user to `router` contract.
-3. call addLiquidity function of `router` contract.
+3. call `addLiquidity` function of `router` contract.
 4. return the extra `token` to user.
 
-This function fails frequently but success sometimes.
+This function fails frequently but does success sometimes.
 We can debug following these steps:
 1. set public state
 2. add `try` `catch` when calling other function
@@ -180,8 +180,8 @@ function addLiquidity(address asset, uint256 amount) public {
 }
 ```
 
-### success
-After redeploying, successfully find errorStatus is `8`, which means the problem happens when `approve`.
+### Redeploy
+After redeploying, successfully find errorStatus is `8`, which means the error occurs when `approve`.
 
 This is standard `approve` function of ERC20 contract:
 

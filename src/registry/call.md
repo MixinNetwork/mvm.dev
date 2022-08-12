@@ -2,11 +2,11 @@
 
 ## Steps
 
-1. Deploy the smart contract and note down the contract address。
+1. Deploy the smart contract and note down the contract address, details in [Deploy Contract](/registry/deploy)
 
-2. Generate `extra` according to contract address and parameters, details in [previous chapter](/zh/encoding)
+2. Generate `extra` according to contract address and parameters, details in [Encoding](/registry/encoding)
 
-3. Generate `memo`，which is the base63 encode of `Operation`
+3. Generate `memo`，which is the base64 code of `Operation`
 
    `Operation`:
    ```golang
@@ -56,7 +56,7 @@
 9. Information will be returned to MVM through `event MixinTransaction(bytes)` after contracts calling
 10. MVM will transfer asset to related user if needed after receiving outputs
 
-Developers can call contract function after finishing the first 5 steps, and the rest steps is accomplished by MVM
+Developers can call contract function after finishing the first 5 steps, and the rest steps will be handled by MVM
 
 ## Official js sdk example
 
@@ -133,7 +133,7 @@ const payment = async () => {
 ```
 
 ::: tip Notice
-There's length limitation for memo. When the length of memo exceed 200，an error will be returned.
+There's length limitation for memo. When the length of memo exceed 200, an error will be returned.
 We will demonstrate how to deal with the memo that has invalid length.
 :::
 
@@ -141,7 +141,7 @@ You can learn the encoding of event from [here](/registry/encoding.html#Encode-F
 
 ## Map MVM contract to Messenger user and asset
 
-You can obtain the map between contract and Mixin user and asset by these three public state variable:
+You can obtain the map between contract and Mixin User, Mixin Asset by these three public state variable:
 
 ```solidity
 mapping(address => bytes) public users;
@@ -151,9 +151,10 @@ mapping(uint => address) public contracts;
 
 ## Summary
 
-Registry Contract saves the map between Mixin user and [Quorum](/quorum/join) user account, 
+Registry Contract stores the map between Mixin user and [Quorum](/quorum/join) user account, 
 the map between mixin asset and [Quorum](/quorum/join) asset contract,
-contracts calling and return the results of contracts. EVM smart contract can directly migrate without any modification.
+and is capable of calling other contract functions and emitting the results. 
+So EVM smart contract can directly migrate without any modification.
 
 However, since the length restriction for memo, `extra` need to be shortened when the length of exceeds 200.
-We will introduce how to solve this problem by Storage contract.
+We will demonstrate how to solve this problem with Storage Contract.

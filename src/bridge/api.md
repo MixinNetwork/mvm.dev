@@ -8,14 +8,14 @@ For the convenience of developers, we provide bridge-api service to make deposit
 
 ### 1. GET `/`
 
-This API returns the deployed address of Registry, Storage, Bridge and withdrawal Contract，the pid of Registry，
+This API returns the deployed address of Registry, Storage, Bridge and withdrawal Contract, the pid of Registry,
 the address of Bridge source code。
 
 
 ### 2. POST `/users`
 
 This API returns the information of Mixin Network User bound to current wallet address.
-If there's Mixin Network User bound to wallet，a Mixin Network User will be created and return, 
+If there's no Mixin Network User bound to the wallet，a new Mixin Network User will be created and returned, 
 MVM User Contract will be bound to it at the same time.
 
 Request：
@@ -49,13 +49,13 @@ Response:
 ```
 
 Response is the information of a Mixin Network User. You can use `GET https://api.mixin.one/assets/:asset_Id` api to 
-request the deposit address of a specific asset.
+fetch the deposit address of a specific asset.
 
 API Document: <https://developers.mixin.one/docs/api/assets/asset>
 
 ### 3. POST `/extra`
 
-This API is used to generate `extra` when transferring or withdrawing
+This API is used to generate `extra` when cross-chain withdrawing or transferring asset to a Mixin Account.
 
 Request:
 
@@ -75,7 +75,7 @@ Request:
 
 * `destination` and `tag` is for cross-chain withdrawal, `tag` could be empty
 
-* `receivers` and `threshold` is for transferring asset to a Mixin User.
+* `receivers` and `threshold` is for transferring assets to a Mixin Account
 
 * `extra` of withdrawal asset should be `<trace_id>:A`, `extra` of fee asset should be `<trace_id>:B`
 and the both `<trace_id>` should be same

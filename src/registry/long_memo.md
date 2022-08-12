@@ -1,19 +1,19 @@
 # Memo Error
 
-In previous chapter, we talked about the way to execute contract by Registry, the core of which is the generation of extra.
-However, when multiple contracts are called or a contract function has many parameters, 
+In previous chapter, we talked about the way to call contract functions by Registry Contract, the core of which is the generation of extra.
+However, when multiple contract functions are called or a contract function has many parameters, 
 you may face `memo has too many characters, maximum is 200` error.
 
 To solve this error, you need to write the keccak256 hash of `extra` as key and `extra` as value
 to the public state variable `values` in Storage Contract.
-You can use gas-free MVM Api to write to Storage Contract with access times limitation, or finish this job on your own.
+You can use gas-free MVM Api to write values to Storage Contract with access times limitation, or finish this job on your own.
 
 Storage Contract is detailed in [this chapter](/reference/storage)。
 
 ## Handle Error
 
-Example：call five contract functions in turn，the length of `extra` would be 330.
-We show how to shorten the extra using [official js sdk](https://github.com/MixinNetwork/bot-api-nodejs-client) here。
+Example：call five contract functions in turn, the length of `extra` would be 330.
+We introduce you how to shorten the extra with [official js sdk](https://github.com/MixinNetwork/bot-api-nodejs-client) here。
 
 ```javascript
 import { getExtra } from '@mixin.dev/mixin-node-sdk';
@@ -41,17 +41,18 @@ const contracts = [
 ];
 
 const extra = getExtra(contracts);
-console.log(extra);
 // 0x00052e8f70631208a2ecfc6fa47baf3fde649963bac7000406661abd2e8f70631208a2ecfc6fa47baf3fde649963bac700046057d3ee2e8f70631208a2ecfc6fa47baf3fde649963bac7000406661abd2e8f70631208a2ecfc6fa47baf3fde649963bac7002477ad0aab00000000000000000000000000000000000000000000000000000000000000022e8f70631208a2ecfc6fa47baf3fde649963bac7000406661abd
+console.log(extra.length); // 330
 ```
 
 
 ### Handle on your own
 
-1. Call `write` function to save `extra` in public variable `values` of [Storage](https://github.com/MixinNetwork/trusted-group/blob/master/mvm/quorum/contracts/storage.sol).
-   It costs gas to write to a contract, make sure you have enough balance in you wallet.
+1. Call `write` function to save `extra` in public variable `values` in
+   [Storage Contract](https://github.com/MixinNetwork/trusted-group/blob/master/mvm/quorum/contracts/storage.sol).
+   It costs gas to write value to a contract, make sure you have enough balance in you wallet.
 
-   [official js sdk](https://github.com/MixinNetwork/bot-api-nodejs-client) example：
+   example：
 
    ```javascript
    import { StorageContract, MVMMainnet } from '@mixin.dev/mixin-node-sdk';
@@ -118,11 +119,11 @@ console.log(extra);
    
 ### Handle with MVMApi
 
-MVMApi can help you with gas-freely writing your extra to Storage contract,
-and there's a limitation that you can access 32 times in 24h each ip.
+MVMApi can help you with writing your `extra` to Storage contract freely,
+and there's a limitation that you can only access 32 times in 24h each ip.
 It doesn't count if the length of `extra` is smaller than 200.
 
-[official js sdk](https://github.com/MixinNetwork/bot-api-nodejs-client) example：
+example：
 
 ```javascript
 import { MVMApi, MVMApiURI, encodeMemo, MVMMainnet } from '@mixin.dev/mixin-node-sdk';
@@ -148,9 +149,9 @@ const pay = async () => {
 pay();
 ```
 
-You can use `post /values` API of MVMApi only to write value to Storage Contract, it shares the limitation with `post /payment` of MVMApi
+You can also use `POST /values` API of MVM Api only to write values to Storage Contract, it shares the limitation with `POST /payment` Api above.
 
-[official js sdk](https://github.com/MixinNetwork/bot-api-nodejs-client) example：
+example：
 
 ```javascript
 import { MixinApi, MVMApi, MVMApiURI, MVMMainnet, getExtraWithStorageKey, encodeMemo } from '@mixin.dev/mixin-node-sdk';

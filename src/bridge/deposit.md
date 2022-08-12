@@ -1,6 +1,6 @@
 # Cross-Chain Deposit
 
-We will talk about how to cross-chain deposit with MVM Bridge Contract
+We will introduce you how to cross-chain deposit with MVM Bridge Contract
 
 ## Steps
 
@@ -10,7 +10,6 @@ We will talk about how to cross-chain deposit with MVM Bridge Contract
   [official js sdk](https://github.com/MixinNetwork/bot-api-nodejs-client) example：
   ```javascript
   import { BridgeApi } from '@mixin.dev/mixin-node-sdk';
-  import { Wallet } from 'ethers';
   
   const bridgeClient = BridgeApi();
   const user = await bridgeClient.register({
@@ -31,14 +30,14 @@ We will talk about how to cross-chain deposit with MVM Bridge Contract
   };
   const mixinClient = MixinApi({ keystore });
   
-  // Get information of different asset
+  // Get information of different assets
   const assets = mixinClient.asset.fetchList();
   console.log(assets);
-  // Get deposit address of specific asset
+  // Get deposit address of a specific asset
   const asset = await mixinClient.asset.fetch(
     'c94ac88f-4671-3976-b60a-09064f1811e8' // asset_id of XIN
   );
-  console.log(asset.destination);
+  console.log(asset.deposit_entries[0].destination);
   ```
 
 * ### Deposit

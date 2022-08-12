@@ -4,7 +4,7 @@ MVM provides some API interfaces for information fetching, which are implemented
 
 ## getmtgkeys
 
-MVM is implemented based on MTG, the content sent to smart contract must be signed by MTG to insure the veritable and effective.
+MVM is implemented based on MTG, the content sent to smart contract must be signed by MTG to keep veritable and effective.
 Contract must verify the content with public key so that the public key of mtg is required when contract deployment.
 
 This interface returns the public key of MTG for verification.

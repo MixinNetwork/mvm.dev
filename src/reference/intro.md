@@ -10,8 +10,8 @@ MVM allows developers on other networks to migrate their applications directly t
 
 # Foundational Topics
 
-1. The principle of Registry Contract and call other contract by registry
-2. Deposit and withdrawal with Bridge Contract
+1. The principle of Registry Contract and call other contract function through Registry
+2. Deposit and withdrawal through Bridge Contract
 3. The principle and usage of Storage Contract
 4. MVM API service
 5. Join Quorum
