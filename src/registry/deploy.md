@@ -53,7 +53,7 @@ Gas is needed to deploy contract, you should fill the private key of your wallet
 
 ### remix
 
-Deploy details in <https://developers.mixin.one/zh-CN/docs/mainnet/mvm/remix>
+Deploy details in <https://developers.mixin.one/docs/mainnet/mvm/remix>
 
 ## Summary
 

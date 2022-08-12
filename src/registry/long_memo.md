@@ -8,7 +8,7 @@ To solve this error, you need to write the keccak256 hash of `extra` as key and 
 to the public state variable `values` in Storage Contract.
 You can use gas-free MVM Api to write values to Storage Contract with access times limitation, or finish this job on your own.
 
-Storage Contract is detailed in [this chapter](/reference/storage)。
+Storage Contract is detailed in [this chapter](/storage/intro)。
 
 ## Handle Error
 
@@ -149,7 +149,7 @@ const pay = async () => {
 pay();
 ```
 
-You can also use `POST /values` API of MVM Api only to write values to Storage Contract, it shares the limitation with `POST /payment` Api above.
+You can also use `POST /values` API of MVM Api only to write values to Storage Contract, it shares the limitation with `POST /payments` Api above.
 
 example：
 
