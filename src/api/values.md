@@ -3,9 +3,10 @@
 `POST /values`
 
 ### Introduction
+
 When someone pays a transaction to call contract functions through Registry, 
 `memo has too many characters, maximum is 200` error may occur.
-To handle it, the original `extra` and its `keccak256` hash should be written to Storage Contract ahead and
+To process it, the original `extra` and its `keccak256` hash should be written to Storage Contract ahead and
 pay the transaction with a new `extra`.
 
 You can write `extra` and its hash to the Storage Contract freely by this api with restriction that 32 times in 24h per ip.
