@@ -30,11 +30,16 @@
    代码示例：
 
    ```javascript
-   // 使用 ethers 例子
+   // use ethers.js
    let contractExtra = '0x2E8f70631208A2EcFC6FA47Baf3Fde649963baC7'.slice(2);
-   contractExtra += utils.id('addAny(uint256)').slice(2, 10)
+      
+   let input = utils.id('addAny(uint256)').slice(2, 10)
    const abiCoder = new ethers.utils.AbiCoder();
-   contractExtra += abiCoder.encode(['uint256'], [2]).slice(2);
+   input += abiCoder.encode(['uint256'], [2]).slice(2);
+   
+   const inputLength = Buffer.from([0, input.length / 2]).toString('hex');
+   
+   contractExtra += inputLength + input;
    ```
 
 2. 读取计数器的值 这一步需要执行合约中的 `function count()` 函数，函数签名 `count()` 的 ABI 编码为 `06661abd`，该函数没有参数，所以长度的十六进制为 `0004`，
@@ -42,9 +47,11 @@
    所以该合约调用的编码为 `2e8f70631208a2ecfc6fa47baf3fde649963bac7000406661abd`
 
    ```javascript
-    // 使用 ethers 例子
-    let contractExtra = '0x2E8f70631208A2EcFC6FA47Baf3Fde649963baC7'.slice(2);
-    contractExtra += utils.id('count()').slice(2, 10)
+   // use ethers.js
+   let contractExtra = '0x2E8f70631208A2EcFC6FA47Baf3Fde649963baC7'.slice(2);
+   const input = utils.id('count()').slice(2, 10);
+   const inputLength = Buffer.from([0, input.length / 2]).toString('hex');
+   contractExtra += inputLength + input;
     ```
 
 最终，`extra` 为 `00022e8f70631208a2ecfc6fa47baf3fde649963bac7002477ad0aab00000000000000000000000000000000000000000000000000000000000000022e8f70631208a2ecfc6fa47baf3fde649963bac7000406661abd`

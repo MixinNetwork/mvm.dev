@@ -89,11 +89,10 @@ API 文档: <https://developers.mixin.one/docs/api/assets/asset>
 * `ef241988d19892fe4eff4935256087f4fdc5ecaa` 为 `Storage` 合约的地址
 * 之后的部分为 `action` 的 keccak256 hash 和 `action`
 
-公钥和加密后的 `action` 必须写入到 Storage 合约内，代码示例：
+代码示例:
 
 ```javascript
-import { BridgeApi, StorageContract } from '@mixin.dev/mixin-node-sdk';
-import { keccak256 } from 'ethers/libs/utils';
+import { BridgeApi } from '@mixin.dev/mixin-node-sdk';
 
 const client = BridgeApi();
 
@@ -103,15 +102,5 @@ const action = {
   "threshold": 1,
   "extra": "blahblahblah"
 };
-const res = await client.generateExtra(action);
-
-// 获得 key value
-const key = res.slice(74, 138);
-const value = res.slice(138);
-// 写入 Storage 合约
-const storage = StorageContract({ privateKey: '' }); // 钱包的私钥
-await storage.writeValue(value, key);
-
-// 写入 Storage 合约后，生成对应格式的 extra：process || storage || key
-const extra = '0x' + res.slice(0, 138);
+const extra = await client.generateExtra(action);
 ```

@@ -14,7 +14,7 @@
 
 #### 示例
 
-<https://api.test.mvm.dev/user_contract?user=e8e8cd79-cd40-4796-8c54-3a13cfe50115>
+<https://api.mvm.dev/user_contract?user=e8e8cd79-cd40-4796-8c54-3a13cfe50115>
 
 #### 返回值
 
@@ -35,7 +35,7 @@
 
 #### 示例
 
-<https://api.test.mvm.dev/asset_contract?asset=965e5c6e-434c-3fa9-b780-c50f43cd955c>
+<https://api.mvm.dev/asset_contract?asset=965e5c6e-434c-3fa9-b780-c50f43cd955c>
 
 #### 返回值
 
@@ -58,7 +58,7 @@
 
 #### 示例
 
-<https://api.test.mvm.dev/contract_user?contract=0xa192D5856A9a7c07731bc13559Da7489C7829C74>
+<https://api.mvm.dev/contract_user?contract=0xa192D5856A9a7c07731bc13559Da7489C7829C74>
 
 #### 返回值
 
@@ -79,7 +79,7 @@
 
 #### 示例
 
-<https://api.test.mvm.dev/contract_asset?contract=0x001fB10b1bFede8505AB138c2Bb2E239CB3b50dC>
+<https://api.mvm.dev/contract_asset?contract=0x001fB10b1bFede8505AB138c2Bb2E239CB3b50dC>
 
 #### 返回值
 

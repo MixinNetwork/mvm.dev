@@ -11,4 +11,4 @@ MVM is based on MTG technology, which allows developers to deploy smart contract
 
 # Open Source Code
 
-Address: https://github.com/MixinNetwork/trusted-group
+Address: <https://github.com/MixinNetwork/trusted-group>

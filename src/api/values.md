@@ -1,23 +1,25 @@
 ### API
 
-`POST https://api.mvm.dev/values`
+`POST /values`
 
-### 介绍
+### Introduction
 
-当开发者通过 Registry 调用合约时，有可能遇到 `memo has too many characters, maximum is 200` 错误。
-此时，开发者需要将原本的 `extra` 写入 Storage 合约，并生成一个新的 `extra` 来调用合约。
+When someone pays a transaction to call contract functions through Registry, 
+`memo has too many characters, maximum is 200` error may occur.
+To process it, the original `extra` and its `keccak256` hash should be written to Storage Contract ahead and
+pay the transaction with a new `extra`.
 
-本 API 免费提供了将过长的 `extra` 写入 Storage 合约的服务，限制每个 ip 24 小时内请求 32 次。
+You can write `extra` and its hash to the Storage Contract freely by this api with restriction that 32 times in 24h per ip.
 
-### 参数
+### Parameters
 
-| 参数                |   类型   |  必填   | 说明                     |
-|:------------------|:------:|:-----:|:-----------------------|
-| key               | string | true  | extra 的 keccak256 hash |
-| value             | string | true  | extra                  |
-| address           | string | false | Storage 合约地址           |
+| Parameter |  Type  | Required | Explain                  |
+|:----------|:------:|:--------:|:-------------------------|
+| key       | string |   true   | keccak256 hash of extra  |
+| value     | string |   true   | extra                    |
+| address   | string |  false   | Storage Contract Address |
 
-### 返回值
+### Response
 
 ```json
 {
@@ -25,7 +27,7 @@
 }
 ```
 
-### 代码示例
+### Example
 
 ```javascript
 import { MVMApi, MVMApiURI, getExtra } from '@mixin.dev/mixin-node-sdk';
@@ -55,7 +57,6 @@ const extra = getExtra(contracts);
 
 const mvmClient = MVMApi(MVMApiURI);     
 const key = keccak256(extra);
-// 每个 IP 24 小时内限制访问 32 次        
 const { error } = await mvmClient.writeValue(key, extra, MVMMainnet.Storage.Contract);
 if (error) throw new Error();   
 ```

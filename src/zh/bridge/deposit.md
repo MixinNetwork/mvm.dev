@@ -45,7 +45,7 @@
 
 * ### 充值
 
-  在上一步中，拿到具体的 BTC, ETH, SOL, DOT 等代币的地址之后，只需要对相关的资产进行链上充值, 之后 MetaMask 中就会有相关的 erc20 资产。
+  在上一步中，拿到具体的 BTC, ETH, SOL, DOT 等代币的地址之后，只需要对相关的资产进行链上充值, 之后 MetaMask 中就会有相关的 ERC20 资产。
 
   整个流程中重要的是获取 MetaMask address 对应的 Mixin Network User 在不同链上的充值地址。
 

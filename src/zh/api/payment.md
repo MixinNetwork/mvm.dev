@@ -6,7 +6,7 @@
   当使用 sdk 请求 POST /payments api 时，需要 keystore 对消息签名才可以访问，却有可能暴露 keystore。
   
   此时，可以访问本 api 来生成支付链接，参数不变。另外，还有自动处理 extra 超过限制的功能
-  （由于向 Storage 合约写入数据需要消耗 XIN，限制每个 ip 24 小时内请求 32 次超长 extra，长度 200 以内的 extra 不作限制）。
+  （由于向 Storage 合约写入数据需要消耗 gas，限制每个 ip 24 小时内请求 32 次超长 extra，长度 200 以内的 extra 不作限制）。
 
 ### 参数
 
@@ -57,8 +57,8 @@ opponent_multisig 参数是跟多签相关的参数
 ```javascript
 import { v4 as uuid } from 'uuid';
 import { 
-  MVMApi, 
-  MVMApiTestURI, 
+  MVMApi,
+  MVMApiURI, 
   getExtra, 
   MVMMainnet 
 } from '@mixin.dev/mixin-node-sdk';
@@ -78,7 +78,7 @@ const params = {
   // 唯一标识
   trace_id: uuid(),
   // 备注
-  memo: extra,
+  memo: encodeMemo(extra, MVMMainnet.Registry.PID),
   // 多签
   opponent_multisig: {
     receivers: MVMMainnet.MVMMembers,
@@ -86,7 +86,7 @@ const params = {
   },
 };
 
-const mvmClient = MVMApi(MVMApiTestURI);
+const mvmClient = MVMApi(MVMApiURI);
 mvmClient.payments(params).then(res => {
   console.log(`mixin://codes/${res.code_id}`);
 });
@@ -97,8 +97,8 @@ mvmClient.payments(params).then(res => {
 ```javascript
 import { v4 as uuid } from 'uuid';
 import { 
-  MVMApi, 
-  MVMApiTestURI, 
+  MVMApi,
+  MVMApiURI, 
   getExtra, 
   MVMMainnet 
 } from '@mixin.dev/mixin-node-sdk';
@@ -120,7 +120,7 @@ const params = {
   // 唯一标识
   trace_id: uuid(),
   // 备注
-  memo: extra,
+  memo: encodeMemo(extra, MVMMainnet.Registry.PID),
   // 多签
   opponent_multisig: {
     receivers: MVMMainnet.MVMMembers,
@@ -128,7 +128,7 @@ const params = {
   },
 };
 
-const mvmClient = MVMApi(MVMApiTestURI);
+const mvmClient = MVMApi(MVMApiURI);
 mvmClient.payments(params).then(res => {
   console.log(`mixin://codes/${res.code_id}`);
 });
@@ -141,8 +141,8 @@ mvmClient.payments(params).then(res => {
 ```javascript
 import { v4 as uuid } from 'uuid';
 import { 
-  MVMApi, 
-  MVMApiTestURI, 
+  MVMApi,
+  MVMApiURI, 
   getExtra, 
   MVMMainnet 
 } from '@mixin.dev/mixin-node-sdk';
@@ -169,7 +169,7 @@ const params = {
   // 唯一标识
   trace_id: uuid(),
   // 备注
-  memo: extra,
+  memo: encodeMemo(extra, MVMMainnet.Registry.PID),
   // 多签
   opponent_multisig: {
     receivers: MVMMainnet.MVMMembers,
@@ -177,131 +177,240 @@ const params = {
   }
 };
 
-const mvmClient = MVMApi(MVMApiTestURI);
+const mvmClient = MVMApi(MVMApiURI);
 mvmClient.payments(params).then(res => {
   console.log(`mixin://codes/${res.code_id}`);
 });
 ```
 
-3. 复杂的合约调用
+[//]: # ()
+[//]: # (3. 复杂的合约调用)
 
-uniswap 的 swap 合约方法调用(values 可以为一个数组或者对象)
+[//]: # ()
+[//]: # (uniswap 的 swap 合约方法调用&#40;values 可以为一个数组或者对象&#41;)
 
-```javascript
-import { v4 as uuid } from 'uuid';
-import { 
-  MVMApi, 
-  MVMApiTestURI, 
-  getExtra, 
-  MVMMainnet 
-} from '@mixin.dev/mixin-node-sdk';
+[//]: # ()
+[//]: # (```javascript)
 
-// 资产地址
-const asset_id = "965e5c6e-434c-3fa9-b780-c50f43cd955c";
-// 转账金额
-const amount = "1";
+[//]: # (import { v4 as uuid } from 'uuid';)
 
-const contract = {
-  address: '0xe4aeAc26BCd161aFAEea468AC22F45FE5a35737F',
-  method: 'swapExactTokensForTokens',
-  types: ["uint256", "uint256", "address[]", "address", "uint256"],
-  values: [
-    100000000,
-    12400948731547,
-    [
-      "0x001fB10b1bFede8505AB138c2Bb2E239CB3b50dC",
-      "0x71c1C2D82b39C0e952751c9BEA39c28c70c47Ff4"
-    ],
-    "0xa192D5856A9a7c07731bc13559Da7489C7829C74",
-    1652262893
-  ]
-}
-const extra = getExtra([contract]);
+[//]: # (import { )
 
-// step 2: 发送请求
-const params = {
-  // 转账币种
-  asset_id,
-  // 转账金额
-  amount,
-  // 唯一标识
-  trace_id: uuid(),
-  // 备注
-  memo: extra,
-  // 多签
-  opponent_multisig: {
-    receivers: MVMMainnet.MVMMembers,
-    threshold: MVMMainnet.MVMThreshold,
-  },
-};
+[//]: # (  MVMApi, )
 
-const mvmClient = MVMApi(MVMApiTestURI);
-mvmClient.payments(params).then(res => {
-  console.log(`mixin://codes/${res.code_id}`);
-});
-```
+[//]: # (  MVMApiURI, )
 
-4. 需要非 mixin 映射资产的调用.
+[//]: # (  getExtra, )
 
-uniswap 的移除流动性方法调用
+[//]: # (  MVMMainnet )
 
-```javascript
-import { v4 as uuid } from 'uuid';
-import { 
-  MVMApi, 
-  MVMApiTestURI, 
-  getExtra, 
-  MVMMainnet 
-} from '@mixin.dev/mixin-node-sdk';
+[//]: # (} from '@mixin.dev/mixin-node-sdk';)
 
-// 资产地址
-const asset_id = "965e5c6e-434c-3fa9-b780-c50f43cd955c";
-// 转账金额
-const amount = "1";
+[//]: # ()
+[//]: # (// 资产地址)
 
-const contract = {
-  address: '0x774A9E576f14d81d7fB439efB1Eb14973a7144Fb',
-  method: 'removeLiquidity',
-  types: [
-    "address",
-    "address",
-    "address",
-    "address",
-    "uint256",
-    "uint256",
-    "uint256"
-  ],
-  values: [
-    "0x5EFDe32C3857fe54b152D3ffa7DCE31e28b83aC6",
-    "0x001fB10b1bFede8505AB138c2Bb2E239CB3b50dC",
-    "0x71c1C2D82b39C0e952751c9BEA39c28c70c47Ff4",
-    "0xa192D5856A9a7c07731bc13559Da7489C7829C74",
-    44,
-    0,
-    0
-  ]
-};
-const extra = getExtra([contract]);
+[//]: # (const asset_id = "965e5c6e-434c-3fa9-b780-c50f43cd955c";)
 
-// step 2: 发送请求
-const params = {
-  // 转账币种
-  asset_id,
-  // 转账金额
-  amount,
-  // 唯一标识
-  trace_id: uuid(),
-  // 备注
-  memo: extra,
-  // 多签
-  opponent_multisig: {
-    receivers: MVMMainnet.MVMMembers,
-    threshold: MVMMainnet.MVMThreshold,
-  }
-};
+[//]: # (// 转账金额)
 
-const mvmClient = MVMApi(MVMApiTestURI);
-mvmClient.payments(params).then(res => {
-  console.log(`mixin://codes/${res.code_id}`);
-});
-```
+[//]: # (const amount = "1";)
+
+[//]: # ()
+[//]: # (const contract = {)
+
+[//]: # (  address: '0xe4aeAc26BCd161aFAEea468AC22F45FE5a35737F',)
+
+[//]: # (  method: 'swapExactTokensForTokens',)
+
+[//]: # (  types: ["uint256", "uint256", "address[]", "address", "uint256"],)
+
+[//]: # (  values: [)
+
+[//]: # (    100000000,)
+
+[//]: # (    12400948731547,)
+
+[//]: # (    [)
+
+[//]: # (      "0x001fB10b1bFede8505AB138c2Bb2E239CB3b50dC",)
+
+[//]: # (      "0x71c1C2D82b39C0e952751c9BEA39c28c70c47Ff4")
+
+[//]: # (    ],)
+
+[//]: # (    "0xa192D5856A9a7c07731bc13559Da7489C7829C74",)
+
+[//]: # (    1652262893)
+
+[//]: # (  ])
+
+[//]: # (})
+
+[//]: # (const extra = getExtra&#40;[contract]&#41;;)
+
+[//]: # ()
+[//]: # (// step 2: 发送请求)
+
+[//]: # (const params = {)
+
+[//]: # (  // 转账币种)
+
+[//]: # (  asset_id,)
+
+[//]: # (  // 转账金额)
+
+[//]: # (  amount,)
+
+[//]: # (  // 唯一标识)
+
+[//]: # (  trace_id: uuid&#40;&#41;,)
+
+[//]: # (  // 备注)
+
+[//]: # (  memo: encodeMemo&#40;extra, MVMMainnet.Registry.PID&#41;,)
+
+[//]: # (  // 多签)
+
+[//]: # (  opponent_multisig: {)
+
+[//]: # (    receivers: MVMMainnet.MVMMembers,)
+
+[//]: # (    threshold: MVMMainnet.MVMThreshold,)
+
+[//]: # (  },)
+
+[//]: # (};)
+
+[//]: # ()
+[//]: # (const mvmClient = MVMApi&#40;MVMApiURI&#41;;)
+
+[//]: # (mvmClient.payments&#40;params&#41;.then&#40;res => {)
+
+[//]: # (  console.log&#40;`mixin://codes/${res.code_id}`&#41;;)
+
+[//]: # (}&#41;;)
+
+[//]: # (```)
+
+[//]: # ()
+[//]: # (4. 需要非 mixin 映射资产的调用.)
+
+[//]: # ()
+[//]: # (uniswap 的移除流动性方法调用)
+
+[//]: # ()
+[//]: # (```javascript)
+
+[//]: # (import { v4 as uuid } from 'uuid';)
+
+[//]: # (import { )
+
+[//]: # (  MVMApi, )
+
+[//]: # (  MVMApiURI, )
+
+[//]: # (  getExtra, )
+
+[//]: # (  MVMMainnet )
+
+[//]: # (} from '@mixin.dev/mixin-node-sdk';)
+
+[//]: # ()
+[//]: # (// 资产地址)
+
+[//]: # (const asset_id = "965e5c6e-434c-3fa9-b780-c50f43cd955c";)
+
+[//]: # (// 转账金额)
+
+[//]: # (const amount = "1";)
+
+[//]: # ()
+[//]: # (const contract = {)
+
+[//]: # (  address: '0x774A9E576f14d81d7fB439efB1Eb14973a7144Fb',)
+
+[//]: # (  method: 'removeLiquidity',)
+
+[//]: # (  types: [)
+
+[//]: # (    "address",)
+
+[//]: # (    "address",)
+
+[//]: # (    "address",)
+
+[//]: # (    "address",)
+
+[//]: # (    "uint256",)
+
+[//]: # (    "uint256",)
+
+[//]: # (    "uint256")
+
+[//]: # (  ],)
+
+[//]: # (  values: [)
+
+[//]: # (    "0x5EFDe32C3857fe54b152D3ffa7DCE31e28b83aC6",)
+
+[//]: # (    "0x001fB10b1bFede8505AB138c2Bb2E239CB3b50dC",)
+
+[//]: # (    "0x71c1C2D82b39C0e952751c9BEA39c28c70c47Ff4",)
+
+[//]: # (    "0xa192D5856A9a7c07731bc13559Da7489C7829C74",)
+
+[//]: # (    44,)
+
+[//]: # (    0,)
+
+[//]: # (    0)
+
+[//]: # (  ])
+
+[//]: # (};)
+
+[//]: # (const extra = getExtra&#40;[contract]&#41;;)
+
+[//]: # ()
+[//]: # (// step 2: 发送请求)
+
+[//]: # (const params = {)
+
+[//]: # (  // 转账币种)
+
+[//]: # (  asset_id,)
+
+[//]: # (  // 转账金额)
+
+[//]: # (  amount,)
+
+[//]: # (  // 唯一标识)
+
+[//]: # (  trace_id: uuid&#40;&#41;,)
+
+[//]: # (  // 备注)
+
+[//]: # (  memo: encodeMemo&#40;extra, MVMMainnet.Registry.PID&#41;,)
+
+[//]: # (  // 多签)
+
+[//]: # (  opponent_multisig: {)
+
+[//]: # (    receivers: MVMMainnet.MVMMembers,)
+
+[//]: # (    threshold: MVMMainnet.MVMThreshold,)
+
+[//]: # (  })
+
+[//]: # (};)
+
+[//]: # ()
+[//]: # (const mvmClient = MVMApi&#40;MVMApiURI&#41;;)
+
+[//]: # (mvmClient.payments&#40;params&#41;.then&#40;res => {)
+
+[//]: # (  console.log&#40;`mixin://codes/${res.code_id}`&#41;;)
+
+[//]: # (}&#41;;)
+
+[//]: # (```)
