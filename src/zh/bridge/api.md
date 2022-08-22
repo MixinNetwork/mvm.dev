@@ -95,15 +95,20 @@ API 文档: <https://developers.mixin.one/docs/api/assets/asset>
 代码示例:
 
 ```javascript
-import { BridgeApi } from '@mixin.dev/mixin-node-sdk';
+import { BridgeApi, MVMMainnet } from '@mixin.dev/mixin-node-sdk';
 
-const client = BridgeApi();
-
-// 请求参数
 const action = {
   "receivers": ["58099349-b159-4662-ad51-c18e809c9035"],
   "threshold": 1,
   "extra": "blahblahblah"
 };
+
+// 通过该 APi 生成
+const client = BridgeApi();
 const extra = await client.generateExtra(action);
+
+// 本地生成
+const value = Buffer.from(JSON.stringify(action)).toString('hex');
+const hash = ethers.utils.keccak256(`0x${value}`).slice(2);
+return `0x${MVMMainnet.Registry.PID.replaceAll('-', '')}${MVMMainnet.Storage.Contract.toLowerCase().slice(2)}${hash}${value}`;
 ```

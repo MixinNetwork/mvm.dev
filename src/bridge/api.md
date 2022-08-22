@@ -102,14 +102,20 @@ Response is `extra` in the format of `process || storage || public_key || encryp
 Example：
 
 ```javascript
-import { BridgeApi } from '@mixin.dev/mixin-node-sdk';
-
-const client = BridgeApi();
+import { BridgeApi, MVMMainnet } from '@mixin.dev/mixin-node-sdk';
 
 const action = {
   "receivers": ["58099349-b159-4662-ad51-c18e809c9035"],
   "threshold": 1,
   "extra": "blahblahblah"
 };
+
+// use bridge api
+const client = BridgeApi();
 const extra = await client.generateExtra(action);
+
+// generate locally
+const value = Buffer.from(JSON.stringify(action)).toString('hex');
+const hash = ethers.utils.keccak256(`0x${value}`).slice(2);
+return `0x${MVMMainnet.Registry.PID.replaceAll('-', '')}${MVMMainnet.Storage.Contract.toLowerCase().slice(2)}${hash}${value}`;
 ```
