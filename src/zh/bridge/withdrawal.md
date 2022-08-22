@@ -86,7 +86,7 @@ import { MVMMainnet, BridgeABI, BridgeApi, MixinApi, AssetABI } from '@mixin.dev
 const bridgeClient = BridgeApi();
 const mixinClient = MixinApi({});
 
-const assetId = "43d61dcd-e413-450d-80b8-101d5e903357"; // ETH
+const assetId = "43d61dcd-e413-450d-80b8-101d5e903357"; // ETH 或其他 ERC20 资产 id
 const destination = ''; // 提现地址
 const tag = '';
 const amount = '0.1';
