@@ -15,8 +15,6 @@ the address of Bridge source code。
 ### 2. POST `/users`
 
 This API returns the information of Mixin Network User bound to current wallet address.
-If there's no Mixin Network User bound to the wallet，a new Mixin Network User will be created and returned, 
-MVM User Contract will be bound to it at the same time.
 
 Request：
 
@@ -48,8 +46,18 @@ Response:
 }
 ```
 
-Response is the information of a Mixin Network User. You can use `GET https://api.mixin.one/assets/:asset_Id` api to 
-fetch the deposit address of a specific asset.
+* Response is the information of a Mixin Network User.
+  You can request `GET /assets/:id` api to fetch the deposit address of a specific asset.
+* The default value of `full_name` is the address of wallet
+* `contract` is the MVM User Contract Address bound with the Mixin User, 
+  also the most important parameter and the key to interact with Mixin: 
+  1. If there's no Mixin Network User bound to the wallet，a new Mixin Network User will be created and returned,
+     a MVM User Contract will be bound to it at the same time
+     (the mapping between Mixin Network User and MVM User Contract can be obtained in Registry, see [Q&A](/resources/qa)).
+  2. If there's no transaction records of Mixin Network User, `contract` may be empty
+  3. `contract` is used in cross-chain withdrawal and transferring asset to a Mixin Network User, 
+     details in [Cross-Chain Withdrawal](/zh/bridge/withdrawal)
+
 
 API Document: <https://developers.mixin.one/docs/api/assets/asset>
 

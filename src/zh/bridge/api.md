@@ -16,21 +16,17 @@ Bridge 服务的源码等。访问 [https://bridge.mvm.dev/](https://bridge.mvm.
 
 ### 2. POST `/users`
 
-这个 API 会返回钱包（如 MetaMask）地址所绑定的 Mixin Network User 的信息；
-如果这个钱包地址还没有绑定的 Mixin Network User，会创建 Mixin Network User 和对应的 MVM User Contract 与其绑定并返回。
+这个 API 会返回钱包（如 MetaMask）地址所绑定的 Mixin Network User 的信息。
 
 请求参数：
 
 ```json
 {
   "public_key": "0xE2aD78Fdf6C29338f5E2434380740ac889457256",
-  "signature": "0xee8b45ee93f56f6bbbb0949b48bf1695083e1d9916b381b29e460541e607f34519759c93ddb6de6fd1b04c4d3c6f598d3e2e977185cf467c087918e108ce49691c"
 }
 ```
 
 * `public_key` 是一个 eth 的帐号地址，可以在任意的钱包直接使用的，例如 metamask, imtoken 等等。
-
-* `signature` 是钱包对字符串 `MVM:Bridge:Proxy:8MfEmL3g8s-PoDpZ4OcDCUDQPDiH4u1_OmxB0Aaknzg:<public_key>` keccak256 hash 的签名
 
 返回值:
 
@@ -49,7 +45,14 @@ Bridge 服务的源码等。访问 [https://bridge.mvm.dev/](https://bridge.mvm.
 }
 ```
 
-返回值是一个 Mixin Network User 信息。在充值时，可通过 GET `https://api.mixin.one/assets/:asset_Id` 可以获取具体资产的充值地址，
+* 返回值是一个 Mixin Network User 信息。在充值时，可用 `key` 签名请求 `GET /assets/:id` API 获取具体资产的充值地址
+* `full_name` 的默认值为钱包地址
+* `contract` 为该 Mixin Network User 所关联的 MVM User Contract，是返回中最重要的参数，是与 Mixin 交互的关键：
+
+  1. 如果这个钱包地址还没有绑定的 Mixin Network User，会创建 Mixin Network User 和对应的 MVM User Contract 与其绑定并返回
+ （Mixin Network User 和 MVM User Contract 映射详见 [Q&A](/zh/resources/qa)）。
+  2. 当没有转账交易记录时，`contract` 的值可能为空
+  3. `contract` 用于多链提现和向 Mixin Network User 转账，详见 [多链提现](/zh/bridge/withdrawal)
 
 API 文档: <https://developers.mixin.one/docs/api/assets/asset>
 
