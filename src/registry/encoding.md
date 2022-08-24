@@ -1,6 +1,6 @@
 # MVM Encoding
 
-Previously we talked about how to deploy a contract on [Quorum](/quorum/join).
+Previously we talked about how to deploy a contract on [MVM](/quorum/join).
 Before continuing to introduce how to call a contract function through Registry Contract,
 some specifications should be noticed to transmit data. Hereby we introduce the data encoding part for preparation. 
 

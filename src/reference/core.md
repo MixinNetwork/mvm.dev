@@ -6,10 +6,10 @@
 is an open source protocol with multi-signature escrow nodes.
 The owners can choose some trusted nodes to implement and run this program. 
 
-## Quorum Network
+## MVM
 
-An EVM compatible POS network managed by multiple nodes, deployed with MVM. 
-You can connect to Quorum [follow instructions](/quorum/join.html)
+An EVM compatible POS network managed by multiple nodes. 
+You can connect to MVM [follow instructions](/quorum/join.html)
 
 ## PID
 

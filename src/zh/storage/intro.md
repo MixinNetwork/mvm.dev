@@ -1,7 +1,7 @@
 # Storage 合约原理及使用
 
 在 [Registry](/zh/Registry/call) 中，我们介绍了如何通过代理合约 [Registry](https://github.com/MixinNetwork/trusted-group/blob/master/mvm/quorum/contracts/registry.sol)，
-来执行部署在 [Quorum](/zh/quorum/join) 上的其他合约。
+来执行部署在 [MVM](/zh/quorum/join) 上的其他合约。
 
 目前 MVM 支持通过 [Registry](https://github.com/MixinNetwork/trusted-group/blob/master/mvm/quorum/contracts/registry.sol) 调用多个合约，
 只需根据要调用的合约函数签名等信息生成 `extra`，并将其编码后作为交易的 `memo` 付款即可。

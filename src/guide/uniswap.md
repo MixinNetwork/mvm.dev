@@ -2,7 +2,7 @@
 
 In the previous article, we mentioned that through the registry, the contract on the EVM can be migrated without any modification. In this chapter, we will introduce in detail how to deploy a uniswap smart contract.
 
-We will deploy with Uniswap V2. Before deployment, we need to configure the Quorum testnet with metamask. For the specific configuration method, please refer to the chapter on how to join the testnet. 
+We will deploy with Uniswap V2. Before deployment, we need to configure the MVM testnet with metamask. For the specific configuration method, please refer to the chapter on how to join the testnet. 
 
 The core uniswap code mainly includes [v2-core](https://github.com/Uniswap/v2-core) and [v2-periphery](https://github.com/Uniswap/v2-periphery). v2-core is the core function of Uniswap, and v2-periphery is a simple encapsulation on top of the core function, providing developers with an easier-to-use interface.   
 
@@ -19,7 +19,7 @@ First, import all the v2-core contract code into Remix IDE, and then modify seve
 
 Note: These modifications are not made for deployment to MVM, these are just some modifications according to the configuration requirements for different network deployments. 
 
-The first is to change the chainId in `contracts/UniswapV2ERC20.sol` to the network ID of the Quorum testnet. Note that the call to assembly is removed here, because the Uniswap code is very old, and many new features on the new network are not easy to support.  
+The first is to change the chainId in `contracts/UniswapV2ERC20.sol` to the network ID of the MVM testnet. Note that the call to assembly is removed here, because the Uniswap code is very old, and many new features on the new network are not easy to support.  
 
 ```solidity
 constructor() public {
@@ -43,7 +43,7 @@ constructor(address _feeToSetter) public {
 }
 ```
 
-Then deploy UniswapV2Factory directly through Remix. There is only one parameter when deploying, and you can directly enter the address of your own testnet. After successful deployment, you will get the address of the contract. In MVM's Quorum testnet browser, you can get the output of the InitCode event added through viewing logs by searching for the contract address and opening it.
+Then deploy UniswapV2Factory directly through Remix. There is only one parameter when deploying, and you can directly enter the address of your own testnet. After successful deployment, you will get the address of the contract. In MVM testnet browser, you can get the output of the InitCode event added through viewing logs by searching for the contract address and opening it.
 
 ![image](https://prsdigg.com/rails/active_storage/blobs/eyJfcmFpbHMiOnsibWVzc2FnZSI6IkJBaHBBcUFOIiwiZXhwIjpudWxsLCJwdXIiOiJibG9iX2lkIn19--ff2de56617bf6a8211019abd1bbe1d32d5131ca0/Screenshot%20from%202022-01-31%2008-35-56)
 
@@ -57,7 +57,7 @@ To replace the string of numbers with the number starting with `0x649f` obtained
 
 Then to deploy the UniswapV2Router02 contract with two parameters required. The factory is the contract address deployed in the previous step, and for the other WETH parameter, we can use any ETH address, because we do not need ETH related operations in MVM. 
 
-So far, all the code of Uniswap V2 has been successfully deployed on MVM's Quorum testnet.
+So far, all the code of Uniswap V2 has been successfully deployed on MVM testnet.
 
 ## Deploy UniswapMVMRouter 
 
@@ -203,7 +203,7 @@ So far, deploying Uniswap on MVM and adding liquidity to Uniswap is completed. T
 
 ## Deployment Example
 
-We have implemented a complete example of deploying uniswap through hardhat, in which the Quorum testnet can be used directly. Smart contracts can be easily deployed through fork.
+We have implemented a complete example of deploying uniswap through hardhat, in which the MVM testnet can be used directly. Smart contracts can be easily deployed through fork.
 
 uniswap deployment script address：https://github.com/MixinNetwork/mvmcontracts/blob/main/scripts/uniswap.ts
 

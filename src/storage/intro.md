@@ -1,6 +1,6 @@
 # Introduction
 
-In [Registry Storage](/Registry/call), we introduce the way to call other contract function deployed on [Quorum](/quorum/join)
+In [Registry Storage](/Registry/call), we introduce the way to call other contract function deployed on [MVM](/quorum/join)
 through [Registry Contract](https://github.com/MixinNetwork/trusted-group/blob/master/mvm/quorum/contracts/registry.sol)，
 
 So far, you can call multiple contract functions through
