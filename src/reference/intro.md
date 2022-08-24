@@ -14,7 +14,7 @@ MVM allows developers on other networks to migrate their applications directly t
 2. Deposit and withdrawal through Bridge Contract
 3. The principle and usage of Storage Contract
 4. MVM API service
-5. Join Quorum
+5. Join MVM
 
 ---
 If you have any questions, join conversation group in mixin messenger:

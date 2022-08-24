@@ -1,6 +1,6 @@
-# 在 Quorum 中部署合约
+# 在 MVM 中部署合约
 
-本节，我们将介绍如何将一个合约部署到 [Quorum](/zh/quorum/join) 网络中。
+本节，我们将介绍如何将一个合约部署到 [MVM](/zh/quorum/join) 网络中。
 开发者可以选择自己熟悉的部署方式：[remix](https://remix-project.org/), [hardhat](https://hardhat.org/) 等。
 
 
@@ -10,7 +10,7 @@
    [Chrome](https://chrome.google.com/webstore/detail/metamask/nkbihfbeogaeaoehlefnkodbefgpgknn?hl=zh-CN) 
    [Firefox](https://addons.mozilla.org/zh-CN/firefox/addon/ether-metamask/?utm_source=addons.mozilla.org&utm_medium=referral&utm_content=search)
 
-2. Metamask 如何添加 [Quorum 网](/zh/quorum/join)
+2. Metamask 如何添加 [MVM 网](/zh/quorum/join)
 
 ## 准备合约
 
@@ -41,7 +41,7 @@ contract Counter { // 计数器合约
 ### 使用 hardhat
 
 我们提供了 [hardhat](https://hardhat.org/) 的[部署示例](<https://github.com/MixinNetwork/mvmcontracts>), 
-已经配置好 [Quorum](/zh/quorum/join) 正式网和测试网，可以直接使用。
+已经配置好 [MVM](/zh/quorum/join) 正式网和测试网，可以直接使用。
 
 执行以下命令：
 
@@ -59,5 +59,5 @@ privateKey 需要替换成钱包的私钥，部署合约需要一定的手续费
 
 ## 总结
 
-本节我们介绍了如何将合约部署到 [Quorum](/zh/quorum/join) 网络。你需要记下合约部署的地址，在 [调用合约](/zh/registry/call) 这节我们将会用到它。
+本节我们介绍了如何将合约部署到 [MVM](/zh/quorum/join) 网络。你需要记下合约部署的地址，在 [调用合约](/zh/registry/call) 这节我们将会用到它。
 

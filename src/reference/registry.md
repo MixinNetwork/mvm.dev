@@ -2,7 +2,7 @@
 
 In the previous article about the deployment of the refund contract, we introduced how to deploy and use a complete contract in MVM. It was mentioned that the contract developer needs to make some modifications to the original contract, and now we further implemented the registry. sol, so that through the registry, the original contract can be directly deployed and used in MVM. 
 
-The registry is the MVM's proxy contract. The original smart contract does not need to be modified, which can be executed directly through the registry after being deployed on Quorum.
+The registry is the MVM's proxy contract. The original smart contract does not need to be modified, which can be executed directly through the registry after being deployed on MVM.
 
 ## How to Use the Registry
 
@@ -51,8 +51,8 @@ When MVM calls the mixin function, raw will be parsed into relevant parameters, 
 4. amount, the amounnt of assets that need to be manipulated
 5. extra, contains some information about assets and contracts
 6. timestamp, no verification currently, which is decided by the own situation of the contract whether to use it or not
-7. user, Mixin user ID, or a multi-signature account, a corresponding Quorum account will be created, if the user does not exist
-8. parse the extra value in 5, if the asset corresponding to Quorum does not exist, the asset will be created
+7. user, Mixin user ID, or a multi-signature account, a corresponding MVM account will be created, if the user does not exist
+8. parse the extra value in 5, if the asset corresponding to MVM does not exist, the asset will be created
 9. signature verification
 10. transfer corresponding asset to the Mixin user's corresponding MVM account
 11. call the contract, after the execution is completed, destroy the assets in the MVM account 
@@ -111,6 +111,6 @@ registry.sol open source address: https://github.com/MixinNetwork/trusted-group/
 
 ## Conclusion
 
-Compared with the refund.sol, contract developers need to do some compatible work (implementation of PID, `_work()`). And the registry assists in the realization work for the mixin users and Quorum accounts mapping, mixin assets and Quorum assets mapping, contract invocation, and the execution result returning. 
+Compared with the refund.sol, contract developers need to do some compatible work (implementation of PID, `_work()`). And the registry assists in the realization work for the mixin users and MVM accounts mapping, mixin assets and MVM assets mapping, contract invocation, and the execution result returning. 
 
 EVM contracts can also be directly migrated without modification. In the next chapter, we will introduce how to deploy a complete uniswap contract based on MVM. 

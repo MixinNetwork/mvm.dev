@@ -3,7 +3,7 @@
 我们将在本章介绍 Registry 合约的原理，展示如何在 MVM 中部署合约并通过 Registry 调用部署合约。我们还会介绍如何解决调用合约中遇到的问题。
 
 ## 介绍
-[Registry](#开源代码) 是 MVM 代理合约，原有的智能合约不需要做修改，在 [Quorum](/zh/quorum/join) 上部署后，
+[Registry](#开源代码) 是 MVM 代理合约，原有的智能合约不需要做修改，在 [MVM](/zh/quorum/join) 上部署后，
 可以直接通过 Registry 来执行。
 
 ### function mixin 
@@ -19,10 +19,10 @@
 4. 解析 amount：需要操作的资产数量
 5. 解析 extra：包含着资产、合约调用的一些信息
 6. 解析 timestamp：目前没有验证，合约可以根据自己的情况来决定是否使用
-7. 解析 user：Mixin 用户 ID，也可能是多签帐号, 如果用户不存在会创建对应的 Quorum 帐号
-8. 解析 5 里面的 extra 值, 如果 Quorum 对应资产不存在会创建资产
+7. 解析 user：Mixin 用户 ID，也可能是多签帐号, 如果用户不存在会创建对应的 MVM 帐号
+8. 解析 5 里面的 extra 值, 如果 MVM 对应资产不存在会创建资产
 9. 验证签名
-10. 通过 MixinEvent 事件暴露接受到到参数，开发者可以在浏览器中的 logs 检查参数，（主网和测试网浏览器的地址见 [Quorum](/zh/quorum/join)）
+10. 通过 MixinEvent 事件暴露接受到到参数，开发者可以在浏览器中的 logs 检查参数，（主网和测试网浏览器的地址见 [MVM](/zh/quorum/join)）
 11. 给 Mixin 用户，对应的 MVM 帐号转入相应的资产，[代码示例](https://github.com/MixinNetwork/mvm-contracts/blob/main/contracts/mixin/registry.sol#L204)
 12. 依次调用合约，[代码示例](https://github.com/MixinNetwork/mvm-contracts/blob/main/contracts/mixin/User.sol#L42)
 13. 合约调用的结果通过 `ProcessCalled` 事件返回，[代码示例](https://github.com/MixinNetwork/mvm-contracts/blob/main/contracts/mixin/User.sol#L82)
@@ -96,4 +96,4 @@ registry.sol 开源地址: <https://github.com/MixinNetwork/trusted-group/tree/m
 
 ## 总结
 
-本节我们介绍了 Registry 合约的原理，我们将在下一节介绍如何在 [Quorum](/zh/quorum/join) 中部署一个合约，并在之后讲解如何通过 Registry 合约来调用部署的合约。
+本节我们介绍了 Registry 合约的原理，我们将在下一节介绍如何在 [MVM](/zh/quorum/join) 中部署一个合约，并在之后讲解如何通过 Registry 合约来调用部署的合约。

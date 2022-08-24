@@ -11,7 +11,7 @@ MVM 可以让其它网络上的开发者（几乎）不需要做任何修改，�
 2. 如何通过 Bridge 合约进行充值和提现
 3. Storage 合约的原理跟实现
 4. MVM 的 API 接口
-5. 如何加入 Quorum
+5. 如何加入 MVM
 
 ---
 遇到任何问题欢迎入群 <https://mixin.one/codes/a91c865c-5de7-40c1-a130-f6c92ee89bd7> 探讨.

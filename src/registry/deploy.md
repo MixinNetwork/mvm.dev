@@ -1,6 +1,6 @@
-# Deploy a Contract in Quorum
+# Deploy a Contract in MVM
 
-We will show you how deploy a contract to [Quorum network](/quorum/join) here.
+We will show you how deploy a contract to [MVM network](/quorum/join) here.
 You can choose the way you familiar with: [remix](https://remix-project.org/) or [hardhat](https://hardhat.org/).
 
 ## Prepare
@@ -9,7 +9,7 @@ You can choose the way you familiar with: [remix](https://remix-project.org/) or
    [Chrome](https://chrome.google.com/webstore/detail/metamask/nkbihfbeogaeaoehlefnkodbefgpgknn) 
    [Firefox](https://addons.mozilla.org/zh-CN/firefox/addon/ether-metamask/?utm_source=addons.mozilla.org&utm_medium=referral&utm_content=search)
 
-2. Add [Quorum network](/quorum/join) to Metamask
+2. Add [MVM network](/quorum/join) to Metamask
 
 ## Contract
 
@@ -40,7 +40,7 @@ contract Counter {
 ### hardhat
 
 We already prepared the [hardhat](https://hardhat.org/) [deploy examples](<https://github.com/MixinNetwork/mvmcontracts>), 
-[Quorum](/quorum/join) mainnet and testnet settings are provided.
+[MVM](/quorum/join) mainnet and testnet settings are provided.
 
 run to deploy：
 ```shell
@@ -57,6 +57,6 @@ Deploy details in <https://developers.mixin.one/docs/mainnet/mvm/remix>
 
 ## Summary
 
-We introduced how to deploy a contract on [Quorum](/quorum/join) in this chapter.
+We introduced how to deploy a contract on [MVM](/quorum/join) in this chapter.
 You should save the deployed contract address, which will be used in chapter [Call Contract](/registry/call).
 

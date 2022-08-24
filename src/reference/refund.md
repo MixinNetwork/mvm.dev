@@ -3,7 +3,7 @@
 In the previous part, we introduced the main functions implemented by MVM. In this article, we will show how to develop a complete contract based on MVM.  Including the following parts:
 
 1. Implement the solidity contract. Here we use refund.sol as an example, while other contracts are in similar process. The open source code is at the end of the article. 
-2. Deploy the refund contract on the quorum, with the same operation as the deployment of the EVM contract. 
+2. Deploy the refund contract on the MVM, with the same operation as the deployment of the EVM contract. 
 3. Publish contracts on MVM
 4. Mixin users use the contracts 
 
@@ -27,17 +27,17 @@ In the previous part, we introduced the main functions implemented by MVM. In th
 
 There is source code and open source address at the end of the article for this.
 
-## Deploy the Contract on Quorum
+## Deploy the Contract on MVM
 
 Developers can choose the deployment method they are familiar with, such as remix, hardhat, etc.
 
-Here is a deployment example for hardhat, https://github.com/MixinNetwork/mvmcontracts, which can be used directly if the quorum testnet has been configured.
+Here is a deployment example for hardhat, https://github.com/MixinNetwork/mvmcontracts, which can be used directly if the MVM testnet has been configured.
 
 TODO: To add refund deployment commands.
 
 ## Publish the Contract on MVM
 
-After the smart contract is deployed on Quorum, it needs to be bound to the Mixin bot on the MVM (publish the contract). MVM will package the data based on the PID, send it to Quorum, and return the execution result in the Quorum to the Mixin user. 
+After the smart contract is deployed on MVM, it needs to be bound to the Mixin bot on the MVM (publish the contract). MVM will package the data based on the PID, send it to MVM, and return the execution result in the MVM to the Mixin user. 
 
 Publishing a contract is a multi-signature transfer to MTG, which will contain contract address, PID, contract address and other information in the memo. 
 

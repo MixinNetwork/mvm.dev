@@ -148,8 +148,8 @@ mapping(uint => address) public contracts;
 
 ## Summary
 
-Registry Contract stores the map between Mixin user and [Quorum](/quorum/join) user account, 
-the map between mixin asset and [Quorum](/quorum/join) asset contract,
+Registry Contract stores the map between Mixin user and [MVM](/quorum/join) user account, 
+the map between mixin asset and [MVM](/quorum/join) asset contract,
 and is capable of calling other contract functions and emitting the results. 
 So EVM smart contract can directly migrate without any modification.
 

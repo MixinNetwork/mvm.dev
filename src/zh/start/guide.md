@@ -3,8 +3,8 @@
 ::: tip 学完本章将会了解
 
 1. 浏览器如何安装 Metamask
-2. 如何将 [Quorum 网] 导入 Metamask 内
-3. 在水龙头网站领取 Quorum 测试网代币
+2. 如何将 [MVM 网] 导入 Metamask 内
+3. 在水龙头网站领取 MVM 测试网代币
 
 :::
 
@@ -13,9 +13,9 @@
 1. 浏览器如何安装 Metamask
    [Chrome](https://chrome.google.com/webstore/detail/metamask/nkbihfbeogaeaoehlefnkodbefgpgknn?hl=zh-CN) [Firefox](https://addons.mozilla.org/zh-CN/firefox/addon/ether-metamask/?utm_source=addons.mozilla.org&utm_medium=referral&utm_content=search)
 
-2. Metamask 如何添加 [Quorum 网](/zh/quorum/join)
+2. Metamask 如何添加 [MVM 网](/zh/quorum/join)
 
-3. 在 [水龙头网站](https://faucet.test.mixinbots.com/)领取 Quorum 测试网代币
+3. 在 [水龙头网站](https://faucet.test.mixinbots.com/)领取 MVM 测试网代币
 
 ::: tip
 

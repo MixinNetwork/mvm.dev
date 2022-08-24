@@ -2,7 +2,7 @@
 
 在上一篇文章中，我们提到通过 registry, 可以不用做任何修改来迁移 EVM 上的合约，这一章我们就来详细介绍一下，如何部署一个 uniswap 的合约。
 
-我们会用 Uniswap V2 版本来部署。在部署之前需要先用 metamask 配置到 Quorum 的测试网，具体的配置方式可以参考 [加入测试网络](/zh/quorum/join) 章节。
+我们会用 Uniswap V2 版本来部署。在部署之前需要先用 metamask 配置到 MVM 的测试网，具体的配置方式可以参考 [加入测试网络](/zh/quorum/join) 章节。
 
 核心的 uniswap 代码主要包含 [v2-core](https://github.com/Uniswap/v2-core) 跟 [v2-periphery](https://github.com/Uniswap/v2-periphery) 两部分。 v2-core 是 Uniswap 最核心的功能，v2-periphery 是在核心功能之上的一层简单的封装，给开发者提供更易用的接口。
 
@@ -21,7 +21,7 @@
 这些修改不是因为要部署到 MVM 才修改的，这只是一些针对不同网络部署的配置文件性质的修改。
 :::
 
-第一个是将 `contracts/UniswapV2ERC20.sol` 中的 chainId 修改成 Quorum 测试网的网络 ID，注意这里去掉了对 assembly 的调用，是因为 Uniswap 的代码非常古老，很多新的特性在新的网络上支持不好。
+第一个是将 `contracts/UniswapV2ERC20.sol` 中的 chainId 修改成 MVM 测试网的网络 ID，注意这里去掉了对 assembly 的调用，是因为 Uniswap 的代码非常古老，很多新的特性在新的网络上支持不好。
 
 ```solidity
 constructor() public {
@@ -45,7 +45,7 @@ constructor(address _feeToSetter) public {
 }
 ```
 
-然后直接通过 Remix 来部署 UniswapV2Factory 了，部署时只有一个参数，可以直接输入自己的测试网的地址即可，部署成功后，会得到这个合约的地址。在 MVM 的 Quorum 测试网浏览器，搜索这个合约地址打开后，查看 logs 会得到我们添加的这个 InitCode 事件的输出结果。
+然后直接通过 Remix 来部署 UniswapV2Factory 了，部署时只有一个参数，可以直接输入自己的测试网的地址即可，部署成功后，会得到这个合约的地址。在 MVM 测试网浏览器，搜索这个合约地址打开后，查看 logs 会得到我们添加的这个 InitCode 事件的输出结果。
 
 ![image](https://prsdigg.com/rails/active_storage/blobs/eyJfcmFpbHMiOnsibWVzc2FnZSI6IkJBaHBBcUFOIiwiZXhwIjpudWxsLCJwdXIiOiJibG9iX2lkIn19--ff2de56617bf6a8211019abd1bbe1d32d5131ca0/Screenshot%20from%202022-01-31%2008-35-56)
 
@@ -59,7 +59,7 @@ constructor(address _feeToSetter) public {
 
 然后部署 UniswapV2Router02 这个合约，需要两个参数，factory 就是上一个步骤部署后的合约地址，另一个 WETH 参数可以随便使用一个 ETH 地址即可，因为我们 MVM 中并不需要 ETH 相关的操作。
 
-至此 Uniswap V2 的所有代码都已经成功部署在了 MVM 的 Quorum 测试网
+至此 Uniswap V2 的所有代码都已经成功部署在了 MVM 测试网
 
 ## UniswapMVMRouter 部署
 
@@ -207,7 +207,7 @@ XIN 流动性的添加，跟 BTC 流动性添加方式一样，生成新的 extr
 
 ## 部署示例
 
-我们实现了一个通过 hardhat 部署 uniswap 的完整示例，其中的 Quorum 测试网可以直接使用，通过 fork 可以方便的部署自己的合约。
+我们实现了一个通过 hardhat 部署 uniswap 的完整示例，其中的 MVM 测试网可以直接使用，通过 fork 可以方便的部署自己的合约。
 
 uniswap 部署脚本地址：<https://github.com/MixinNetwork/mvmcontracts/blob/main/scripts/uniswap.ts>
 

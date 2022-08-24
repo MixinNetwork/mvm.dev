@@ -205,7 +205,7 @@ module.exports = {
               ]
             },
             {
-              title: 'Quorum',
+              title: 'MVM',
               children: [
                 {
                   title: 'Join',
@@ -357,7 +357,7 @@ module.exports = {
               ]
             },
             {
-              title: 'Quorum',
+              title: 'MVM',
               children: [
                 {
                   title: '如何加入',

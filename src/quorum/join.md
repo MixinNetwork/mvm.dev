@@ -1,4 +1,4 @@
-# Join Quorum
+# Join MVM
 
 JSON RPC list:
 
@@ -30,7 +30,7 @@ Blockchain browser：<https://scan.mvm.dev>
 
 ### Testnet
 
-Network name：Quorum Test
+Network name：MVM Test
 
 RPC link：<https://quorum-testnet.mixin.zone>
 

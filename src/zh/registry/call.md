@@ -148,6 +148,6 @@ mapping(uint => address) public contracts;
 
 ## 总结
 
-Registry 合约辅助实现了：Mixin 用户与 [Quorum](/zh/quorum/join) 帐户的映射、mixin 资产与 [Quorum](/zh/quorum/join) 资产的映射、合约调用以及执行结果返回的工作。EVM 合约也可以直接迁移不需要作修改。
+Registry 合约辅助实现了：Mixin 用户与 [MVM](/zh/quorum/join) 帐户的映射、mixin 资产与 [MVM](/zh/quorum/join) 资产的映射、合约调用以及执行结果返回的工作。EVM 合约也可以直接迁移不需要作修改。
 
 但是，由于 mtg 对 extra 的长度有限制，当 extra 的长度超过 200 时，需要进行额外的处理，我们将在下一节介绍 Storage 合约的原理和使用以解决这个问题。

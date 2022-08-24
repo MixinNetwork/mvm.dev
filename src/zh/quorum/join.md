@@ -1,4 +1,4 @@
-# 加入 Quorum
+# 加入 MVM
 
 JSON RPC 列表:
 
@@ -32,7 +32,7 @@ ChainID：73927
 
 #### 测试网
 
-网络名：Quorum Test
+网络名：MVM Test
 
 RPC 链接：<https://quorum-testnet.mixin.zone>
 
