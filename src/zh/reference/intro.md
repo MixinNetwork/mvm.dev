@@ -14,4 +14,4 @@ MVM 可以让其它网络上的开发者（几乎）不需要做任何修改，�
 5. 如何加入 MVM
 
 ---
-遇到任何问题欢迎入群 <https://mixin.one/codes/a91c865c-5de7-40c1-a130-f6c92ee89bd7> 探讨.
+遇到任何问题欢迎入群 <https://mixin.one/codes/99f90817-9b2a-4d39-ba53-ab2cf0aa2440> 探讨.

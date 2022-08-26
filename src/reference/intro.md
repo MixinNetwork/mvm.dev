@@ -18,4 +18,4 @@ MVM allows developers on other networks to migrate their applications directly t
 
 ---
 If you have any questions, join conversation group in mixin messenger:
-<https://mixin.one/codes/a91c865c-5de7-40c1-a130-f6c92ee89bd7>
+<https://mixin.one/codes/99f90817-9b2a-4d39-ba53-ab2cf0aa2440>
