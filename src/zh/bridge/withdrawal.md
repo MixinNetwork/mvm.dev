@@ -81,11 +81,16 @@ function transferWithExtra(
 import { Wallet, ethers } from 'ethers';
 import { StaticJsonRpcProvider } from '@ethersproject/providers';
 import { v4 } from 'uuid';
-import { MVMMainnet, BridgeABI, BridgeApi, MixinApi } from '@mixin.dev/mixin-node-sdk';
+import { MVMMainnet, BridgeABI, BridgeApi, MixinApi, AssetABI } from '@mixin.dev/mixin-node-sdk';
 
+const bridgeClient = BridgeApi();
+const mixinClient = MixinApi({});
+
+const assetId = "43d61dcd-e413-450d-80b8-101d5e903357"; // ETH 或其他 ERC20 资产 id
 const destination = ''; // 提现地址
 const tag = '';
-const amount = 0.1;
+const amount = '0.1';
+const asset = await mixinClient.network.fetchAsset(assetId);
 
 const publicKey = ''; // 钱包地址
 const privateKey = ''; // 钱包私钥
@@ -96,9 +101,10 @@ const bridge = new ethers.Contract(
   BridgeABI,
   signer
 );
-
-const bridgeClient = BridgeApi();
-const mixinClient = MixinApi({});
+// 钱包地址对应的 Mixin User 所绑定的 MVM Contract 地址
+const { contract } = await bridgeClient.register({
+  public_key: publicKey
+});
 
 const main = async () => {
   const traceId = v4();
@@ -115,20 +121,27 @@ const main = async () => {
   const extra1 = await bridgeClient.generateExtra(action1);
   const extra2 = await bridgeClient.generateExtra(action2);
   
-  const { contract } = await bridgeClient.register({
-    public_key: publicKey
-  });
-  const res1 = await bridge.release(contract, extra1, {
+  // 提现 ETH
+  const assetRes1 = await bridge.release(contract, extra1, {
     gasPrice: 10000000, // 0.01 Gwei
     gasLimit: 350000,
     value: ethers.utils.parseEther(Number(amount).toFixed(8))
   });
+  
+  // 提现 ERC20
+  const tokenContract = new ethers.Contract(asset.contract, AssetABI, signer);
+  const tokenDecimal = await tokenContract.decimals();
+  const value = ethers.utils.parseUnits(amount, tokenDecimal);
+  await tokenContract.transferWithExtra(contract, value, extra2, {
+    gasPrice: 10000000,
+    gasLimit: 350000
+  });
 
-  const asset = await mixinClient.network.fetchAsset("43d61dcd-e413-450d-80b8-101d5e903357"); // ETH
-  const res2 = await bridge.release(contract, extra2, {
+  // 提现费用
+  const feeRes = await bridge.release(contract, extra2, {
     gasPrice: 10000000, // 0.01 Gwei
     gasLimit: 350000,
-    value: ethers.utils.parseEther(Number(asset.fee).toFixed(8)) // ETH 手续费
+    value: ethers.utils.parseEther(Number(asset.fee).toFixed(8))
   });
 };
 ```
@@ -147,7 +160,4 @@ const main = async () => {
 ```
 
 * `receivers` 为转账的账户，给 Mixin User 转账时只填一个该用户的 `client_id` 即可
-
-## withdrawal.sol 完整代码
-
-<https://github.com/MixinNetwork/trusted-group/blob/master/mvm/quorum/bridge/contracts/Withdrawal.sol>
+* 

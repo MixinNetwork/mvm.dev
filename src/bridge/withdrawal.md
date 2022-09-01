@@ -86,13 +86,18 @@ Withdrawal Code Example：
 import { Wallet, ethers } from 'ethers';
 import { StaticJsonRpcProvider } from '@ethersproject/providers';
 import { v4 } from 'uuid';
-import { MVMMainnet, BridgeABI, BridgeApi, MixinApi } from '@mixin.dev/mixin-node-sdk';
+import { MVMMainnet, BridgeABI, BridgeApi, MixinApi, AssetABI } from '@mixin.dev/mixin-node-sdk';
 
+const bridgeClient = BridgeApi();
+const mixinClient = MixinApi({});
+
+const assetId = "43d61dcd-e413-450d-80b8-101d5e903357"; // ETH or other ERC20 asset id
 const destination = ''; // withdrawal address
 const tag = '';
-const amount = 0.1;
+const amount = '0.1';
+const asset = await mixinClient.network.fetchAsset(assetId);
 
-const publicKey = ''; // address of wallet 
+const publicKey = ''; // public key of wallet
 const privateKey = ''; // private key of wallet
 const provider = new StaticJsonRpcProvider(MVMMainnet.RPCUri);
 const signer = new Wallet(privateKey, provider);
@@ -101,9 +106,10 @@ const bridge = new ethers.Contract(
   BridgeABI,
   signer
 );
-
-const bridgeClient = BridgeApi();
-const mixinClient = MixinApi({});
+// MVM Contract Address of Mixin User bound with wallet
+const { contract } = await bridgeClient.register({
+  public_key: publicKey
+});
 
 const main = async () => {
   const traceId = v4();
@@ -119,21 +125,28 @@ const main = async () => {
   };
   const extra1 = await bridgeClient.generateExtra(action1);
   const extra2 = await bridgeClient.generateExtra(action2);
-  
-  const { contract } = await bridgeClient.register({
-    public_key: publicKey
-  });
-  const res1 = await bridge.release(contract, extra1, {
+
+  // withdraw ETH
+  const assetRes1 = await bridge.release(contract, extra1, {
     gasPrice: 10000000, // 0.01 Gwei
     gasLimit: 350000,
     value: ethers.utils.parseEther(Number(amount).toFixed(8))
   });
 
-  const asset = await mixinClient.network.fetchAsset("43d61dcd-e413-450d-80b8-101d5e903357"); // ETH
-  const res2 = await bridge.release(contract, extra2, {
+  // withdraw ERC20
+  const tokenContract = new ethers.Contract(asset.contract, AssetABI, signer);
+  const tokenDecimal = await tokenContract.decimals();
+  const value = ethers.utils.parseUnits(amount, tokenDecimal);
+  await tokenContract.transferWithExtra(contract, value, extra2, {
+    gasPrice: 10000000,
+    gasLimit: 350000
+  });
+
+  // withdraw fee
+  const feeRes = await bridge.release(contract, extra2, {
     gasPrice: 10000000, // 0.01 Gwei
     gasLimit: 350000,
-    value: ethers.utils.parseEther(Number(asset.fee).toFixed(8)) // ETH withdrawal cost
+    value: ethers.utils.parseEther(Number(asset.fee).toFixed(8))
   });
 };
 ```
