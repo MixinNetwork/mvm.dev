@@ -95,6 +95,11 @@ module.exports = {
                   directory: false,
                   path: '/reference/core'
                 },
+                {
+                  title: 'SDK',
+                  directory: false,
+                  path: '/reference/sdk'
+                }
               ]
             },
             {
@@ -248,6 +253,11 @@ module.exports = {
                   directory: false,
                   path: '/zh/reference/core'
                 },
+                {
+                  title: 'SDK',
+                  directory: false,
+                  path: '/zh/reference/sdk'
+                }
               ]
             },
             {
