@@ -19,7 +19,7 @@ IOS Version: 5.6.0
 ![3](../assets/add_mvm_guide/metamask/metamask_3.jpg)
 ![4](../assets/add_mvm_guide/metamask/metamask_4.jpg)
 3. Search `Mixin`
-![5](../assets/add_mvm_guide/metamask/metamask_5.PNG)
+![5](../assets/add_mvm_guide/metamask/metamask_5.jpg)
 4. Connect wallet
 ![6](../assets/add_mvm_guide/metamask/metamask_6.jpg)
 5. Add Chain
@@ -27,7 +27,7 @@ IOS Version: 5.6.0
 6. Approve
 ![8](../assets/add_mvm_guide/metamask/metamask_8.jpg)
 7. Switch Network
-![9](../assets/add_mvm_guide/metamask/metamask_9.PNG)
+![9](../assets/add_mvm_guide/metamask/metamask_9.jpg)
 Well done!
 
 ## [TokenPocket](#switch-to-mvm-mainnet)
@@ -55,11 +55,11 @@ IOS Version: 1.9.0
 10. If you have ETH wallet already, you can click on `One-key Sync`
 ![11](../assets/add_mvm_guide/tp/tp_11.jpg)
 11. Select `Ethereum` if you have ETH wallet, or any other network you have.
-![12](../assets/add_mvm_guide/tp/tp_12.PNG)
+![12](../assets/add_mvm_guide/tp/tp_12.jpg)
 12. Click on `Start syncing`
 ![13](../assets/add_mvm_guide/tp/tp_13.jpg)
 13. Well done!
-![14](../assets/add_mvm_guide/tp/tp_14.PNG)
+![14](../assets/add_mvm_guide/tp/tp_14.jpg)
 
 ## [ImToken](#switch-to-mvm-mainnet)
 IOS Version: 2.11.0.1953
@@ -79,9 +79,9 @@ IOS Version: 28.7.0
 1. Click on `Browser`
 ![1](../assets/add_mvm_guide/coinbase/coinbase_1.jpg)
 2. Search `chainlist.wtf`
-![2](../assets/add_mvm_guide/coinbase/coinbase_2.PNG)
+![2](../assets/add_mvm_guide/coinbase/coinbase_2.jpg)
 3. Search `Mixin` and click on `Connect wallet`
-![3](../assets/add_mvm_guide/coinbase/coinbase_3.PNG)
+![3](../assets/add_mvm_guide/coinbase/coinbase_3.jpg)
 4. Click on `Add Chain`
 ![4](../assets/add_mvm_guide/coinbase/coinbase_4.jpg)
 5. Click on `Switch`

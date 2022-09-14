@@ -20,7 +20,7 @@ IOS 版本: 5.6.0
 ![3](../assets/add_mvm_guide/metamask/metamask_3.jpg)
 ![4](../assets/add_mvm_guide/metamask/metamask_4.jpg)
 3. 搜索 `Mixin`
-![5](../assets/add_mvm_guide/metamask/metamask_5.PNG)
+![5](../assets/add_mvm_guide/metamask/metamask_5.jpg)
 4. 连接钱包
 ![6](../assets/add_mvm_guide/metamask/metamask_6.jpg)
 5. 添加网络
@@ -28,7 +28,7 @@ IOS 版本: 5.6.0
 6. 授权
 ![8](../assets/add_mvm_guide/metamask/metamask_8.jpg)
 7. 切换网络
-![9](../assets/add_mvm_guide/metamask/metamask_9.PNG)
+![9](../assets/add_mvm_guide/metamask/metamask_9.jpg)
 8. 添加成功!
 
 ## [TokenPocket](#switch-to-mvm-mainnet)
@@ -56,11 +56,11 @@ IOS 版本: 1.9.0
 10. 如果你已经有Ethereum钱包，可以点击`一键同步`
 ![11](../assets/add_mvm_guide/tp/tp_11.jpg)
 11. 选择你已有的对应钱包
-![12](../assets/add_mvm_guide/tp/tp_12.PNG)
+![12](../assets/add_mvm_guide/tp/tp_12.jpg)
 12. 点击 `开始同步`
 ![13](../assets/add_mvm_guide/tp/tp_13.jpg)
 13. 添加成功！
-![14](../assets/add_mvm_guide/tp/tp_14.PNG)
+![14](../assets/add_mvm_guide/tp/tp_14.jpg)
 
 ## [ImToken](#switch-to-mvm-mainnet)
 IOS 版本: 2.11.0.1953
@@ -80,9 +80,9 @@ IOS 版本: 28.7.0
 1. 点击 `浏览器`
 ![1](../assets/add_mvm_guide/coinbase/coinbase_1.jpg)
 2. 搜索 `chainlist.wtf`
-![2](../assets/add_mvm_guide/coinbase/coinbase_2.PNG)
+![2](../assets/add_mvm_guide/coinbase/coinbase_2.jpg)
 3. 搜索 `Mixin` 并点击 `Connect wallet`
-![3](../assets/add_mvm_guide/coinbase/coinbase_3.PNG)
+![3](../assets/add_mvm_guide/coinbase/coinbase_3.jpg)
 4. 点击 `Add Chain`
 ![4](../assets/add_mvm_guide/coinbase/coinbase_4.jpg)
 5. 点击 `切换网络`
