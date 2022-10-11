@@ -1,6 +1,6 @@
 # Join MVM
 
-## Mainnet
+## Mainnet RPC
 
 Network name：Mixin Virtual Machine
 

@@ -1,6 +1,6 @@
 # 加入 MVM
 
-## 正式网
+## 正式网 RPC
 
 网络名：Mixin Virtual Machine
 
