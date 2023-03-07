@@ -122,7 +122,7 @@ const main = async () => {
   const extra2 = await bridgeClient.generateExtra(action2);
   
   // 提现 ETH
-  --------------------------------------------------
+  // --------------------------------------------------
   const assetRes1 = await bridge.release(contract, extra1, {
     gasPrice: await provider.getGasPrice(), 
     gasLimit: 350000,
@@ -135,12 +135,12 @@ const main = async () => {
     gasLimit: 350000,
     value: ethers.utils.parseEther(Number(asset.fee).toFixed(8))
   });
-  --------------------------------------------------
+  // --------------------------------------------------
 
   // 或者
 
   // 提现 ERC20
-  --------------------------------------------------
+  // --------------------------------------------------
   const tokenContract = new ethers.Contract(asset.contract, AssetABI, signer);
   const tokenDecimal = await tokenContract.decimals();
   const value = ethers.utils.parseUnits(amount, tokenDecimal);
@@ -155,7 +155,7 @@ const main = async () => {
     gasLimit: 350000,
     value: ethers.utils.parseEther(Number(asset.fee).toFixed(8))
   });
-  --------------------------------------------------
+  // --------------------------------------------------
 };
 ```
 

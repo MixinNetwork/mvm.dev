@@ -127,7 +127,7 @@ const main = async () => {
   const extra2 = await bridgeClient.generateExtra(action2);
 
   // withdraw ETH
-  --------------------------------------------------
+  // --------------------------------------------------
   const assetRes1 = await bridge.release(contract, extra1, {
     gasPrice: await provider.getGasPrice(), 
     gasLimit: 350000,
@@ -140,7 +140,7 @@ const main = async () => {
     gasLimit: 350000,
     value: ethers.utils.parseEther(Number(asset.fee).toFixed(8))
   });
-  --------------------------------------------------
+  // --------------------------------------------------
 
   // OR
 
@@ -160,7 +160,7 @@ const main = async () => {
     gasLimit: 350000,
     value: ethers.utils.parseEther(Number(asset.fee).toFixed(8))
   });
-  --------------------------------------------------
+  // --------------------------------------------------
 };
 ```
 
