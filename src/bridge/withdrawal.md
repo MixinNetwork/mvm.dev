@@ -127,27 +127,40 @@ const main = async () => {
   const extra2 = await bridgeClient.generateExtra(action2);
 
   // withdraw ETH
+  // --------------------------------------------------
   const assetRes1 = await bridge.release(contract, extra1, {
-    gasPrice: 10000000, // 0.01 Gwei
+    gasPrice: await provider.getGasPrice(), 
     gasLimit: 350000,
     value: ethers.utils.parseEther(Number(amount).toFixed(8))
   });
 
+  // withdraw fee
+  const feeRes = await bridge.release(contract, extra2, {
+    gasPrice: await provider.getGasPrice(), 
+    gasLimit: 350000,
+    value: ethers.utils.parseEther(Number(asset.fee).toFixed(8))
+  });
+  // --------------------------------------------------
+
+  // OR
+
   // withdraw ERC20
+  --------------------------------------------------
   const tokenContract = new ethers.Contract(asset.contract, AssetABI, signer);
   const tokenDecimal = await tokenContract.decimals();
   const value = ethers.utils.parseUnits(amount, tokenDecimal);
-  await tokenContract.transferWithExtra(contract, value, extra2, {
-    gasPrice: 10000000,
+  await tokenContract.transferWithExtra(contract, value, extra1, {
+    gasPrice: await provider.getGasPrice(),
     gasLimit: 350000
   });
 
   // withdraw fee
   const feeRes = await bridge.release(contract, extra2, {
-    gasPrice: 10000000, // 0.01 Gwei
+    gasPrice: await provider.getGasPrice(), 
     gasLimit: 350000,
     value: ethers.utils.parseEther(Number(asset.fee).toFixed(8))
   });
+  // --------------------------------------------------
 };
 ```
 
