@@ -1,5 +1,12 @@
-# 介绍
+# Mixin Safe Computer
 
-这是 Mixin Safe Computer 的开发者教程
+Safe Computer 是一个用于金融计算的去中心化计算机。该计算机运行在 Mixin Safe 内部，并利用 Solana Network 的基建。
 
-#### [开源代码](https://github.com/MixinNetwork/trusted-group/tree/master/mvm)
+## 功能介绍
+
+1. [注册用户](/operation/register)
+2. [发起交易](/operation/call)
+
+
+## 开源代码
+[github](https://github.com/MixinNetwork/safe/tree/main/computer)
