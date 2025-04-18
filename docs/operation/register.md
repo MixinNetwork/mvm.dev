@@ -92,3 +92,17 @@ const recipients = buildSafeTransactionRecipient(
 // fetch unspent utxos and handle the change
 const tx = buildSafeTransaction(utxos, recipients, ghosts, Buffer.from(memo));
 ```
+
+## 4. 查询用户信息
+
+待注册成功后，查询用户信息以便发起 Solana 交易，包含用户的 id、Solana 链上地址等信息。
+
+```javascript
+const user = await requestComputerApi('GET', '/users/MIX3QEetjLB1hKcPGEbBKF8PvMaxSuttJg', undefined);
+console.log(user)
+// {
+//   id: '281474976710657',
+//   chain_address: '2LQbfjqGn7paKFTDRPnu68VkgrMZ2JUEXm8PVYgNf8Rh',
+//   mix_address: 'MIX3QEetjLB1hKcPGEbBKF8PvMaxSuttJg'
+// }
+```
