@@ -6,7 +6,7 @@ module.exports = {
     sidebar: [
       '/',
       ['/operation/register', '注册用户'],
-      ['/operation/register', '发起交易'],
+      ['/operation/call', '发起 Solana 交易'],
     ]
   },
   title: 'Mixin Safe Computer 教程',

@@ -5,7 +5,7 @@ Safe Computer 是一个用于金融计算的去中心化计算机。该计算机
 ## 功能介绍
 
 1. [注册用户](/operation/register)
-2. [发起交易](/operation/call)
+2. [发起 Solana 交易](/operation/call)
 
 
 ## 开源代码
