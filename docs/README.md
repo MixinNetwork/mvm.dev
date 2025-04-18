@@ -9,4 +9,5 @@ Safe Computer 是一个用于金融计算的去中心化计算机。该计算机
 
 
 ## 开源代码
-[github](https://github.com/MixinNetwork/safe/tree/main/computer)
+[Computer](https://github.com/MixinNetwork/safe/tree/main/computer)
+[Mixin Node SDK](https://github.com/MixinNetwork/bot-api-nodejs-client)
