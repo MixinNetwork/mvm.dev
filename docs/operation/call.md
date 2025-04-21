@@ -10,8 +10,8 @@
 const requestComputerApi = async (method, url, body) => {
   const resp = await fetch('https://computer.mixin.dev' + url, { method, body });
   const data = await resp.text();
-  return JSON.parse(data)
-}
+  return JSON.parse(data);
+};
 
 const computerInfo = await requestComputerApi('GET', '/' , undefined);
 const nonce = await requestComputerApi('POST', '/nonce_accounts', JSON.stringify({
@@ -24,7 +24,7 @@ const nonce = await requestComputerApi('POST', '/nonce_accounts', JSON.stringify
 在构造好你需要的 Solana 交易后，更新 Fee Payer、Recent Block Hash 和 Instructions.
 
 ```javascript
-import { PublicKey, VersionedTransaction, TransactionMessage, SystemProgram } from '@solana/web3.js'
+import { PublicKey, VersionedTransaction, TransactionMessage, SystemProgram } from '@solana/web3.js';
 // 构造你需要的 Solana 交易 txx
 
 const nonceIns = SystemProgram.nonceAdvance({
@@ -83,8 +83,8 @@ const buildSystemCallExtra = (uid: string, cid: string, flag: 0 | 1, fid?: strin
   const ib = bigNumberToBytes(BigNumber(uid));
   const cb = parse(cid);
   const data = [ib, cb, Buffer.from([flag])];
-  if (fid) data.push(parse(fid))
-  return Buffer.concat(data)
+  if (fid) data.push(parse(fid));
+  return Buffer.concat(data);
 };
 const buildComputerExtra = (operation: number, extra: Buffer) => Buffer.concat([
   Buffer.from([operation]),
@@ -95,7 +95,7 @@ const encodeMtgExtra = (app_id: string, extra: Buffer) => {
     parse(app_id),
     extra,
   ]);
-  return base64RawURLEncode(data)
+  return base64RawURLEncode(data);
 };
 
 const user = await requestComputerApi('GET', '/users/MIX3QEeHEkbmkthQcHMdhpksk3nATrPTsw', undefined);
@@ -110,7 +110,7 @@ const memo = encodeMtgExtra(computerInfo.members.app_id, requestExtra);
 
 # 5. 申请创建交易
 
-通过 Invoice 的方式，向 Computer 发送创建 Solana 交易的申请：
+通过 Invoice 的方式，向 Computer 发送创建 Solana 交易的申请。
 
 ```javascript
 import { buildMixAddress, newMixinInvoice, attachStorageEntry, getInvoiceString } from "@mixin.dev/mixin-node-sdk";
@@ -140,7 +140,7 @@ attachInvoiceEntry(invoice, {
   extra: emtpyMemo,
   index_references: [],
   hash_references: []
-})
+});
 attachInvoiceEntry(invoice, {
   trace_id: v4(),
   asset_id: "64692c23-8971-4cf4-84a7-4dd1271dd887", // SOL
@@ -148,9 +148,10 @@ attachInvoiceEntry(invoice, {
   extra: emtpyMemo,
   index_references: [],
   hash_references: []
-})
+});
 
 // 创建交易的费用 = 0.001 + 额外费用
+// fee_id 具有实效性，须尽快支付
 let total = BigNumber(info.params.operation.price).plus(fee.xin_amount).toFixed(8, BigNumber.ROUND_CEIL);
 attachInvoiceEntry(invoice, {
   trace_id: v4(),
