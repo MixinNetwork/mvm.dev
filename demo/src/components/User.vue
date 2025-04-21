@@ -1,12 +1,31 @@
 <template>
   <div>
-    <div v-if="user" class="flex items-center">
-      <NAvatar 
-        :circle="true" 
-        :size="32"
-        :src="user.avatar_url"
-      />
-      <div class="ml-2 text-lg">{{ user.full_name }}</div>
+    <div v-if="user" class="flex flex-col items-end">  
+      <n-popconfirm :show-icon="false" :on-positive-click="clearUserAuth">
+        <template #trigger>
+          <div class="flex items-center">
+            <NAvatar 
+              :circle="true" 
+              :size="32"
+              :src="user.avatar_url"
+            />
+            <div class="ml-2 text-lg">{{ user.full_name }}</div>
+          </div>
+        </template>
+        登出？
+      </n-popconfirm>
+      <div class="mt-2">
+        <div v-if="user.info" class="flex ">
+          <div>{{ user.info.chain_address }}</div>
+          <div 
+            class="ml-2 text-sm text-blue-600 cursor-pointer" 
+            @click="copy(user.info.chain_address)"
+          >
+            {{ copied ? '已复制' : '复制' }}
+          </div>
+        </div>
+        <div v-else>未注册</div>
+      </div>
     </div>
 
     <div v-else>
@@ -39,14 +58,17 @@ import ReconnectingWebSocket from 'reconnecting-websocket';
 import { useStore } from '@/store';
 import { useAuthorization } from '@/utils/login';
 import { BOT } from '@/utils/constant';
+import { useClipboard } from '@vueuse/core';
 
 const userStore = useStore();
 const { user, mixinClient } = storeToRefs(userStore);
-const { saveUserAuth, profile } = userStore;
+const { saveUserAuth, clearUserAuth, profile } = userStore;
 
 const showModal = ref(false);
 const loginCode = ref('');
 const ws = ref<ReconnectingWebSocket | undefined>(undefined);
+
+const { copy, copied } = useClipboard({ source: user.value && user.value.info && user.value.info.chain_address })
 
 const handleLogin = () => showModal.value = true;
 const handleClear = () => {

@@ -1,5 +1,5 @@
 <template>
-  <div class="">
+  <div class="flex justify-center">
     <div v-if="!user || !user.info" class="text-lg">请先登录并完成注册</div>
     <div v-else class="flex flex-col">
     </div>

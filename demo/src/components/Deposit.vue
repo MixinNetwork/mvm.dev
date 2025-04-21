@@ -31,5 +31,5 @@ import { useClipboard } from '@vueuse/core';
 const userStore = useStore();
 const { user } = storeToRefs(userStore);
 
-const { text, copy, copied, isSupported } = useClipboard({ source: user.value && user.value.info && user.value.info.chain_address })
+const { copy, copied } = useClipboard({ source: user.value && user.value.info && user.value.info.chain_address })
 </script>
