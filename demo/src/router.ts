@@ -1,7 +1,8 @@
 import { createRouter, createWebHistory } from 'vue-router';
 import Register from './components/Register.vue';
-import Transfer from './components/Transfer.vue';
+import Balances from './components/Balances.vue';
 import Deposit from './components/Deposit.vue';
+import Transfer from './components/Transfer.vue';
 
 const router = createRouter({
   history: createWebHistory(),
@@ -12,7 +13,16 @@ const router = createRouter({
     },
     {
       path: '/transfer',
-      component: Transfer,
+      children: [
+        {
+          path: '',
+          component: Balances,
+        },
+        {
+          path: ':id',
+          component: Transfer,
+        }
+      ]
     },
     {
       path: '/deposit',

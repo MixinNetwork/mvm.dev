@@ -10,6 +10,7 @@
   },
   "dependencies": {
     "@mixin.dev/mixin-node-sdk": "^7.3.8",
+    "@solana/web3.js": "^1.98.0",
     "@tailwindcss/vite": "^4.1.4",
     "@vueuse/core": "^13.1.0",
     "bignumber.js": "^9.3.0",

@@ -3,9 +3,13 @@ import { onMounted } from 'vue';
 import User from './components/User.vue';
 import { useStore } from '@/store';
 
-const { profile } = useStore();
+const { profile, updateBalances } = useStore();
 
 onMounted(profile);
+onMounted(() => {
+  updateBalances();
+  setInterval(updateBalances, 1000 * 5);
+});
 </script>
 
 <template>
@@ -23,7 +27,7 @@ onMounted(profile);
       <RouterLink to="/transfer" class="mr-5">转账</RouterLink>
       <RouterLink to="/deposit">充值</RouterLink>
     </div>
-    <div class="mt-20 w-full">
+    <div class="mt-10 w-full">
       <RouterView />
     </div>
   </div>

@@ -1,1 +1,8 @@
 @import "tailwindcss";
+
+@layer components {
+    input,
+    textarea {
+      @apply border-[1px] border-black hover:border-[#4B7CDD] focus:border-[#4B7CDD] outline-none focus:outline-none rounded resize-none align-top;
+    }
+}
