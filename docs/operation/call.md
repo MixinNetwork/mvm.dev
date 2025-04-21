@@ -159,8 +159,8 @@ attachInvoiceEntry(invoice, {
   extra: Buffer.from(memo),
   index_references: [0, 1, 2], // 引用前面的 invoice entry
   hash_references: []
-})
+});
 
 // 扫码支付
-const codeUrl = `https://mixin.one/pay/${getInvoiceString(invoice)}`
+const codeUrl = `https://mixin.one/pay/${getInvoiceString(invoice)}`;
 ```
