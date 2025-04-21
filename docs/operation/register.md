@@ -47,9 +47,8 @@ const requestComputerApi = async (method, url, body) => {
 }
 
 const encodeMtgExtra = (app_id: string, extra: Buffer) => {
-  const computerAppId = "a7376114-5db3-4822-bd3c-26416b57da1b"    
   const data = Buffer.concat([
-    parse(computerAppId),
+    parse(app_id),
     extra,
   ]);
   return base64RawURLEncode(data)
@@ -78,19 +77,20 @@ console.log(memo); // pzdhFF2zSCK9PCZBa1faGwFNSVgzUUVlSEVrYm1rdGhRY0hNZGhwa3NrM2
 
 ## 3. 发送请求
 
-将上一步得到的 memo 发送给 Computer group，费用为 0.001 XIN.
+扫码发送注册用户的申请，费用为 0.001 XIN.
 
 ```javascript
-import { buildSafeTransaction, buildSafeTransactionRecipient } from "@mixin.dev/mixin-node-sdk";
+import { buildMixAddress } from "@mixin.dev/mixin-node-sdk";
 
-const recipients = buildSafeTransactionRecipient(
-  computerInfo.members.members, 
-  computerInfo.members.threshold, 
-  computerInfo.params.operation.price,
-);
+// 生成 Computer MTG MIX 地址
+const destination = buildMixAddress({ 
+  version: 2,
+  xinMembers: [],
+  uuidMembers: computerInfo.members.members,
+  threshold: computerInfo.members.threshold,
+});
 
-// fetch unspent utxos and handle the change
-const tx = buildSafeTransaction(utxos, recipients, ghosts, Buffer.from(memo));
+const codeUrl = `https://mixin.one/pay/${destination}?amount=${info.params.operation.price}&asset=${info.params.operation.asset}&memo=${memo}`;
 ```
 
 ## 4. 查询用户信息
@@ -98,11 +98,11 @@ const tx = buildSafeTransaction(utxos, recipients, ghosts, Buffer.from(memo));
 待注册成功后，查询用户信息以便发起 Solana 交易，包含用户的 id、Solana 链上地址等信息。
 
 ```javascript
-const user = await requestComputerApi('GET', '/users/MIX3QEetjLB1hKcPGEbBKF8PvMaxSuttJg', undefined);
+const user = await requestComputerApi('GET', '/users/MIX3QEeHEkbmkthQcHMdhpksk3nATrPTsw', undefined);
 console.log(user)
 // {
 //   id: '281474976710657',
 //   chain_address: '2LQbfjqGn7paKFTDRPnu68VkgrMZ2JUEXm8PVYgNf8Rh',
-//   mix_address: 'MIX3QEetjLB1hKcPGEbBKF8PvMaxSuttJg'
+//   mix_address: 'MIX3QEeHEkbmkthQcHMdhpksk3nATrPTsw'
 // }
 ```
