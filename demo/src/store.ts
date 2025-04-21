@@ -1,7 +1,9 @@
 import { ref, computed } from 'vue';
 import { defineStore } from 'pinia';
-import { MixinApi, OAuthKeystore, type UserResponse } from '@mixin.dev/mixin-node-sdk';
+import { buildMixAddress, MixinApi, type OAuthKeystore } from '@mixin.dev/mixin-node-sdk';
+import { User } from './types';
 import { useLocalStorage } from '@vueuse/core';
+import { initComputerClient } from './utils/api';
 
 const MIXIN_OAUTH = 'oauth';
 
@@ -37,9 +39,23 @@ export const useStore = defineStore('store', () => {
     localStorage.removeItem(MIXIN_OAUTH);
   };
 
-  const user = ref<UserResponse | undefined>(undefined);
+  const user = ref<User | undefined>(undefined);
   const profile = async () => {
-    user.value = await mixinClient.value.user.profile();
+    try {
+      user.value = await mixinClient.value.user.profile();
+      const mix = buildMixAddress({
+        version: 2,
+        uuidMembers: [user.value.user_id],
+        xinMembers: [],
+        threshold: 1,
+      });
+
+      const c = initComputerClient();
+      const u = await c.fetchUser(mix);
+      user.value.info = u;
+    } catch(e) {
+      console.error(e);
+    }
   };
 
   return {

@@ -1,4 +1,14 @@
-import { SafeUtxoOutput } from "@mixin.dev/mixin-node-sdk";
+import { SafeUtxoOutput, UserResponse } from "@mixin.dev/mixin-node-sdk";
+
+export interface ComputerUserResponse {
+  id: string;
+  mix_address: string;
+  chain_address: string;
+}
+
+export interface User extends UserResponse {
+  info?: ComputerUserResponse;
+}
 
 export interface ComputerInfoResponse {
   observer: string;
@@ -15,12 +25,6 @@ export interface ComputerInfoResponse {
     };
   };
   height: number;
-}
-
-export interface ComputerUserResponse {
-  id: string;
-  mix_address: string;
-  chain_address: string;
 }
 
 export interface ComputerAssetResponse {

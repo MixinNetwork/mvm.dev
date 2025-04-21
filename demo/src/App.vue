@@ -17,5 +17,14 @@ onMounted(profile);
     </div>
   </header>
 
-  <div class="h-10">123</div>
+  <div class="flex flex-col justify-start items-center px-10 pt-10 w-full h-[600px]">
+    <div class="flex justify-center items-center w-full font-normal text-lg h-10">
+      <RouterLink to="/" class="mr-5">注册</RouterLink>
+      <RouterLink to="/transfer" class="mr-5">转账</RouterLink>
+      <RouterLink to="/deposit">充值</RouterLink>
+    </div>
+    <div class="mt-20 w-full">
+      <RouterView />
+    </div>
+  </div>
 </template>
