@@ -1,4 +1,4 @@
-import { ref, computed } from 'vue';
+import { ref, computed, watchEffect } from 'vue';
 import { defineStore } from 'pinia';
 import { buildMixAddress, MixinApi, SafeUtxoOutput, type OAuthKeystore } from '@mixin.dev/mixin-node-sdk';
 import { User, UserAssetBalance, UserAssetBalanceWithoutAsset } from './types';
@@ -116,6 +116,13 @@ export const useStore = defineStore('store', () => {
     balances.value = fbm;
   };
 
+  let timer: number | undefined;
+  watchEffect(async () => {
+    if (!user.value) return;
+    updateBalances();
+    timer = window.setInterval(updateBalances, 1000 * 30);
+    return () => window.clearInterval(timer);
+  });
 
   return {
     auth,

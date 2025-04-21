@@ -28,17 +28,10 @@
 </template>
 
 <script setup lang="ts">
-import { watchEffect } from 'vue';
 import { storeToRefs } from 'pinia';
 import { NAvatar } from 'naive-ui';
 import { useStore } from '@/store';
 
 const userStore = useStore();
 const { user, balances } = storeToRefs(userStore);
-const { updateBalances } = userStore;
-
-watchEffect(async () => {
-  if (!user.value) return;
-  await updateBalances();
-});
 </script>

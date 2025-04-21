@@ -9,24 +9,28 @@ const router = createRouter({
   routes: [
     {
       path: '/',
+      name: 'register',
       component: Register,
+    },
+    {
+      path: '/deposit',
+      name: 'deposit',
+      component: Deposit,
     },
     {
       path: '/transfer',
       children: [
         {
           path: '',
+          name: 'balances',
           component: Balances,
         },
         {
           path: ':id',
+          name: 'transfer',
           component: Transfer,
         }
       ]
-    },
-    {
-      path: '/deposit',
-      component: Deposit,
     },
   ],
 });

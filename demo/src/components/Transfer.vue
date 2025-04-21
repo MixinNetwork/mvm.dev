@@ -30,6 +30,7 @@
         ]"
         type="text"
       ></textarea>
+      <div class="mt-1 text-sm">不可转给当前地址</div>
     </div>
   </div>
 </template>

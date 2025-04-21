@@ -2,19 +2,22 @@
 import { onMounted } from 'vue';
 import User from './components/User.vue';
 import { useStore } from '@/store';
+import { useRoute } from 'vue-router';
 
-const { profile, updateBalances } = useStore();
+const route = useRoute();
+const routes = [
+  { to:"/", text: '注册', name: ['register'] },
+  { to:"/transfer", text: '转账', name: ['balances', 'transfer'] },
+  { to:"/deposit", text: '充值', name: ['deposit'] },
+];
 
+const { profile } = useStore();
 onMounted(profile);
-onMounted(() => {
-  updateBalances();
-  setInterval(updateBalances, 1000 * 5);
-});
 </script>
 
 <template>
   <header class="flex justify-between items-center px-10 w-full h-20 border-b border-gray-950">
-    <div class="font-medium text-[40px]">Computer Demo</div>
+    <div class="font-medium text-[40px] select-none">Computer Demo</div>
 
     <div class="flex items-center h-15">
       <User />
@@ -23,9 +26,15 @@ onMounted(() => {
 
   <div class="flex flex-col justify-start items-center px-10 pt-10 w-full h-[600px]">
     <div class="flex justify-center items-center w-full font-normal text-lg h-10">
-      <RouterLink to="/" class="mr-5">注册</RouterLink>
-      <RouterLink to="/transfer" class="mr-5">转账</RouterLink>
-      <RouterLink to="/deposit">充值</RouterLink>
+      <RouterLink 
+        v-for="r of routes" 
+        :key="r.to" 
+        :to="r.to"
+        :class="[
+          'mr-5', r.name.includes(route.name) && 'text-[#4B7CDD]']"
+      >
+        {{ r.text }}
+      </RouterLink>
     </div>
     <div class="mt-10 w-full">
       <RouterView />
