@@ -76,11 +76,9 @@ export interface Asset {
 export interface UserAssetBalanceWithoutAsset {
   asset_id: string;
   total_amount: string;
-  outputs: SafeUtxoOutput[];
   address?: string;
 }
 
 export interface UserAssetBalance extends UserAssetBalanceWithoutAsset{
   asset: Asset;
-  hide?: boolean;
 }

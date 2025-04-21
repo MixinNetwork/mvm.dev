@@ -12,6 +12,7 @@
     "@mixin.dev/mixin-node-sdk": "^7.3.8",
     "@tailwindcss/vite": "^4.1.4",
     "@vueuse/core": "^13.1.0",
+    "bignumber.js": "^9.3.0",
     "pako": "^2.1.0",
     "pinia": "^3.0.2",
     "reconnecting-websocket": "^4.4.0",

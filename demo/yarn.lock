@@ -1556,7 +1556,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"bignumber.js@npm:^9.1.2":
+"bignumber.js@npm:^9.1.2, bignumber.js@npm:^9.3.0":
   version: 9.3.0
   resolution: "bignumber.js@npm:9.3.0"
   checksum: 10c0/f54a79cd6fc98552ac0510c1cd9381650870ae443bdb20ba9b98e3548188d941506ac3c22a9f9c69b2cc60da9be5700e87d3f54d2825310a8b2ae999dfd6d99d
@@ -1893,6 +1893,7 @@ __metadata:
     "@tailwindcss/vite": "npm:^4.1.4"
     "@vitejs/plugin-vue": "npm:^5.2.3"
     "@vueuse/core": "npm:^13.1.0"
+    bignumber.js: "npm:^9.3.0"
     naive-ui: "npm:^2.41.0"
     pako: "npm:^2.1.0"
     pinia: "npm:^3.0.2"

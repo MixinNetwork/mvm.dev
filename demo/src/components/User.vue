@@ -93,7 +93,8 @@ const useLogin = async (code: string, code_verifier: string) => {
 
     if (
       !scope ||
-      scope.indexOf('ASSETS:READ') < 0
+      scope.indexOf('ASSETS:READ') < 0 ||
+      scope.indexOf('SNAPSHOTS:READ') < 0
     ) {
       return;
     }
@@ -115,7 +116,7 @@ const useLogin = async (code: string, code_verifier: string) => {
 
 watchEffect(() => {
   if (!showModal.value) return;
-  const scope = 'PROFILE:READ ASSETS:READ';
+  const scope = 'PROFILE:READ ASSETS:READ SNAPSHOTS:READ';
   const { verifier, challenge } = getChallenge();
   
   ws.value = useAuthorization(BOT, scope, challenge, (a: AuthorizationResponse) => {
