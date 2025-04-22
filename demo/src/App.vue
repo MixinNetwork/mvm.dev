@@ -11,8 +11,9 @@ const routes = [
   { to:"/deposit", text: '充值', name: ['deposit'] },
 ];
 
-const { profile } = useStore();
+const { profile, fetchComputer } = useStore();
 onMounted(profile);
+onMounted(fetchComputer);
 </script>
 
 <template>

@@ -28,7 +28,7 @@ const mix = buildMixAddress({
 }); // MIX3QEeHEkbmkthQcHMdhpksk3nATrPTsw
 
 const OperationTypeAddUser = 1;
-const extra = buildComputerExtra(OperationTypeAddUser. Buffer.from(mix));
+const extra = buildComputerExtra(OperationTypeAddUser, Buffer.from(mix));
 console.log(extra.toString('hex')); // 014d49583351456548456b626d6b74685163484d6468706b736b336e41547250547377
 ```
 

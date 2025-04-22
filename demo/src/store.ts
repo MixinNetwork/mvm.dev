@@ -1,7 +1,7 @@
 import { ref, computed, watchEffect } from 'vue';
 import { defineStore } from 'pinia';
 import { buildMixAddress, MixinApi, SafeUtxoOutput, type OAuthKeystore } from '@mixin.dev/mixin-node-sdk';
-import { User, UserAssetBalance, UserAssetBalanceWithoutAsset } from './types';
+import { ComputerInfoResponse, User, UserAssetBalance, UserAssetBalanceWithoutAsset } from './types';
 import { useLocalStorage } from '@vueuse/core';
 import { initComputerClient } from './utils/api';
 import { add } from './utils/number';
@@ -124,6 +124,11 @@ export const useStore = defineStore('store', () => {
     return () => window.clearInterval(timer);
   });
 
+  const computer = ref<ComputerInfoResponse | undefined>(undefined);
+  const fetchComputer = async () => {
+    computer.value = await cc.fetchInfo();
+  };
+
   return {
     auth,
     mixinClient,
@@ -134,5 +139,8 @@ export const useStore = defineStore('store', () => {
     profile,
     balances,
     updateBalances,
+
+    computer,
+    fetchComputer
   };
 });
