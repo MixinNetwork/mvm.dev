@@ -3,48 +3,78 @@
     <div v-if="!user || !user.info" class="text-lg">请先登录并完成注册</div>
     <div v-else-if="!balance">未找到该资产</div>
     <div v-else class="flex flex-col w-1/2">
-      <div class="flex justify-between items-center text-base">
-        <div class="flex items-center">
-          <NAvatar :src="balance.asset.icon_url" :size="16" :circle="true"></NAvatar>
-          <div class="ml-1">{{ balance.asset.name }}</div>
-        </div>
-        <div>{{ `${balance.total_amount} ${balance.asset.symbol}` }}</div>
-      </div>              
-      <input
-        :value="amount"
-        :class="[
-          'flex items-center pl-[14px] pr-[68px] w-full h-11',
-          isValidAmount !== false ? '' : '!border-[#DD4B65]',
-        ]"
-        type="text"
-        @input="useRestrictAmount($event, amount)"
-      />
+      <div>
+        <div class="flex justify-between items-center text-base">
+          <div class="flex items-center">
+            <NAvatar :src="balance.asset.icon_url" :size="16" :circle="true"></NAvatar>
+            <div class="ml-1">{{ balance.asset.name }}</div>
+          </div>
+          <div>{{ `${balance.total_amount} ${balance.asset.symbol}` }}</div>
+        </div>              
+        <input
+          :value="amount"
+          :class="[
+            'flex items-center pl-[14px] pr-[68px] w-full h-11',
+            isValidAmount !== false ? '' : '!border-[#DD4B65]',
+          ]"
+          type="text"
+          @input="useRestrictAmount($event, amount)"
+        />
+      </div>
       
-      <div class="mt-5 text-base">收款人</div>
-      <textarea
-        ref="destinationRef"
-        v-model.trim="destination"
+      <div>
+        <div class="mt-5 text-base">收款人</div>
+        <textarea
+          ref="destinationRef"
+          v-model.trim="destination"
+          :class="[
+            'p-[14px] pr-11 w-full h-[46px] font-normal text-sm leading-4 text-safeBlack overflow-hidden',
+            isValidAddress !== false ? '' : '!border-[#DD4B65]',
+          ]"
+          type="text"
+        ></textarea>
+        <div class="mt-1 text-sm">不可转给当前地址</div>
+      </div>
+
+      <div 
         :class="[
-          'p-[14px] pr-11 w-full h-[46px] font-normal text-sm leading-4 text-safeBlack overflow-hidden',
-          isValidAddress !== false ? '' : '!border-[#DD4B65]',
-        ]"
-        type="text"
-      ></textarea>
-      <div class="mt-1 text-sm">不可转给当前地址</div>
+          'flex justify-center self-center mt-8 py-2 w-[100px] text-lg  text-white rounded',
+          isValidAddress && isValidAmount ? 'bg-blue-500 cursor-pointer' : 'bg-gray-300 cursor-not-allowed'
+        ]" 
+        @click="useTransfer"
+      >
+        转账
+      </div>
     </div>
+
+    <n-modal v-model:show="deploying">
+      <n-card
+        style="width: 300px; height: 80px;"
+        :bordered="false"
+        size="huge"
+        aria-modal="true"
+      > 
+        资产部署中，请稍后。。。
+      </n-card>
+    </n-modal>
   </div>
 </template>
 
 <script setup lang="ts">
-import { computed, ref } from 'vue';
+import { computed, ref, watchEffect } from 'vue';
 import { storeToRefs } from 'pinia';
 import { useRoute } from 'vue-router';
-import { NAvatar } from 'naive-ui';
+import { NAvatar, useNotification } from 'naive-ui';
+import BigNumber from 'bignumber.js';
 import { useStore } from '@/store';
 import { PublicKey } from '@solana/web3.js';
+import { initComputerClient } from '@/utils/api';
+
+const notification = useNotification()
 
 const userStore = useStore();
 const { user, balances } = storeToRefs(userStore);
+const { updateBalances } = userStore
 
 const route = useRoute();
 const id = computed(() => route.params.id as string);
@@ -66,6 +96,7 @@ const isValidAmount = computed(() => {
 });
 const isValidAddress = computed(() => {
   if (!destination.value) return undefined;
+  if (destination.value === user.value.info.chain_address) return false;
   try {
     new PublicKey(destination.value);
     return true;
@@ -82,4 +113,34 @@ const useRestrictAmount = (e: Event, oldValue: string) => {
     target.value = amount.value;
   } else amount.value = target.value;
 };
+
+const show = ref(true)
+const deploying = ref('');
+const useTransfer = async () => {
+  if (!user.value || !isValidAddress.value || !isValidAddress.value) return;
+
+  if (!balance.value.address) {
+    deploying.value = balance.value.asset_id;
+    const c = initComputerClient();
+    await c.deployAssets([balance.value.asset_id]);
+    return;
+  }
+
+
+}
+
+watchEffect(() => {
+  if (!deploying.value) return;
+  const timer = window.setInterval(async () => {
+    await updateBalances();
+    if (!balance.value.address) return;
+
+    window.clearInterval(timer);
+    deploying.value = '';
+    notification['success']({
+      title: '资产部署成功',
+    });
+  }, 1000 * 5);
+  return () => window.clearInterval(timer);
+});
 </script>
