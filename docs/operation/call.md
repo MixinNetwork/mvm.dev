@@ -78,7 +78,19 @@ import { buildMixAddress, bigNumberToBytes } from "@mixin.dev/mixin-node-sdk";
 import { parse, v4 } from "uuid";
 import BigNumber from 'bignumber.js';
 
-const buildSystemCallExtra = (uid: string, cid: string, flag: 0 | 1, fid?: string) => {
+const bigNumberToBytes = (x: BigNumber) => {
+  const bytes = [];
+  let i = x;
+  do {
+    bytes.unshift(i.mod(256).toNumber());
+    i = i.dividedToIntegerBy(256);
+  } while (!i.isZero());
+  do {
+    bytes.unshift(0)
+  } while(bytes.length < 8);
+  return Buffer.from(bytes);
+};
+const buildSystemCallExtra = (uid: string, cid: string, skipPostProcess: boolean, fid?: string) => {
   const flag = skipPostProcess ? 1 : 0;
   const ib = bigNumberToBytes(BigNumber(uid));
   const cb = parse(cid);
@@ -137,7 +149,7 @@ attachInvoiceEntry(invoice, {
   trace_id: v4(),
   asset_id: "c6d0c728-2624-429b-8e0d-d9d19b6592fa", // BTC
   amount: "0.01",
-  extra: emtpyMemo,
+  extra: emtpyExtra,
   index_references: [],
   hash_references: []
 });
@@ -145,7 +157,7 @@ attachInvoiceEntry(invoice, {
   trace_id: v4(),
   asset_id: "64692c23-8971-4cf4-84a7-4dd1271dd887", // SOL
   amount: "0.01",
-  extra: emtpyMemo,
+  extra: emtpyExtra,
   index_references: [],
   hash_references: []
 });
