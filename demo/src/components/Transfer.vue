@@ -61,7 +61,7 @@
 
     <n-modal :show="!!track" :mask-closable="false">
       <n-card
-        v-if="!track.state"
+        v-if="track && !track.state"
         style="width: 378px; height: 360px;"
         :bordered="false"
         size="huge"
@@ -306,26 +306,28 @@ watchEffect(() => {
   if (!track.value) return;
   const client = mixinClient.value
   const timer = window.setInterval(async () => {
-    if (!track.value.state) {
-      const req = await client.utxo.fetchTransaction(track.value.trace);
-      if (req && req.state === 'spent') track.value.state = 'spent';
-      return;
-    }
+    try {
+      if (!track.value.state) {
+        const req = await client.utxo.fetchTransaction(track.value.trace);
+        if (req && req.state === 'spent') track.value.state = 'spent';
+        return;
+      }
 
-    const call = await c.fetchCall(track.value.call);
-    if (call && ['done', 'failed'].includes(call.state)) {
-      window.clearInterval(timer);
-      track.value = undefined;
-      loading.value = false;
-      if (call.state === 'done')
-        notification['success']({
-          title: '交易成功',
-        });
-      if (call.state === 'failed')
-        notification['error']({
-          title: '交易失败',
-        });
-    }
+      const call = await c.fetchCall(track.value.call);
+      if (call && ['done', 'failed'].includes(call.state)) {
+        window.clearInterval(timer);
+        track.value = undefined;
+        loading.value = false;
+        if (call.state === 'done')
+          notification['success']({
+            title: '交易成功',
+          });
+        if (call.state === 'failed')
+          notification['error']({
+            title: '交易失败',
+          });
+      }
+    } catch {}
   }, 1000 * 5);
   return () => window.clearInterval(timer);
 });

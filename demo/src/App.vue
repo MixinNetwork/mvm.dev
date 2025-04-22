@@ -13,7 +13,11 @@ const routes = [
 ];
 
 const { profile, fetchComputer } = useStore();
-onMounted(profile);
+onMounted(async () => {
+  try {
+    await profile();
+  } catch {}
+});
 onMounted(fetchComputer);
 </script>
 
