@@ -7,7 +7,7 @@
         <RouterLink
           v-for="(a, id) of balances"
           :key="id"
-          :to="`/transfer/${a.asset_id}`"
+          :to="`/demo/transfer/${a.asset_id}`"
           class="block mb-4 p-2 border border-[#D9D9D9] rounded"
         >
           <div class="flex justify-between">
