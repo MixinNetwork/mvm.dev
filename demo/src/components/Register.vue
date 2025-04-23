@@ -10,14 +10,14 @@
       用户注册
     </div>
 
-    <n-modal v-model:show="code.length">
+    <n-modal v-model:show="login.show">
       <n-card
         style="width: 378px; height: 360px;"
         :bordered="false"
         size="huge"
         aria-modal="true"
       >
-        <n-qr-code :value="code" error-correction-level="H" :size="300" :padding="0"/>
+        <n-qr-code :value="login.code" error-correction-level="H" :size="300" :padding="0"/>
       </n-card>
     </n-modal>
   </div>
@@ -40,7 +40,10 @@ const mix = computed(() => user.value ? buildMixAddress({
     threshold: 1
   }): '');
 
-const code = ref('');
+const login = ref({
+  show: false,
+  code: ''
+});
 
 const useRegister = () => {
   if (!mix.value || !computer.value) return;
@@ -53,19 +56,25 @@ const useRegister = () => {
     uuidMembers: computer.value.members.members,
     threshold:   computer.value.members.threshold,
   });
-  code.value = `https://mixin.one/pay/${destination}?amount=${computer.value.params.operation.price}&asset=${computer.value.params.operation.asset}&memo=${memo}`;
+  login.value = {
+    show: true,
+    code: `https://mixin.one/pay/${destination}?amount=${computer.value.params.operation.price}&asset=${computer.value.params.operation.asset}&memo=${memo}`
+  }
 };
 
 const c = initComputerClient();
 watchEffect( () => {
-  if (!code.value) return;
+  if (!login.value.code || !login.value.show) return;
   const timer = window.setInterval(async () => {
     try {
       const u = await c.fetchUser(mix.value);
       if (u) {
         user.value.info = u;
         window.clearInterval(timer);
-        code.value = '';
+        login.value = {
+          show: false,
+          code: ''
+        };
       }
     } catch {}
   }, 1000 * 5);

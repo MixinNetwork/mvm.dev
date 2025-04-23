@@ -56,9 +56,7 @@ export const useStore = defineStore('store', () => {
       const c = initComputerClient();
       const u = await c.fetchUser(mix);
       user.value.info = u;
-    } catch(e) {
-      console.error(e);
-    }
+    } catch(e) {}
   };
 
 
