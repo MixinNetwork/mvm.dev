@@ -1,16 +1,38 @@
 {
-  "name": "mvm.dev",
-  "version": "1.0.0",
-  "main": "index.js",
-  "repository": "git@github.com:MixinNetwork/mvm.dev.git",
-  "author": "hundredark <hundredark@gmail.com>",
-  "license": "MIT",
+  "name": "computer-demo",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
   "scripts": {
-    "dev": "vuepress dev docs",
-    "build": "vuepress build docs"
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview"
+  },
+  "dependencies": {
+    "@mixin.dev/mixin-node-sdk": "^7.3.8",
+    "@solana/spl-token": "^0.4.13",
+    "@solana/web3.js": "^1.98.0",
+    "@tailwindcss/vite": "^4.1.4",
+    "@vueuse/core": "^13.1.0",
+    "bignumber.js": "^9.3.0",
+    "highlight.js": "^11.11.1",
+    "pako": "^2.1.0",
+    "pinia": "^3.0.2",
+    "reconnecting-websocket": "^4.4.0",
+    "tailwindcss": "^4.1.4",
+    "uuid": "^11.1.0",
+    "vue": "^3.5.13",
+    "vue-router": "^4.5.0"
   },
   "devDependencies": {
-    "vuepress": "^1.9.10"
-  },
-  "packageManager": "yarn@4.9.1"
+    "@esbuild-plugins/node-globals-polyfill": "^0.2.3",
+    "@esbuild-plugins/node-modules-polyfill": "^0.2.2",
+    "@vitejs/plugin-vue": "^5.2.3",
+    "naive-ui": "^2.41.0",
+    "rollup-plugin-node-polyfills": "^0.2.1",
+    "unplugin-vue-components": "^28.5.0",
+    "vite": "^6.2.4",
+    "vite-plugin-node-polyfills": "^0.23.0",
+    "vite-plugin-vue-devtools": "^7.7.2"
+  }
 }

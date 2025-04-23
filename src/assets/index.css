@@ -5,4 +5,20 @@
     textarea {
       @apply border-[1px] border-black hover:border-[#4B7CDD] focus:border-[#4B7CDD] outline-none focus:outline-none rounded resize-none align-top;
     }
+
+    h1 {
+      @apply font-medium text-2xl;
+    }
+
+    h2 {
+      @apply font-medium text-xl;
+    }
+
+    .content {
+      @apply block font-normal text-lg;
+    }
+
+    .link {
+      @apply cursor-pointer text-blue-500;
+    }
 }

@@ -26,7 +26,7 @@ onMounted(fetchComputer);
     <header class="flex justify-between items-center px-10 w-full h-20 border-b border-gray-950">
       <div class="">
         <div class="font-medium text-[24px] select-none">Computer Demo</div>
-        <RouterLink to="tutorial" class="font-medium text-[20px] select-none text-blue-600 cursor-pointer">
+        <RouterLink to="/" class="font-medium text-[20px] select-none text-blue-600 cursor-pointer">
           中文教程
         </RouterLink>
       </div>

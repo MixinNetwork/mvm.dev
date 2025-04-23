@@ -1,7 +1,29 @@
-The document for MVM (Mixin Virtual Machine), official link: [https://mvm.dev](https://mvm.dev)
+# computer-demo
 
-## Open Source
+This template should help get you started developing with Vue 3 in Vite.
 
-MVM is based on Ethereum, and [open source](https://github.com/MixinNetwork/trusted-group/tree/master/mvm).
+## Recommended IDE Setup
 
-It can be easily used through [JS SDK](https://github.com/MixinNetwork/bot-api-nodejs-client)
+[VSCode](https://code.visualstudio.com/) + [Volar](https://marketplace.visualstudio.com/items?itemName=Vue.volar) (and disable Vetur).
+
+## Customize configuration
+
+See [Vite Configuration Reference](https://vite.dev/config/).
+
+## Project Setup
+
+```sh
+yarn
+```
+
+### Compile and Hot-Reload for Development
+
+```sh
+yarn dev
+```
+
+### Compile and Minify for Production
+
+```sh
+yarn build
+```

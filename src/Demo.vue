@@ -2,7 +2,7 @@
 import { onMounted } from 'vue';
 import { useRoute } from 'vue-router';
 import { NNotificationProvider } from 'naive-ui';
-import User from './components/User.vue';
+import User from './components/Demo/User.vue';
 import { useStore } from '@/store';
 
 const route = useRoute();
