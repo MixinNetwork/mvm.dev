@@ -7,9 +7,9 @@ import { useStore } from '@/store';
 
 const route = useRoute();
 const routes = [
-  { to:"/", text: '注册', name: ['register'] },
-  { to:"/transfer", text: '转账', name: ['balances', 'transfer'] },
-  { to:"/deposit", text: '充值', name: ['deposit'] },
+  { to: '/', text: '注册', name: ['register'] },
+  { to: '/transfer', text: '转账', name: ['balances', 'transfer'] },
+  { to: '/deposit', text: '充值', name: ['deposit'] },
 ];
 
 const { profile, fetchComputer } = useStore();
@@ -33,12 +33,11 @@ onMounted(fetchComputer);
 
     <div class="flex flex-col justify-start items-center px-10 pt-10 w-full h-[600px]">
       <div class="flex justify-center items-center w-full font-normal text-lg h-10">
-        <RouterLink 
-          v-for="r of routes" 
-          :key="r.to" 
+        <RouterLink
+          v-for="r of routes"
+          :key="r.to"
           :to="r.to"
-          :class="[
-            'mr-5', r.name.includes(route.name) && 'text-[#4B7CDD]']"
+          :class="['mr-5', r.name.includes(route.name) && 'text-[#4B7CDD]']"
         >
           {{ r.text }}
         </RouterLink>

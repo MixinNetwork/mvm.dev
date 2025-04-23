@@ -1,7 +1,17 @@
 import { ref, computed, watchEffect } from 'vue';
 import { defineStore } from 'pinia';
-import { buildMixAddress, MixinApi, SafeUtxoOutput, type OAuthKeystore } from '@mixin.dev/mixin-node-sdk';
-import { ComputerInfoResponse, User, UserAssetBalance, UserAssetBalanceWithoutAsset } from './types';
+import {
+  buildMixAddress,
+  MixinApi,
+  SafeUtxoOutput,
+  type OAuthKeystore,
+} from '@mixin.dev/mixin-node-sdk';
+import {
+  ComputerInfoResponse,
+  User,
+  UserAssetBalance,
+  UserAssetBalanceWithoutAsset,
+} from './types';
 import { useLocalStorage } from '@vueuse/core';
 import { initComputerClient } from './utils/api';
 import { add } from './utils/number';
@@ -56,9 +66,8 @@ export const useStore = defineStore('store', () => {
       const c = initComputerClient();
       const u = await c.fetchUser(mix);
       user.value.info = u;
-    } catch(e) {}
+    } catch (e) {}
   };
-
 
   const balances = ref<Record<string, UserAssetBalance>>({});
   const updateBalances = async () => {
@@ -66,50 +75,58 @@ export const useStore = defineStore('store', () => {
     const das = await cc.fetchAssets();
 
     const members = [user.value.user_id];
-    let offset = 0
-    let total: SafeUtxoOutput[] = []
-    while(true) {
+    let offset = 0;
+    let total: SafeUtxoOutput[] = [];
+    while (true) {
       const outputs = await mixinClient.value.utxo.safeOutputs({
         limit: 500,
         members,
         threshold: 1,
         state: 'unspent',
-        offset
+        offset,
       });
-      total = [...total, ...outputs]
+      total = [...total, ...outputs];
       if (outputs.length < 500) {
         break;
       }
-      offset = outputs[outputs.length - 1].sequence + 1
+      offset = outputs[outputs.length - 1].sequence + 1;
     }
-    const bm = total.reduce((prev, cur) => {
-      const key = cur.asset_id;
-      if (prev[key]) {
-        prev[key].total_amount = add(prev[key].total_amount, cur.amount).toString();
-      } else {
-        const address = das.find(a => a.asset_id === cur.asset_id)?.address;
-        prev[key] = {
-          asset_id: cur.asset_id,
-          total_amount: cur.amount,
-          address
+    const bm = total.reduce(
+      (prev, cur) => {
+        const key = cur.asset_id;
+        if (prev[key]) {
+          prev[key].total_amount = add(prev[key].total_amount, cur.amount).toString();
+        } else {
+          const address = das.find((a) => a.asset_id === cur.asset_id)?.address;
+          prev[key] = {
+            asset_id: cur.asset_id,
+            total_amount: cur.amount,
+            address,
+          };
         }
-      }
-      return prev
-    }, {} as Record<string, UserAssetBalanceWithoutAsset>);
+        return prev;
+      },
+      {} as Record<string, UserAssetBalanceWithoutAsset>,
+    );
 
     const assets = await mixinClient.value.safe.fetchAssets(Object.keys(bm));
-    const fbm = assets.reduce((prev, cur) => {
-      const b = bm[cur.asset_id]
-      const v: UserAssetBalance = { ...b, asset: {
-        ...cur,
-        name: cur.display_name,
-        symbol: cur.display_symbol,
-      } }
-      if (cur.chain_id === SOL_ASSET_ID) 
-        v.address = cur.asset_key;
-      prev[cur.asset_id] = v;
-      return prev
-    }, {} as Record<string, UserAssetBalance>);
+    const fbm = assets.reduce(
+      (prev, cur) => {
+        const b = bm[cur.asset_id];
+        const v: UserAssetBalance = {
+          ...b,
+          asset: {
+            ...cur,
+            name: cur.display_name,
+            symbol: cur.display_symbol,
+          },
+        };
+        if (cur.chain_id === SOL_ASSET_ID) v.address = cur.asset_key;
+        prev[cur.asset_id] = v;
+        return prev;
+      },
+      {} as Record<string, UserAssetBalance>,
+    );
 
     balances.value = fbm;
   };
@@ -139,6 +156,6 @@ export const useStore = defineStore('store', () => {
     updateBalances,
 
     computer,
-    fetchComputer
+    fetchComputer,
   };
 });

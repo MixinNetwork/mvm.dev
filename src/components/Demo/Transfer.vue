@@ -10,7 +10,7 @@
             <div class="ml-1">{{ balance.asset.name }}</div>
           </div>
           <div>{{ `${balance.total_amount} ${balance.asset.symbol}` }}</div>
-        </div>              
+        </div>
         <input
           :value="amount"
           :class="[
@@ -21,7 +21,7 @@
           @input="useRestrictAmount($event, amount)"
         />
       </div>
-      
+
       <div>
         <div class="mt-5 text-base">收款人</div>
         <textarea
@@ -36,25 +36,22 @@
         <div class="mt-1 text-sm">不可转给当前地址</div>
       </div>
 
-      <div 
+      <div
         :class="[
           'flex justify-center self-center mt-8 py-2 w-[100px] text-lg  text-white rounded',
-          isValidAddress && isValidAmount ? 'bg-blue-500 cursor-pointer' : 'bg-gray-300 cursor-not-allowed'
-        ]" 
+          isValidAddress && isValidAmount
+            ? 'bg-blue-500 cursor-pointer'
+            : 'bg-gray-300 cursor-not-allowed',
+        ]"
         @click="useTransfer"
       >
-        <n-spin v-if="loading" size="small" stroke="white"/>
+        <n-spin v-if="loading" size="small" stroke="white" />
         <div v-else>转账</div>
       </div>
     </div>
 
     <n-modal :show="deploying.length > 0" :mask-closable="false">
-      <n-card
-        style="width: 300px; height: 80px;"
-        :bordered="false"
-        size="huge"
-        aria-modal="true"
-      > 
+      <n-card style="width: 300px; height: 80px" :bordered="false" size="huge" aria-modal="true">
         资产部署中，请稍后。。。
       </n-card>
     </n-modal>
@@ -62,20 +59,20 @@
     <n-modal :show="!!track" :mask-closable="false">
       <n-card
         v-if="track && !track.state"
-        style="width: 378px; height: 360px;"
+        style="width: 378px; height: 360px"
         :bordered="false"
         size="huge"
         aria-modal="true"
       >
-        <n-qr-code :value="track.scheme" error-correction-level="H" :size="300" :padding="0"/>
+        <n-qr-code :value="track.scheme" error-correction-level="H" :size="300" :padding="0" />
       </n-card>
       <n-card
         v-else
-        style="width: 300px; height: 80px;"
+        style="width: 300px; height: 80px"
         :bordered="false"
         size="huge"
         aria-modal="true"
-      > 
+      >
         交易处理中。。。
       </n-card>
     </n-modal>
@@ -83,10 +80,26 @@
 </template>
 
 <script setup lang="ts">
-import { attachInvoiceEntry, attachStorageEntry, buildMixAddress, formatUnits, getInvoiceString, newMixinInvoice, parseUnits } from '@mixin.dev/mixin-node-sdk';
+import {
+  attachInvoiceEntry,
+  attachStorageEntry,
+  buildMixAddress,
+  formatUnits,
+  getInvoiceString,
+  newMixinInvoice,
+  parseUnits,
+} from '@mixin.dev/mixin-node-sdk';
 import { Connection, PublicKey, SystemProgram, Transaction } from '@solana/web3.js';
 import { v4 } from 'uuid';
-import { getAccount, getAssociatedTokenAddressSync, TokenAccountNotFoundError, TokenInvalidAccountOwnerError, createAssociatedTokenAccountInstruction, transferChecked, createTransferCheckedInstruction} from "@solana/spl-token";
+import {
+  getAccount,
+  getAssociatedTokenAddressSync,
+  TokenAccountNotFoundError,
+  TokenInvalidAccountOwnerError,
+  createAssociatedTokenAccountInstruction,
+  transferChecked,
+  createTransferCheckedInstruction,
+} from '@solana/spl-token';
 import { computed, ref, watchEffect } from 'vue';
 import { storeToRefs } from 'pinia';
 import { useRoute } from 'vue-router';
@@ -95,23 +108,32 @@ import BigNumber from 'bignumber.js';
 import { useStore } from '@/store';
 import { initComputerClient } from '@/utils/api';
 import { RPC, SOL_ASSET_ID, XIN_ASSET_ID } from '@/utils/constant';
-import { buildComputerExtra, buildSystemCallExtra, encodeMtgExtra, OperationTypeSystemCall } from '@/utils/mixin';
+import {
+  buildComputerExtra,
+  buildSystemCallExtra,
+  encodeMtgExtra,
+  OperationTypeSystemCall,
+} from '@/utils/mixin';
 
-const notification = useNotification()
+const notification = useNotification();
 
 const userStore = useStore();
 const { user, balances, computer, mixinClient } = storeToRefs(userStore);
-const { updateBalances } = userStore
+const { updateBalances } = userStore;
 
 const route = useRoute();
 const id = computed(() => route.params.id as string);
 const balance = computed(() => balances.value[id.value]);
-const mix = computed(() => user.value ? buildMixAddress({
-    version: 2,
-    uuidMembers: [user.value.user_id],
-    xinMembers: [],
-    threshold: 1
-  }): '');
+const mix = computed(() =>
+  user.value
+    ? buildMixAddress({
+        version: 2,
+        uuidMembers: [user.value.user_id],
+        xinMembers: [],
+        threshold: 1,
+      })
+    : '',
+);
 
 const loading = ref(false);
 const amount = ref('');
@@ -149,12 +171,15 @@ const useRestrictAmount = (e: Event, oldValue: string) => {
 };
 
 const deploying = ref('');
-const track = ref<{
-  trace: string;
-  call: string;
-  state: string;
-  scheme: string;
-} | undefined>(undefined);
+const track = ref<
+  | {
+      trace: string;
+      call: string;
+      state: string;
+      scheme: string;
+    }
+  | undefined
+>(undefined);
 
 const c = initComputerClient();
 const useTransfer = async () => {
@@ -168,77 +193,70 @@ const useTransfer = async () => {
   }
 
   const src = new PublicKey(user.value.info.chain_address);
-  const dst = new PublicKey(destination.value)
-  const nonce = await c.getNonce(mix.value)
+  const dst = new PublicKey(destination.value);
+  const nonce = await c.getNonce(mix.value);
   const tx = new Transaction();
   tx.feePayer = new PublicKey(computer.value.payer);
   tx.recentBlockhash = nonce.nonce_hash;
-  tx.add(SystemProgram.nonceAdvance({
-        authorizedPubkey: new PublicKey(computer.value.payer),
-        noncePubkey: new PublicKey(nonce.nonce_address),
-  }));
+  tx.add(
+    SystemProgram.nonceAdvance({
+      authorizedPubkey: new PublicKey(computer.value.payer),
+      noncePubkey: new PublicKey(nonce.nonce_address),
+    }),
+  );
 
   let extraFee = 0;
   if (balance.value.asset_id === SOL_ASSET_ID) {
-    tx.add(SystemProgram.transfer({
-      fromPubkey: src,
-      toPubkey: new PublicKey(destination.value),
-      lamports: parseUnits(amount.value, 9).toNumber()
-    }));
+    tx.add(
+      SystemProgram.transfer({
+        fromPubkey: src,
+        toPubkey: new PublicKey(destination.value),
+        lamports: parseUnits(amount.value, 9).toNumber(),
+      }),
+    );
   } else {
     const connection = new Connection(RPC);
     const mint = new PublicKey(balance.value.address);
     const token = await connection.getAccountInfo(mint);
 
-    const srcAta = getAssociatedTokenAddressSync(
-        mint,
-        src,
-        false,
-        token.owner,
-    );
-    const dstAta = getAssociatedTokenAddressSync(
-        mint,
-        dst,
-        false,
-        token.owner,
-    );
+    const srcAta = getAssociatedTokenAddressSync(mint, src, false, token.owner);
+    const dstAta = getAssociatedTokenAddressSync(mint, dst, false, token.owner);
 
     try {
       await getAccount(connection, dstAta);
-    } catch(e) {
+    } catch (e) {
       if (e instanceof TokenAccountNotFoundError || e instanceof TokenInvalidAccountOwnerError) {
-        tx.add(createAssociatedTokenAccountInstruction(
-          src,
-          dstAta,
-          dst,
-          mint,
-          token.owner,
-        ));
+        tx.add(createAssociatedTokenAccountInstruction(src, dstAta, dst, mint, token.owner));
 
-        const rent = await connection.getMinimumBalanceForRentExemption(165, "confirmed")
-        extraFee += formatUnits(rent, 9).toNumber()
+        const rent = await connection.getMinimumBalanceForRentExemption(165, 'confirmed');
+        extraFee += formatUnits(rent, 9).toNumber();
       }
     }
 
-    tx.add(createTransferCheckedInstruction(
-      srcAta,
-      mint,
-      dstAta,
-      src,
-      parseUnits(amount.value, balance.value.asset.precision).toNumber(),
-      balance.value.asset.precision,
-      [],
-      token.owner,
-    ));
+    tx.add(
+      createTransferCheckedInstruction(
+        srcAta,
+        mint,
+        dstAta,
+        src,
+        parseUnits(amount.value, balance.value.asset.precision).toNumber(),
+        balance.value.asset.precision,
+        [],
+        token.owner,
+      ),
+    );
   }
 
-  const fee = extraFee > 0 ? (await c.getFeeOnXin(extraFee.toString())) : undefined;
+  const fee = extraFee > 0 ? await c.getFeeOnXin(extraFee.toString()) : undefined;
   const callId = v4();
   const callExtra = buildSystemCallExtra(user.value.info.id, callId, false, fee?.fee_id);
-  const memo = encodeMtgExtra(computer.value.members.app_id, buildComputerExtra(OperationTypeSystemCall, callExtra))
+  const memo = encodeMtgExtra(
+    computer.value.members.app_id,
+    buildComputerExtra(OperationTypeSystemCall, callExtra),
+  );
   const emtpyExtra = Buffer.from(encodeMtgExtra(computer.value.members.app_id, Buffer.alloc(0)));
 
-  const r = buildMixAddress({ 
+  const r = buildMixAddress({
     version: 2,
     xinMembers: [],
     uuidMembers: computer.value.members.members,
@@ -246,10 +264,12 @@ const useTransfer = async () => {
   });
   const invoice = newMixinInvoice(r);
 
-  const txBuf = Buffer.from(tx.serialize({
-    requireAllSignatures: false,
-    verifySignatures: false
-  }));
+  const txBuf = Buffer.from(
+    tx.serialize({
+      requireAllSignatures: false,
+      verifySignatures: false,
+    }),
+  );
   attachStorageEntry(invoice, v4(), txBuf);
 
   attachInvoiceEntry(invoice, {
@@ -258,7 +278,7 @@ const useTransfer = async () => {
     amount: amount.value,
     extra: emtpyExtra,
     index_references: [],
-    hash_references: []
+    hash_references: [],
   });
 
   let total = BigNumber(computer.value.params.operation.price);
@@ -270,21 +290,21 @@ const useTransfer = async () => {
     amount: total.toFixed(8, BigNumber.ROUND_CEIL),
     extra: Buffer.from(memo),
     index_references: [0, 1],
-    hash_references: []
+    hash_references: [],
   });
-  console.log(invoice)
+  console.log(invoice);
 
   const invoiceStr = `https://mixin.one/pay/${getInvoiceString(invoice)}`;
   const code = await mixinClient.value.code.schemes(invoiceStr);
-  const scheme = `https://mixin.one/schemes/${code.scheme_id}`
+  const scheme = `https://mixin.one/schemes/${code.scheme_id}`;
 
   track.value = {
     scheme,
     trace,
     call: callId,
-    state: ''
-  }
-}
+    state: '',
+  };
+};
 
 watchEffect(() => {
   if (!deploying.value) return;
@@ -304,7 +324,7 @@ watchEffect(() => {
 
 watchEffect(() => {
   if (!track.value) return;
-  const client = mixinClient.value
+  const client = mixinClient.value;
   const timer = window.setInterval(async () => {
     try {
       if (!track.value.state) {

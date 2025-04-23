@@ -1,4 +1,4 @@
-import { SafeUtxoOutput, UserResponse } from "@mixin.dev/mixin-node-sdk";
+import { SafeUtxoOutput, UserResponse } from '@mixin.dev/mixin-node-sdk';
 
 export interface ComputerUserResponse {
   id: string;
@@ -17,7 +17,7 @@ export interface ComputerInfoResponse {
     app_id: string;
     members: string[];
     threshold: number;
-  },
+  };
   params: {
     operation: {
       asset: string;
@@ -53,12 +53,12 @@ export interface ComputerSystemCallRequest {
 }
 
 export interface ComputerSystemCallResponse {
-  id:            string;
-  user_id:       string;
+  id: string;
+  user_id: string;
   nonce_account: string;
-  raw:           string;
-  state:         string;
-  hash:          string;
+  raw: string;
+  state: string;
+  hash: string;
 }
 
 export interface Asset {
@@ -79,6 +79,6 @@ export interface UserAssetBalanceWithoutAsset {
   address?: string;
 }
 
-export interface UserAssetBalance extends UserAssetBalanceWithoutAsset{
+export interface UserAssetBalance extends UserAssetBalanceWithoutAsset {
   asset: Asset;
 }

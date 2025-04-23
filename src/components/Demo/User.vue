@@ -1,24 +1,20 @@
 <template>
   <div>
-    <div v-if="user" class="flex flex-col items-end">  
+    <div v-if="user" class="flex flex-col items-end">
       <n-popconfirm :show-icon="false" :on-positive-click="clearUserAuth">
         <template #trigger>
           <div class="flex items-center">
-            <NAvatar 
-              :circle="true" 
-              :size="32"
-              :src="user.avatar_url"
-            />
+            <NAvatar :circle="true" :size="32" :src="user.avatar_url" />
             <div class="ml-2 text-lg">{{ user.full_name }}</div>
           </div>
         </template>
         登出？
       </n-popconfirm>
       <div class="mt-2">
-        <div v-if="user.info" class="flex ">
+        <div v-if="user.info" class="flex">
           <div>{{ user.info.chain_address }}</div>
-          <div 
-            class="ml-2 text-sm text-blue-600 cursor-pointer" 
+          <div
+            class="ml-2 text-sm text-blue-600 cursor-pointer"
             @click="copy(user.info.chain_address)"
           >
             {{ copied ? '已复制' : '复制' }}
@@ -37,13 +33,19 @@
 
   <n-modal v-model:show="showModal">
     <n-card
-      style="width: 378px; height: 360px;"
+      style="width: 378px; height: 360px"
       :bordered="false"
       size="huge"
       aria-modal="true"
       :on-mask-click="handleClear"
     >
-      <n-qr-code v-if="loginCode" :value="loginCode" error-correction-level="H" :size="300" :padding="0"/>
+      <n-qr-code
+        v-if="loginCode"
+        :value="loginCode"
+        error-correction-level="H"
+        :size="300"
+        :padding="0"
+      />
       <n-skeleton v-else :width="300" :height="300" :sharp="false" :animated="true" />
     </n-card>
   </n-modal>
@@ -51,7 +53,13 @@
 
 <script setup lang="ts">
 import { onUnmounted, ref, watchEffect } from 'vue';
-import { AuthorizationResponse, base64RawURLEncode, getChallenge, getED25519KeyPair, OAuthKeystore } from '@mixin.dev/mixin-node-sdk';
+import {
+  AuthorizationResponse,
+  base64RawURLEncode,
+  getChallenge,
+  getED25519KeyPair,
+  OAuthKeystore,
+} from '@mixin.dev/mixin-node-sdk';
 import { storeToRefs } from 'pinia';
 import { NModal, NQrCode, NSkeleton, NCard, NAvatar } from 'naive-ui';
 import ReconnectingWebSocket from 'reconnecting-websocket';
@@ -68,9 +76,11 @@ const showModal = ref(false);
 const loginCode = ref('');
 const ws = ref<ReconnectingWebSocket | undefined>(undefined);
 
-const { copy, copied } = useClipboard({ source: user.value && user.value.info && user.value.info.chain_address })
+const { copy, copied } = useClipboard({
+  source: user.value && user.value.info && user.value.info.chain_address,
+});
 
-const handleLogin = () => showModal.value = true;
+const handleLogin = () => (showModal.value = true);
 const handleClear = () => {
   showModal.value = false;
   loginCode.value = '';
@@ -91,11 +101,7 @@ const useLogin = async (code: string, code_verifier: string) => {
       code_verifier,
     });
 
-    if (
-      !scope ||
-      scope.indexOf('ASSETS:READ') < 0 ||
-      scope.indexOf('SNAPSHOTS:READ') < 0
-    ) {
+    if (!scope || scope.indexOf('ASSETS:READ') < 0 || scope.indexOf('SNAPSHOTS:READ') < 0) {
       return;
     }
 
@@ -118,7 +124,7 @@ watchEffect(() => {
   if (!showModal.value) return;
   const scope = 'PROFILE:READ ASSETS:READ SNAPSHOTS:READ';
   const { verifier, challenge } = getChallenge();
-  
+
   ws.value = useAuthorization(BOT, scope, challenge, (a: AuthorizationResponse) => {
     if (a && !loginCode.value) loginCode.value = `mixin://codes/${a.code_id}`;
     if (a.authorization_code.length > 16) {
@@ -128,7 +134,7 @@ watchEffect(() => {
     return false;
   });
   return () => ws.value.close();
-})
+});
 
 onUnmounted(handleClear);
 </script>

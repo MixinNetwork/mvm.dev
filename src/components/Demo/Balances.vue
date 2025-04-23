@@ -4,14 +4,14 @@
     <div v-else class="flex flex-col w-1/2">
       <div class="text-base">资产列表</div>
       <div class="mt-5 pb-4">
-        <RouterLink 
-          v-for="(a, id) of balances" 
-          :key="id" 
+        <RouterLink
+          v-for="(a, id) of balances"
+          :key="id"
           :to="`/transfer/${a.asset_id}`"
           class="block mb-4 p-2 border border-[#D9D9D9] rounded"
         >
           <div class="flex justify-between">
-            <div class="flex items-center ">
+            <div class="flex items-center">
               <NAvatar :src="a.asset.icon_url" :size="16" :circle="true"></NAvatar>
               <div class="ml-1">{{ a.asset.symbol }}</div>
             </div>

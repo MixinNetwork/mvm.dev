@@ -1,6 +1,13 @@
 import axios, { type AxiosResponse } from 'axios';
 import axiosRetry from 'axios-retry';
-import type { ComputerAssetResponse, ComputerFeeResponse, ComputerInfoResponse, ComputerNonceResponse, ComputerSystemCallResponse, ComputerUserResponse } from '@/types';
+import type {
+  ComputerAssetResponse,
+  ComputerFeeResponse,
+  ComputerInfoResponse,
+  ComputerNonceResponse,
+  ComputerSystemCallResponse,
+  ComputerUserResponse,
+} from '@/types';
 import { HOST } from '@/utils/constant';
 
 axios.defaults.headers.post['Content-Type'] = 'application/json';
@@ -35,6 +42,7 @@ export const initComputerClient = (responseCallback?: (e: any) => void) => {
 
     deployAssets: (assets: string[]) => ins.post('/deployed_assets', { assets }),
     getNonce: (mix: string): Promise<ComputerNonceResponse> => ins.post('/nonce_accounts', { mix }),
-    getFeeOnXin: (amount: string): Promise<ComputerFeeResponse> => ins.post('/fee', { sol_amount: amount }),
+    getFeeOnXin: (amount: string): Promise<ComputerFeeResponse> =>
+      ins.post('/fee', { sol_amount: amount }),
   };
 };

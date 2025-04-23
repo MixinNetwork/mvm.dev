@@ -59,8 +59,8 @@ const router = createRouter({
               path: ':id',
               name: 'transfer',
               component: Transfer,
-            }
-          ]
+            },
+          ],
         },
       ],
     },
