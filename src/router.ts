@@ -1,64 +1,55 @@
-import { createRouter, createWebHistory } from 'vue-router';
-import Register from './components/Demo/Register.vue';
-import Balances from './components/Demo/Balances.vue';
-import Deposit from './components/Demo/Deposit.vue';
-import Transfer from './components/Demo/Transfer.vue';
-import DemoLayout from './components/Demo/DemoLayout.vue';
-import TutorialLayout from './components/Tutorial/TutorialLayout.vue';
-import Introduce from './components/Tutorial/Introduce.vue';
-import RegisterTutorial from './components/Tutorial/Register.vue';
-import Call from './components/Tutorial/Call.vue';
+import { createRouter, createWebHistory } from "vue-router";
 
 const router = createRouter({
   history: createWebHistory(),
   routes: [
     {
-      path: '/',
-      component: TutorialLayout,
+      path: "/",
+      component: () => import("@/components/Tutorial/TutorialLayout.vue"),
       children: [
         {
-          path: '',
-          name: 'introduce',
-          component: Introduce,
+          path: "",
+          name: "introduce",
+          component: () => import("@/components/Tutorial/Introduce.vue"),
         },
         {
-          path: 'register',
-          name: 'register_user',
-          component: RegisterTutorial,
+          path: "register",
+          name: "register_user",
+          component: () => import("@/components/Tutorial/Register.vue"),
         },
         {
-          path: 'call',
-          name: 'call',
-          component: Call,
+          path: "call",
+          name: "call",
+          component: () => import("@/components/Tutorial/Call.vue"),
         },
       ],
     },
     {
-      path: '/demo',
-      component: DemoLayout,
+      path: "/demo",
+      component: () => import("@/components/Demo/DemoLayout.vue"),
       children: [
         {
-          path: '',
-          name: 'register',
-          component: Register,
+          path: "",
+          name: "register",
+          component: () => import("@/components/Demo/Register.vue"),
         },
         {
-          path: 'deposit',
-          name: 'deposit',
-          component: Deposit,
+          path: "deposit",
+          name: "deposit",
+          component: () => import("@/components/Demo/Deposit.vue"),
         },
         {
-          path: 'transfer',
+          path: "transfer",
           children: [
             {
-              path: '',
-              name: 'balances',
-              component: Balances,
+              path: "",
+              name: "balances",
+              component: () => import("@/components/Demo/Balances.vue"),
             },
             {
-              path: ':id',
-              name: 'transfer',
-              component: Transfer,
+              path: ":id",
+              name: "transfer",
+              component: () => import("@/components/Demo/Transfer.vue"),
             },
           ],
         },

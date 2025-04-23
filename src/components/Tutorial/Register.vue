@@ -3,7 +3,8 @@
     <h1>注册用户</h1>
 
     <div class="content mt-10">
-      在使用 Mixin Safe Computer 前，必须先注册用户。本文将介绍如何通过 Javascript 注册用户。
+      在使用 Mixin Safe Computer 前，必须先注册用户。本文将介绍如何通过
+      Javascript 注册用户。
     </div>
 
     <div class="mt-10">
@@ -18,8 +19,9 @@
     <div class="mt-10">
       <h2>2. 交易 Memo 格式</h2>
       <div class="my-2 content">
-        在向 Mixin Safe Computer 这样的 [MTG](https://github.com/MixinNetwork/trusted-group)
-        发送交易时，memo 必须按指定格式编码：
+        在向 Mixin Safe Computer 这样的
+        [MTG](https://github.com/MixinNetwork/trusted-group) 发送交易时，memo
+        必须按指定格式编码：
       </div>
       <Code :code="code2" />
     </div>
@@ -33,7 +35,8 @@
     <div class="mt-10">
       <h2>4. 查询用户信息</h2>
       <div class="my-2 content">
-        待注册成功后，查询用户信息以便发起 Solana 交易，包含用户的 id、Solana 链上地址等信息。
+        待注册成功后，查询用户信息以便发起 Solana 交易，包含用户的 id、Solana
+        链上地址等信息。
       </div>
       <Code :code="code4" />
     </div>
@@ -41,7 +44,7 @@
 </template>
 
 <script setup lang="ts">
-import Code from '@/components/Code.vue';
+import Code from "@/components/Code.vue";
 
 const code1 = `import { buildMixAddress } from "@mixin.dev/mixin-node-sdk";
 

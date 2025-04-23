@@ -6,7 +6,11 @@
       <div>
         <div class="flex justify-between items-center text-base">
           <div class="flex items-center">
-            <NAvatar :src="balance.asset.icon_url" :size="16" :circle="true"></NAvatar>
+            <NAvatar
+              :src="balance.asset.icon_url"
+              :size="16"
+              :circle="true"
+            ></NAvatar>
             <div class="ml-1">{{ balance.asset.name }}</div>
           </div>
           <div>{{ `${balance.total_amount} ${balance.asset.symbol}` }}</div>
@@ -51,7 +55,12 @@
     </div>
 
     <n-modal :show="deploying.length > 0" :mask-closable="false">
-      <n-card style="width: 300px; height: 80px" :bordered="false" size="huge" aria-modal="true">
+      <n-card
+        style="width: 300px; height: 80px"
+        :bordered="false"
+        size="huge"
+        aria-modal="true"
+      >
         资产部署中，请稍后。。。
       </n-card>
     </n-modal>
@@ -64,7 +73,12 @@
         size="huge"
         aria-modal="true"
       >
-        <n-qr-code :value="track.scheme" error-correction-level="H" :size="300" :padding="0" />
+        <n-qr-code
+          :value="track.scheme"
+          error-correction-level="H"
+          :size="300"
+          :padding="0"
+        />
       </n-card>
       <n-card
         v-else
@@ -88,9 +102,14 @@ import {
   getInvoiceString,
   newMixinInvoice,
   parseUnits,
-} from '@mixin.dev/mixin-node-sdk';
-import { Connection, PublicKey, SystemProgram, Transaction } from '@solana/web3.js';
-import { v4 } from 'uuid';
+} from "@mixin.dev/mixin-node-sdk";
+import {
+  Connection,
+  PublicKey,
+  SystemProgram,
+  Transaction,
+} from "@solana/web3.js";
+import { v4 } from "uuid";
 import {
   getAccount,
   getAssociatedTokenAddressSync,
@@ -99,21 +118,21 @@ import {
   createAssociatedTokenAccountInstruction,
   transferChecked,
   createTransferCheckedInstruction,
-} from '@solana/spl-token';
-import { computed, ref, watchEffect } from 'vue';
-import { storeToRefs } from 'pinia';
-import { useRoute } from 'vue-router';
-import { NAvatar, useNotification, NSpin } from 'naive-ui';
-import BigNumber from 'bignumber.js';
-import { useStore } from '@/store';
-import { initComputerClient } from '@/utils/api';
-import { RPC, SOL_ASSET_ID, XIN_ASSET_ID } from '@/utils/constant';
+} from "@solana/spl-token";
+import { computed, ref, watchEffect } from "vue";
+import { storeToRefs } from "pinia";
+import { useRoute } from "vue-router";
+import { NAvatar, useNotification, NSpin } from "naive-ui";
+import BigNumber from "bignumber.js";
+import { useStore } from "@/store";
+import { initComputerClient } from "@/utils/api";
+import { RPC, SOL_ASSET_ID, XIN_ASSET_ID } from "@/utils/constant";
 import {
   buildComputerExtra,
   buildSystemCallExtra,
   encodeMtgExtra,
   OperationTypeSystemCall,
-} from '@/utils/mixin';
+} from "@/utils/mixin";
 
 const notification = useNotification();
 
@@ -132,19 +151,21 @@ const mix = computed(() =>
         xinMembers: [],
         threshold: 1,
       })
-    : '',
+    : "",
 );
 
 const loading = ref(false);
-const amount = ref('');
-const destination = ref('');
+const amount = ref("");
+const destination = ref("");
 const isValidAmount = computed(() => {
   if (balance.value && amount.value) {
     try {
       const amt = BigNumber(amount.value);
-      const minimum = BigNumber('0.0001');
+      const minimum = BigNumber("0.0001");
       const maximum = BigNumber(balance.value.total_amount);
-      return maximum.isGreaterThanOrEqualTo(amt) && minimum.isLessThanOrEqualTo(amt);
+      return (
+        maximum.isGreaterThanOrEqualTo(amt) && minimum.isLessThanOrEqualTo(amt)
+      );
     } catch (e) {
       return false;
     }
@@ -165,12 +186,12 @@ const useRestrictAmount = (e: Event, oldValue: string) => {
   const target = e.target as HTMLInputElement;
 
   if (target.value.match(/^(\d*\.?\d{0,8})?$/)?.[0] === undefined) {
-    amount.value = oldValue ?? '';
+    amount.value = oldValue ?? "";
     target.value = amount.value;
   } else amount.value = target.value;
 };
 
-const deploying = ref('');
+const deploying = ref("");
 const track = ref<
   | {
       trace: string;
@@ -183,7 +204,13 @@ const track = ref<
 
 const c = initComputerClient();
 const useTransfer = async () => {
-  if (!user.value || !computer.value || !isValidAddress.value || !isValidAddress.value) return;
+  if (
+    !user.value ||
+    !computer.value ||
+    !isValidAddress.value ||
+    !isValidAddress.value
+  )
+    return;
   loading.value = true;
 
   if (!balance.value.address) {
@@ -225,10 +252,24 @@ const useTransfer = async () => {
     try {
       await getAccount(connection, dstAta);
     } catch (e) {
-      if (e instanceof TokenAccountNotFoundError || e instanceof TokenInvalidAccountOwnerError) {
-        tx.add(createAssociatedTokenAccountInstruction(src, dstAta, dst, mint, token.owner));
+      if (
+        e instanceof TokenAccountNotFoundError ||
+        e instanceof TokenInvalidAccountOwnerError
+      ) {
+        tx.add(
+          createAssociatedTokenAccountInstruction(
+            src,
+            dstAta,
+            dst,
+            mint,
+            token.owner,
+          ),
+        );
 
-        const rent = await connection.getMinimumBalanceForRentExemption(165, 'confirmed');
+        const rent = await connection.getMinimumBalanceForRentExemption(
+          165,
+          "confirmed",
+        );
         extraFee += formatUnits(rent, 9).toNumber();
       }
     }
@@ -247,14 +288,22 @@ const useTransfer = async () => {
     );
   }
 
-  const fee = extraFee > 0 ? await c.getFeeOnXin(extraFee.toString()) : undefined;
+  const fee =
+    extraFee > 0 ? await c.getFeeOnXin(extraFee.toString()) : undefined;
   const callId = v4();
-  const callExtra = buildSystemCallExtra(user.value.info.id, callId, false, fee?.fee_id);
+  const callExtra = buildSystemCallExtra(
+    user.value.info.id,
+    callId,
+    false,
+    fee?.fee_id,
+  );
   const memo = encodeMtgExtra(
     computer.value.members.app_id,
     buildComputerExtra(OperationTypeSystemCall, callExtra),
   );
-  const emtpyExtra = Buffer.from(encodeMtgExtra(computer.value.members.app_id, Buffer.alloc(0)));
+  const emtpyExtra = Buffer.from(
+    encodeMtgExtra(computer.value.members.app_id, Buffer.alloc(0)),
+  );
 
   const r = buildMixAddress({
     version: 2,
@@ -302,7 +351,7 @@ const useTransfer = async () => {
     scheme,
     trace,
     call: callId,
-    state: '',
+    state: "",
   };
 };
 
@@ -313,10 +362,10 @@ watchEffect(() => {
     if (!balance.value.address) return;
 
     window.clearInterval(timer);
-    deploying.value = '';
+    deploying.value = "";
     loading.value = false;
-    notification['success']({
-      title: '资产部署成功',
+    notification["success"]({
+      title: "资产部署成功",
     });
   }, 1000 * 5);
   return () => window.clearInterval(timer);
@@ -329,22 +378,22 @@ watchEffect(() => {
     try {
       if (!track.value.state) {
         const req = await client.utxo.fetchTransaction(track.value.trace);
-        if (req && req.state === 'spent') track.value.state = 'spent';
+        if (req && req.state === "spent") track.value.state = "spent";
         return;
       }
 
       const call = await c.fetchCall(track.value.call);
-      if (call && ['done', 'failed'].includes(call.state)) {
+      if (call && ["done", "failed"].includes(call.state)) {
         window.clearInterval(timer);
         track.value = undefined;
         loading.value = false;
-        if (call.state === 'done')
-          notification['success']({
-            title: '交易成功',
+        if (call.state === "done")
+          notification["success"]({
+            title: "交易成功",
           });
-        if (call.state === 'failed')
-          notification['error']({
-            title: '交易失败',
+        if (call.state === "failed")
+          notification["error"]({
+            title: "交易失败",
           });
       }
     } catch {}

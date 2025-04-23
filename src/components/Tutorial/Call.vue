@@ -3,15 +3,17 @@
     <h1>发起 Solana 交易</h1>
 
     <div class="content mt-10">
-      在完成用户注册，获取到用户 id 和链上地址之后，即可在 Solana 网络上参与交互。
+      在完成用户注册，获取到用户 id 和链上地址之后，即可在 Solana
+      网络上参与交互。
     </div>
 
     <div class="mt-10">
       <h2>1. 获取 Nonce Account 和 Fee Payer</h2>
       <div class="content my-2">
-        第一步先通过 Computer Http Api 获取可用的 Nonce Account 和交易的 Payer 地址。通过 Computer
-        执行的 Solana 交易，必须用 Nonce Account Hash 作为 Recent Block Hash，且其第一个 Instruction
-        必须为 NonceAdvance。Payer 只可作为交易的 Fee Payer，不可在 NonceAdvance 之后的 instruction
+        第一步先通过 Computer Http Api 获取可用的 Nonce Account 和交易的 Payer
+        地址。通过 Computer 执行的 Solana 交易，必须用 Nonce Account Hash 作为
+        Recent Block Hash，且其第一个 Instruction 必须为 NonceAdvance。Payer
+        只可作为交易的 Fee Payer，不可在 NonceAdvance 之后的 instruction
         中操作。
       </div>
       <Code :code="code1" />
@@ -20,7 +22,8 @@
     <div class="mt-10">
       <h2>2. 更新 Solana 交易</h2>
       <div class="my-2 content">
-        在构造好你需要的 Solana 交易后，更新 Fee Payer、Recent Block Hash 和 Instructions.
+        在构造好你需要的 Solana 交易后，更新 Fee Payer、Recent Block Hash 和
+        Instructions.
       </div>
       <Code :code="code2" />
     </div>
@@ -30,8 +33,8 @@
       <div class="my-2 content">
         在与 Solana Program
         交互的过程中，可能会产生一些费用，如创建账号需要的租金。这部分费用需要由用户或应用来承担，在创建交易时超过
-        `computerInfo.params.operation.price` 的费用将兑换为等值的 SOL，并在交易发送前转至用户的
-        Solana 地址。
+        `computerInfo.params.operation.price` 的费用将兑换为等值的
+        SOL，并在交易发送前转至用户的 Solana 地址。
       </div>
       <Code :code="code3" />
     </div>
@@ -45,8 +48,9 @@
       <div class="my-2 content">
         其中，UID 为 Computer Api 返回的 user id；CID 是为该 Solana 交易指定的
         uuid；SKIP_POSTPROCESS_FLAG 为 0 或 1，当设为 1
-        时在交易成功后将不会处理剩余或收到的代币，如添加流动性成功后，将不会把 Lp Token 转回用户的
-        MIX 地址，而是保留在链上地址；FEE_ID 用来处理额外的手续费，将在后文详述。
+        时在交易成功后将不会处理剩余或收到的代币，如添加流动性成功后，将不会把
+        Lp Token 转回用户的 MIX 地址，而是保留在链上地址；FEE_ID
+        用来处理额外的手续费，将在后文详述。
       </div>
 
       <Code :code="code4" />
@@ -54,14 +58,16 @@
 
     <div class="mt-10">
       <h2>6. 申请创建交易</h2>
-      <div class="my-2 content">通过 Invoice 的方式，向 Computer 发送创建 Solana 交易的申请。</div>
+      <div class="my-2 content">
+        通过 Invoice 的方式，向 Computer 发送创建 Solana 交易的申请。
+      </div>
       <Code :code="code5" />
     </div>
   </div>
 </template>
 
 <script setup lang="ts">
-import Code from '@/components/Code.vue';
+import Code from "@/components/Code.vue";
 
 const code1 = `const requestComputerApi = async (method, url, body) => {
   const resp = await fetch('https://computer.mixin.dev' + url, { method, body });

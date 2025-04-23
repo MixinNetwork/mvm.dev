@@ -11,20 +11,34 @@
     </div>
 
     <n-modal v-model:show="login.show">
-      <n-card style="width: 378px; height: 360px" :bordered="false" size="huge" aria-modal="true">
-        <n-qr-code :value="login.code" error-correction-level="H" :size="300" :padding="0" />
+      <n-card
+        style="width: 378px; height: 360px"
+        :bordered="false"
+        size="huge"
+        aria-modal="true"
+      >
+        <n-qr-code
+          :value="login.code"
+          error-correction-level="H"
+          :size="300"
+          :padding="0"
+        />
       </n-card>
     </n-modal>
   </div>
 </template>
 
 <script setup lang="ts">
-import { computed, ref, watchEffect } from 'vue';
-import { storeToRefs } from 'pinia';
-import { useStore } from '@/store';
-import { buildMixAddress } from '@mixin.dev/mixin-node-sdk';
-import { buildComputerExtra, encodeMtgExtra, OperationTypeAddUser } from '@/utils/mixin';
-import { initComputerClient } from '@/utils/api';
+import { computed, ref, watchEffect } from "vue";
+import { storeToRefs } from "pinia";
+import { useStore } from "@/store";
+import { buildMixAddress } from "@mixin.dev/mixin-node-sdk";
+import {
+  buildComputerExtra,
+  encodeMtgExtra,
+  OperationTypeAddUser,
+} from "@/utils/mixin";
+import { initComputerClient } from "@/utils/api";
 
 const userStore = useStore();
 const { user, computer } = storeToRefs(userStore);
@@ -36,17 +50,20 @@ const mix = computed(() =>
         xinMembers: [],
         threshold: 1,
       })
-    : '',
+    : "",
 );
 
 const login = ref({
   show: false,
-  code: '',
+  code: "",
 });
 
 const useRegister = () => {
   if (!mix.value || !computer.value) return;
-  const extra = buildComputerExtra(OperationTypeAddUser, Buffer.from(mix.value));
+  const extra = buildComputerExtra(
+    OperationTypeAddUser,
+    Buffer.from(mix.value),
+  );
   const memo = encodeMtgExtra(computer.value.members.app_id, extra);
 
   const destination = buildMixAddress({
@@ -72,7 +89,7 @@ watchEffect(() => {
         window.clearInterval(timer);
         login.value = {
           show: false,
-          code: '',
+          code: "",
         };
       }
     } catch {}

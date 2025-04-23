@@ -1,12 +1,12 @@
 <script setup>
-import { useRoute } from 'vue-router';
-import { NNotificationProvider } from 'naive-ui';
+import { useRoute } from "vue-router";
+import { NNotificationProvider } from "naive-ui";
 
 const route = useRoute();
 const routes = [
-  { to: '/', text: '介绍', name: 'introduce' },
-  { to: '/register', text: '用户注册', name: 'register_user' },
-  { to: '/call', text: '发起 Solana 交易', name: 'call' },
+  { to: "/", text: "介绍", name: "introduce" },
+  { to: "/register", text: "用户注册", name: "register_user" },
+  { to: "/call", text: "发起 Solana 交易", name: "call" },
 ];
 </script>
 
@@ -33,7 +33,10 @@ const routes = [
             v-for="r of routes"
             :key="r.text"
             :to="r.to"
-            :class="['block mb-4 text-lg ', route.name === r.name ? 'text-blue-500' : 'text-black']"
+            :class="[
+              'block mb-4 text-lg ',
+              route.name === r.name ? 'text-blue-500' : 'text-black',
+            ]"
             >{{ r.text }}</RouterLink
           >
         </div>

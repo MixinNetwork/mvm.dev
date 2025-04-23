@@ -1,27 +1,27 @@
-import { ref, computed, watchEffect } from 'vue';
-import { defineStore } from 'pinia';
+import { ref, computed, watchEffect } from "vue";
+import { defineStore } from "pinia";
 import {
   buildMixAddress,
   MixinApi,
   SafeUtxoOutput,
   type OAuthKeystore,
-} from '@mixin.dev/mixin-node-sdk';
+} from "@mixin.dev/mixin-node-sdk";
 import {
   ComputerInfoResponse,
   User,
   UserAssetBalance,
   UserAssetBalanceWithoutAsset,
-} from './types';
-import { useLocalStorage } from '@vueuse/core';
-import { initComputerClient } from './utils/api';
-import { add } from './utils/number';
-import { SOL_ASSET_ID } from './utils/constant';
+} from "./types";
+import { useLocalStorage } from "@vueuse/core";
+import { initComputerClient } from "./utils/api";
+import { add } from "./utils/number";
+import { SOL_ASSET_ID } from "./utils/constant";
 
-const MIXIN_OAUTH = 'oauth';
+const MIXIN_OAUTH = "oauth";
 const cc = initComputerClient();
 
-export const useStore = defineStore('store', () => {
-  const auth = useLocalStorage(MIXIN_OAUTH, '', {
+export const useStore = defineStore("store", () => {
+  const auth = useLocalStorage(MIXIN_OAUTH, "", {
     listenToStorageChanges: true,
   });
   const mixinClient = computed(() => {
@@ -34,13 +34,13 @@ export const useStore = defineStore('store', () => {
     });
   });
   const saveUserAuth = (k: OAuthKeystore) => {
-    const userAuth = Buffer.from(JSON.stringify(k)).toString('base64');
+    const userAuth = Buffer.from(JSON.stringify(k)).toString("base64");
     auth.value = userAuth;
   };
   const readUserAuth = () => {
     if (!auth.value) return undefined;
     try {
-      const k = JSON.parse(Buffer.from(auth.value, 'base64').toString());
+      const k = JSON.parse(Buffer.from(auth.value, "base64").toString());
       return k as OAuthKeystore;
     } catch {
       return undefined;
@@ -48,7 +48,7 @@ export const useStore = defineStore('store', () => {
   };
   const clearUserAuth = () => {
     user.value = undefined;
-    auth.value = '';
+    auth.value = "";
     localStorage.removeItem(MIXIN_OAUTH);
   };
 
@@ -82,7 +82,7 @@ export const useStore = defineStore('store', () => {
         limit: 500,
         members,
         threshold: 1,
-        state: 'unspent',
+        state: "unspent",
         offset,
       });
       total = [...total, ...outputs];
@@ -95,7 +95,10 @@ export const useStore = defineStore('store', () => {
       (prev, cur) => {
         const key = cur.asset_id;
         if (prev[key]) {
-          prev[key].total_amount = add(prev[key].total_amount, cur.amount).toString();
+          prev[key].total_amount = add(
+            prev[key].total_amount,
+            cur.amount,
+          ).toString();
         } else {
           const address = das.find((a) => a.asset_id === cur.asset_id)?.address;
           prev[key] = {

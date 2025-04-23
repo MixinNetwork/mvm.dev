@@ -1,6 +1,6 @@
-import ReconnectingWebSocket from 'reconnecting-websocket';
-import pako from 'pako';
-import { v4 } from 'uuid';
+import ReconnectingWebSocket from "reconnecting-websocket";
+import pako from "pako";
+import { v4 } from "uuid";
 
 export const useAuthorization = (
   clientId: string,
@@ -8,10 +8,10 @@ export const useAuthorization = (
   codeChallenge: string,
   callback: (data: any) => boolean,
 ) => {
-  const endpoint = 'wss://blaze.mixin.one';
+  const endpoint = "wss://blaze.mixin.one";
 
   let handled = false;
-  const ws = new ReconnectingWebSocket(endpoint, 'Mixin-OAuth-1', {
+  const ws = new ReconnectingWebSocket(endpoint, "Mixin-OAuth-1", {
     maxReconnectionDelay: 5000,
     minReconnectionDelay: 1000,
     reconnectionDelayGrowFactor: 1.2,
@@ -38,25 +38,27 @@ export const useAuthorization = (
 
     send({
       id: v4().toUpperCase(),
-      action: 'REFRESH_OAUTH_CODE',
+      action: "REFRESH_OAUTH_CODE",
       params: {
         client_id: clientId,
         scope,
         code_challenge: codeChallenge,
-        authorization_id: authorization ? authorization.authorization_id : '',
+        authorization_id: authorization ? authorization.authorization_id : "",
       },
     });
   };
 
-  ws.addEventListener('message', function (event) {
+  ws.addEventListener("message", function (event) {
     if (handled) {
       return;
     }
     const fileReader = new FileReader();
     fileReader.onload = function () {
       const msg = this.result
-        ? pako.ungzip(new Uint8Array(this.result as ArrayBuffer), { to: 'string' })
-        : '{}';
+        ? pako.ungzip(new Uint8Array(this.result as ArrayBuffer), {
+            to: "string",
+          })
+        : "{}";
       const authorization = JSON.parse(msg);
       if (callback(authorization.data)) {
         handled = true;
@@ -69,7 +71,7 @@ export const useAuthorization = (
     fileReader.readAsArrayBuffer(event.data);
   });
 
-  ws.addEventListener('open', function () {
+  ws.addEventListener("open", function () {
     sendRefreshCode(codeChallenge);
   });
 

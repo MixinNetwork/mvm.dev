@@ -1,6 +1,6 @@
-import { base64RawURLEncode } from '@mixin.dev/mixin-node-sdk';
-import { parse } from 'uuid';
-import BigNumber from 'bignumber.js';
+import { base64RawURLEncode } from "@mixin.dev/mixin-node-sdk";
+import { parse } from "uuid";
+import BigNumber from "bignumber.js";
 
 export const OperationTypeAddUser = 1;
 export const OperationTypeSystemCall = 2;

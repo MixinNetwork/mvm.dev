@@ -12,14 +12,22 @@
         >
           <div class="flex justify-between">
             <div class="flex items-center">
-              <NAvatar :src="a.asset.icon_url" :size="16" :circle="true"></NAvatar>
+              <NAvatar
+                :src="a.asset.icon_url"
+                :size="16"
+                :circle="true"
+              ></NAvatar>
               <div class="ml-1">{{ a.asset.symbol }}</div>
             </div>
             <div>{{ a.total_amount }}</div>
           </div>
           <div class="flex justify-between mt-2">
             <div>{{ a.asset.name }}</div>
-            <div>{{ a.address && `${a.address.slice(0, 6)}...${a.address.slice(-6)}` }}</div>
+            <div>
+              {{
+                a.address && `${a.address.slice(0, 6)}...${a.address.slice(-6)}`
+              }}
+            </div>
           </div>
         </RouterLink>
       </div>
@@ -28,9 +36,9 @@
 </template>
 
 <script setup lang="ts">
-import { storeToRefs } from 'pinia';
-import { NAvatar } from 'naive-ui';
-import { useStore } from '@/store';
+import { storeToRefs } from "pinia";
+import { NAvatar } from "naive-ui";
+import { useStore } from "@/store";
 
 const userStore = useStore();
 const { user, balances } = storeToRefs(userStore);

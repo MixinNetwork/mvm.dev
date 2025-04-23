@@ -2,7 +2,9 @@
   <div class="flex justify-center">
     <div v-if="!user || !user.info" class="text-lg">请先登录并完成注册</div>
     <div v-else class="flex flex-col">
-      <div class="flex justify-center text-base">向该地址转账，即可向您的 Messenger 钱包充值</div>
+      <div class="flex justify-center text-base">
+        向该地址转账，即可向您的 Messenger 钱包充值
+      </div>
 
       <div class="flex items-center mt-5">
         <div class="text-base">{{ user.info.chain_address }}</div>
@@ -10,7 +12,7 @@
           class="ml-2 text-sm text-blue-600 cursor-pointer"
           @click="copy(user.info.chain_address)"
         >
-          {{ copied ? '已复制' : '复制' }}
+          {{ copied ? "已复制" : "复制" }}
         </div>
       </div>
 
@@ -27,9 +29,9 @@
 </template>
 
 <script setup lang="ts">
-import { storeToRefs } from 'pinia';
-import { useStore } from '@/store';
-import { useClipboard } from '@vueuse/core';
+import { storeToRefs } from "pinia";
+import { useStore } from "@/store";
+import { useClipboard } from "@vueuse/core";
 
 const userStore = useStore();
 const { user } = storeToRefs(userStore);

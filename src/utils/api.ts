@@ -1,5 +1,5 @@
-import axios, { type AxiosResponse } from 'axios';
-import axiosRetry from 'axios-retry';
+import axios, { type AxiosResponse } from "axios";
+import axiosRetry from "axios-retry";
 import type {
   ComputerAssetResponse,
   ComputerFeeResponse,
@@ -7,10 +7,10 @@ import type {
   ComputerNonceResponse,
   ComputerSystemCallResponse,
   ComputerUserResponse,
-} from '@/types';
-import { HOST } from '@/utils/constant';
+} from "@/types";
+import { HOST } from "@/utils/constant";
 
-axios.defaults.headers.post['Content-Type'] = 'application/json';
+axios.defaults.headers.post["Content-Type"] = "application/json";
 
 export const initComputerClient = (responseCallback?: (e: any) => void) => {
   const ins = axios.create({
@@ -35,14 +35,19 @@ export const initComputerClient = (responseCallback?: (e: any) => void) => {
   });
 
   return {
-    fetchInfo: (): Promise<ComputerInfoResponse> => ins.get('/'),
-    fetchUser: (mix: string): Promise<ComputerUserResponse> => ins.get(`/users/${mix}`),
-    fetchAssets: (): Promise<ComputerAssetResponse[]> => ins.get('/deployed_assets'),
-    fetchCall: (id: string): Promise<ComputerSystemCallResponse> => ins.get(`/system_calls/${id}`),
+    fetchInfo: (): Promise<ComputerInfoResponse> => ins.get("/"),
+    fetchUser: (mix: string): Promise<ComputerUserResponse> =>
+      ins.get(`/users/${mix}`),
+    fetchAssets: (): Promise<ComputerAssetResponse[]> =>
+      ins.get("/deployed_assets"),
+    fetchCall: (id: string): Promise<ComputerSystemCallResponse> =>
+      ins.get(`/system_calls/${id}`),
 
-    deployAssets: (assets: string[]) => ins.post('/deployed_assets', { assets }),
-    getNonce: (mix: string): Promise<ComputerNonceResponse> => ins.post('/nonce_accounts', { mix }),
+    deployAssets: (assets: string[]) =>
+      ins.post("/deployed_assets", { assets }),
+    getNonce: (mix: string): Promise<ComputerNonceResponse> =>
+      ins.post("/nonce_accounts", { mix }),
     getFeeOnXin: (amount: string): Promise<ComputerFeeResponse> =>
-      ins.post('/fee', { sol_amount: amount }),
+      ins.post("/fee", { sol_amount: amount }),
   };
 };
