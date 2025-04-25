@@ -107,45 +107,12 @@ const fee = await requestComputerApi('POST', '/fee' , JSON.stringify({ sol_amoun
 // }
 `;
 
-const code4 = `import { buildMixAddress, bigNumberToBytes } from "@mixin.dev/mixin-node-sdk";
+const code4 = `import { buildMixAddress, buildSystemCallExtra, buildComputerExtra, encodeMtgExtra, OperationTypeSystemCall } from "@mixin.dev/mixin-node-sdk";
 import { parse, v4 } from "uuid";
 import BigNumber from 'bignumber.js';
 
-const bigNumberToBytes = (x: BigNumber) => {
-  const bytes = [];
-  let i = x;
-  do {
-    bytes.unshift(i.mod(256).toNumber());
-    i = i.dividedToIntegerBy(256);
-  } while (!i.isZero());
-  do {
-    bytes.unshift(0)
-  } while(bytes.length < 8);
-  return Buffer.from(bytes);
-};
-const buildSystemCallExtra = (uid: string, cid: string, skipPostProcess: boolean, fid?: string) => {
-  const flag = skipPostProcess ? 1 : 0;
-  const ib = bigNumberToBytes(BigNumber(uid));
-  const cb = parse(cid);
-  const data = [ib, cb, Buffer.from([flag])];
-  if (fid) data.push(parse(fid));
-  return Buffer.concat(data);
-};
-const buildComputerExtra = (operation: number, extra: Buffer) => Buffer.concat([
-  Buffer.from([operation]),
-  extra,
-]);
-const encodeMtgExtra = (app_id: string, extra: Buffer) => {
-  const data = Buffer.concat([
-    parse(app_id),
-    extra,
-  ]);
-  return base64RawURLEncode(data);
-};
-
 const user = await requestComputerApi('GET', '/users/MIX3QEeHEkbmkthQcHMdhpksk3nATrPTsw', undefined);
 const callExtra = buildSystemCallExtra(user.id, v4(), 0, fee.fee_id);
-const OperationTypeSystemCall = 2;
 const extra = buildComputerExtra(OperationTypeSystemCall, callExtra);
 
 // 处理为发给 mtg 的交易 memo
@@ -153,7 +120,7 @@ const computerInfo = await requestComputerApi('GET', '/' , undefined);
 const memo = encodeMtgExtra(computerInfo.members.app_id, requestExtra);
 `;
 
-const code5 = `import { buildMixAddress, newMixinInvoice, attachStorageEntry, getInvoiceString } from "@mixin.dev/mixin-node-sdk";
+const code5 = `import { buildMixAddress, encodeMtgExtra, newMixinInvoice, attachStorageEntry, getInvoiceString } from "@mixin.dev/mixin-node-sdk";
 import { v4 } from "uuid";
 import BigNumber from 'bignumber.js';
 

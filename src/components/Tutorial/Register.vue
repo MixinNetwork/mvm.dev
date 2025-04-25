@@ -46,12 +46,8 @@
 <script setup lang="ts">
 import Code from "@/components/Code.vue";
 
-const code1 = `import { buildMixAddress } from "@mixin.dev/mixin-node-sdk";
+const code1 = `import { buildMixAddress, buildComputerExtra, OperationTypeAddUser } from "@mixin.dev/mixin-node-sdk";
 
-const buildComputerExtra = (operation: number, extra: Buffer) => Buffer.concat([
-  Buffer.from([operation]),
-  extra,
-]);
 const user_id = "4b79fe76-0d9d-49e6-85fd-0f6be01147da";
 const mix = buildMixAddress({
   version: 2,
@@ -60,25 +56,16 @@ const mix = buildMixAddress({
   threshold: 1
 }); // MIX3QEeHEkbmkthQcHMdhpksk3nATrPTsw
 
-const OperationTypeAddUser = 1;
 const extra = buildComputerExtra(OperationTypeAddUser, Buffer.from(mix));
 console.log(extra.toString('hex')); // 014d49583351456548456b626d6b74685163484d6468706b736b336e41547250547377;
 `;
 const code2 = `import { parse } from "uuid";
-import { base64RawURLEncode } from "@mixin.dev/mixin-node-sdk";
+import { encodeMtgExtra } from "@mixin.dev/mixin-node-sdk";
 
 const requestComputerApi = async (method, url, body) => {
   const resp = await fetch('https://computer.mixin.dev' + url, { method, body });
   const data = await resp.text();
   return JSON.parse(data)
-}
-
-const encodeMtgExtra = (app_id: string, extra: Buffer) => {
-  const data = Buffer.concat([
-    parse(app_id),
-    extra,
-  ]);
-  return base64RawURLEncode(data)
 };
 
 const computerInfo = await requestComputerApi('GET', '/' , undefined);

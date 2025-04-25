@@ -111,12 +111,17 @@ import {
 } from "@solana/web3.js";
 import { v4 } from "uuid";
 import {
+  buildComputerExtra,
+  buildSystemCallExtra,
+  encodeMtgExtra,
+  OperationTypeSystemCall,
+} from "@mixin.dev/mixin-node-sdk";
+import {
   getAccount,
   getAssociatedTokenAddressSync,
   TokenAccountNotFoundError,
   TokenInvalidAccountOwnerError,
   createAssociatedTokenAccountInstruction,
-  transferChecked,
   createTransferCheckedInstruction,
 } from "@solana/spl-token";
 import { computed, ref, watchEffect } from "vue";
@@ -127,12 +132,6 @@ import BigNumber from "bignumber.js";
 import { useStore } from "@/store";
 import { initComputerClient } from "@/utils/api";
 import { RPC, SOL_ASSET_ID, XIN_ASSET_ID } from "@/utils/constant";
-import {
-  buildComputerExtra,
-  buildSystemCallExtra,
-  encodeMtgExtra,
-  OperationTypeSystemCall,
-} from "@/utils/mixin";
 
 const notification = useNotification();
 

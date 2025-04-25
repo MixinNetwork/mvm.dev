@@ -14,3 +14,4 @@ deploy
 yarn-error.log
 .idea
 .yarn/
+deploy.sh
