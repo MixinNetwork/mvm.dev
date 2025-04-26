@@ -32,9 +32,12 @@
 import { computed, ref, watchEffect } from "vue";
 import { storeToRefs } from "pinia";
 import { useStore } from "@/store";
-import { buildMixAddress, buildComputerExtra,
+import {
+  buildMixAddress,
+  buildComputerExtra,
   encodeMtgExtra,
-  OperationTypeAddUser, } from "@mixin.dev/mixin-node-sdk";
+  OperationTypeAddUser,
+} from "@mixin.dev/mixin-node-sdk";
 import { initComputerClient } from "@/utils/api";
 
 const userStore = useStore();
