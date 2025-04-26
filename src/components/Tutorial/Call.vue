@@ -57,7 +57,7 @@
     </div>
 
     <div class="mt-10">
-      <h2>6. 申请创建交易</h2>
+      <h2>5. 申请创建交易</h2>
       <div class="my-2 content">
         通过 Invoice 的方式，向 Computer 发送创建 Solana 交易的申请。
       </div>
