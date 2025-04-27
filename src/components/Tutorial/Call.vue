@@ -82,6 +82,8 @@ const nonce = await requestComputerApi('POST', '/nonce_accounts', JSON.stringify
 `;
 
 const code2 = `import { PublicKey, VersionedTransaction, TransactionMessage, SystemProgram } from '@solana/web3.js';
+import { checkSystemCallSize } from "@mixin.dev/mixin-node-sdk";
+
 // 构造你需要的 Solana 交易 txx
 
 const nonceIns = SystemProgram.nonceAdvance({
@@ -95,6 +97,15 @@ const messageV0 = new TransactionMessage({
   instructions: [nonceIns, ...txx.instructions],
 }).compileToV0Message();
 const tx = new VersionedTransaction(messageV0);
+
+// Solana 交易有着长度限制，如果交易超出限制，可以将 instructions 分成多个 System Call 发送
+const txBuf = Buffer.from(tx.serialize({
+  requireAllSignatures: false,
+  verifySignatures: false,
+}));
+if checkSystemCallSize(txBuf) {
+  // ...
+}
 `;
 
 const code3 = `// 例如发送某个 Spl Token 时，需要为对方创建 Associated Token Address，需要 0.00203928 SOL 租金
@@ -136,7 +147,6 @@ const computer = buildMixAddress({
 const invoice = newMixinInvoice(computer);
 
 // 将 Solana 交易存在 Mixin Storage
-const txBuf = Buffer.from(tx.serialize());
 attachStorageEntry(invoice, v4(), txBuf);
 
 // 用户发出的币。如添加 BTC/SOL 流动性
