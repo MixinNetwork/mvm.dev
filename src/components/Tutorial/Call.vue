@@ -14,7 +14,8 @@
         地址。通过 Computer 执行的 Solana 交易，必须用 Nonce Account Hash 作为
         Recent Block Hash，且其第一个 Instruction 必须为 NonceAdvance。Payer
         只可作为交易的 Fee Payer，不可在 NonceAdvance 之后的 instruction
-        中操作。
+        中操作。一个 Nonce Account
+        仅能用于发一笔交易，如果您需要发多笔交易请获取多个 Nonce Account。
       </div>
       <Code :code="code1" />
     </div>
@@ -50,7 +51,7 @@
         uuid；SKIP_POSTPROCESS_FLAG 为 0 或 1，当设为 1
         时在交易成功后将不会处理剩余或收到的代币，如添加流动性成功后，将不会把
         Lp Token 转回用户的 MIX 地址，而是保留在链上地址；FEE_ID
-        用来处理额外的手续费，将在后文详述。
+        为上一步中的手续费 id，如果没有额外费用则不需要。
       </div>
 
       <Code :code="code4" />
@@ -59,7 +60,9 @@
     <div class="mt-10">
       <h2>5. 申请创建交易</h2>
       <div class="my-2 content">
-        通过 Invoice 的方式，向 Computer 发送创建 Solana 交易的申请。
+        通过 Invoice 的方式，向 Computer 发送创建 Solana 交易的申请。 Computer
+        仅能完成 Payer 和 User Account 的签名， 如果您的交易中包含 2 个以上的
+        Signer，需要完成剩余的签名后再发送给 Computer。
       </div>
       <Code :code="code5" />
     </div>
