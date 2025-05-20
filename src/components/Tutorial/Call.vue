@@ -106,8 +106,9 @@ const txBuf = Buffer.from(tx.serialize({
   requireAllSignatures: false,
   verifySignatures: false,
 }));
-if checkSystemCallSize(txBuf) {
-  // ...
+const valid = checkSystemCallSize(txBuf);
+if (!valid) {
+  // ...split to multiple transactions
 }
 `;
 
