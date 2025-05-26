@@ -102,6 +102,7 @@ import {
   getInvoiceString,
   newMixinInvoice,
   parseUnits,
+  userIdToBytes,
 } from "@mixin.dev/mixin-node-sdk";
 import {
   Connection,
@@ -300,8 +301,8 @@ const useTransfer = async () => {
     computer.value.members.app_id,
     buildComputerExtra(OperationTypeSystemCall, callExtra),
   );
-  const emtpyExtra = Buffer.from(
-    encodeMtgExtra(computer.value.members.app_id, Buffer.alloc(0)),
+  const referenceExtra = Buffer.from(
+    encodeMtgExtra(computer.value.members.app_id, userIdToBytes(user.value.user_id)),
   );
 
   const r = buildMixAddress({
@@ -324,7 +325,7 @@ const useTransfer = async () => {
     trace_id: v4(),
     asset_id: balance.value.asset_id,
     amount: amount.value,
-    extra: emtpyExtra,
+    extra: referenceExtra,
     index_references: [],
     hash_references: [],
   });

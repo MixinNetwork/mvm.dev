@@ -138,11 +138,9 @@ const computerInfo = await requestComputerApi('GET', '/' , undefined);
 const memo = encodeMtgExtra(computerInfo.members.app_id, requestExtra);
 `;
 
-const code5 = `import { buildMixAddress, encodeMtgExtra, newMixinInvoice, attachStorageEntry, getInvoiceString } from "@mixin.dev/mixin-node-sdk";
+const code5 = `import { buildMixAddress, encodeMtgExtra, userIdToBytes, newMixinInvoice, attachStorageEntry, getInvoiceString } from "@mixin.dev/mixin-node-sdk";
 import { v4 } from "uuid";
 import BigNumber from 'bignumber.js';
-
-const emtpyExtra = Buffer.from(encodeMtgExtra(computerInfo.members.app_id, Buffer.alloc(0))); // pzdhFF2zSCK9PCZBa1faGw
 
 // 创建 invoice
 const computer = buildMixAddress({ 
@@ -156,12 +154,17 @@ const invoice = newMixinInvoice(computer);
 // 将 Solana 交易存在 Mixin Storage
 attachStorageEntry(invoice, v4(), txBuf);
 
+// 引用的交易 memo
+const referenceExtra = Buffer.from(
+  encodeMtgExtra(computer.value.members.app_id, userIdToBytes(user.value.user_id)),
+);
+
 // 用户发出的币。如添加 BTC/SOL 流动性
 attachInvoiceEntry(invoice, {
   trace_id: v4(),
   asset_id: "c6d0c728-2624-429b-8e0d-d9d19b6592fa", // BTC
   amount: "0.01",
-  extra: emtpyExtra,
+  extra: referenceExtra,
   index_references: [],
   hash_references: []
 });
@@ -169,7 +172,7 @@ attachInvoiceEntry(invoice, {
   trace_id: v4(),
   asset_id: "64692c23-8971-4cf4-84a7-4dd1271dd887", // SOL
   amount: "0.01",
-  extra: emtpyExtra,
+  extra: referenceExtra,
   index_references: [],
   hash_references: []
 });
