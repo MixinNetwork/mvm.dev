@@ -138,7 +138,7 @@ const computerInfo = await requestComputerApi('GET', '/' , undefined);
 const memo = encodeMtgExtra(computerInfo.members.app_id, requestExtra);
 `;
 
-const code5 = `import { buildMixAddress, encodeMtgExtra, userIdToBytes, newMixinInvoice, attachStorageEntry, getInvoiceString } from "@mixin.dev/mixin-node-sdk";
+const code5 = `import { buildMixAddress, encodeMtgExtra, userIdToBytes, OperationTypeUserDeposit, newMixinInvoice, attachStorageEntry, getInvoiceString } from "@mixin.dev/mixin-node-sdk";
 import { v4 } from "uuid";
 import BigNumber from 'bignumber.js';
 
@@ -156,7 +156,7 @@ attachStorageEntry(invoice, v4(), txBuf);
 
 // 引用的交易 memo
 const referenceExtra = Buffer.from(
-  encodeMtgExtra(computer.value.members.app_id, userIdToBytes(user.value.user_id)),
+  encodeMtgExtra(computer.value.members.app_id, buildComputerExtra(OperationTypeUserDeposit, userIdToBytes(user.value.info.id))),
 );
 
 // 用户发出的币。如添加 BTC/SOL 流动性

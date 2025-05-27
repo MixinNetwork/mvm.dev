@@ -10,7 +10,7 @@
     "format": "prettier --write src/"
   },
   "dependencies": {
-    "@mixin.dev/mixin-node-sdk": "^7.4.1",
+    "@mixin.dev/mixin-node-sdk": "^7.4.2",
     "@solana/spl-token": "^0.4.13",
     "@solana/web3.js": "^1.98.0",
     "@tailwindcss/vite": "^4.1.4",
