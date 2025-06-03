@@ -285,7 +285,7 @@ const useTransfer = async () => {
         dstAta,
         src,
         parseUnits(amount.value, token.decimals).toNumber(),
-        balance.value.asset.precision,
+        token.decimals,
         [],
         owner,
       ),
