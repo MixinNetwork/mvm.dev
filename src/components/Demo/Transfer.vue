@@ -119,6 +119,7 @@ import {
   OperationTypeSystemCall,
 } from "@mixin.dev/mixin-node-sdk";
 import {
+  getMint,
   getAccount,
   getAssociatedTokenAddressSync,
   TokenAccountNotFoundError,
@@ -245,10 +246,12 @@ const useTransfer = async () => {
   } else {
     const connection = new Connection(RPC);
     const mint = new PublicKey(balance.value.address);
-    const token = await connection.getAccountInfo(mint);
-
-    const srcAta = getAssociatedTokenAddressSync(mint, src, false, token.owner);
-    const dstAta = getAssociatedTokenAddressSync(mint, dst, false, token.owner);
+    const acc = await connection.getAccountInfo(mint);
+    const owner = acc.owner
+    const token = await getMint(connection, mint);
+    
+    const srcAta = getAssociatedTokenAddressSync(mint, src, false, owner);
+    const dstAta = getAssociatedTokenAddressSync(mint, dst, false, owner);
 
     try {
       await getAccount(connection, dstAta);
@@ -263,7 +266,7 @@ const useTransfer = async () => {
             dstAta,
             dst,
             mint,
-            token.owner,
+            owner,
           ),
         );
 
@@ -281,10 +284,10 @@ const useTransfer = async () => {
         mint,
         dstAta,
         src,
-        parseUnits(amount.value, balance.value.asset.precision).toNumber(),
+        parseUnits(amount.value, token.decimals).toNumber(),
         balance.value.asset.precision,
         [],
-        token.owner,
+        owner,
       ),
     );
   }
