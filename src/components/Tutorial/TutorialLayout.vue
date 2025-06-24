@@ -15,7 +15,7 @@ const routes = [
     <header
       class="flex justify-between items-center fixed top-0 left-0 px-10 w-full h-20 border-b border-gray-950 bg-white"
     >
-      <div class="">
+      <div class="block">
         <div class="font-medium text-[24px] select-none">Computer 中文教程</div>
         <RouterLink
           to="/demo"
@@ -28,7 +28,7 @@ const routes = [
 
     <div class="flex pt-20 w-full min-h-screen">
       <div class="flex-none w-[280px] border-r border-gray-950">
-        <div class="fixed top-[120px] left-10">
+        <div class="absolute top-[120px] left-10">
           <RouterLink
             v-for="r of routes"
             :key="r.text"
