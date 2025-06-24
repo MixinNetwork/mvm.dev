@@ -27,7 +27,7 @@ const routes = [
     </header>
 
     <div class="flex pt-20 w-full min-h-screen">
-      <div class="w-[280px] border-r border-gray-950">
+      <div class="flex-none w-[280px] border-r border-gray-950">
         <div class="fixed top-[120px] left-10">
           <RouterLink
             v-for="r of routes"
