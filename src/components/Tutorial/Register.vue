@@ -98,7 +98,8 @@ const destination = buildMixAddress({
 });
 
 let codeUrl = 'https://mixin.one/pay/' + destination;
-codeUrl += '?amount=' + info.params.operation.price;
+codeUrl += '?amount=' + computerInfo.params.operation.price;
+codeUrl += '&asset=' + computerInfo.params.operation.asset;
 codeUrl += '&memo=' + memo;
 `;
 const code4 = `const user = await requestComputerApi('GET', '/users/MIX3QEeHEkbmkthQcHMdhpksk3nATrPTsw', undefined);
