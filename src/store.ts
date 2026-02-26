@@ -4,21 +4,26 @@ import {
   buildMixAddress,
   MixinApi,
   SafeUtxoOutput,
+  formatUnits,
   type OAuthKeystore,
 } from "@mixin.dev/mixin-node-sdk";
+import { Connection, PublicKey } from "@solana/web3.js";
 import {
+  ComputerAssetResponse,
   ComputerInfoResponse,
+  TokenBalance,
   User,
   UserAssetBalance,
   UserAssetBalanceWithoutAsset,
 } from "./types";
 import { useLocalStorage } from "@vueuse/core";
-import { initComputerClient } from "./utils/api";
+import { getAssets, initComputerClient } from "./utils/api";
 import { add } from "./utils/number";
-import { SOL_ASSET_ID } from "./utils/constant";
+import { RPC, SOL_ADDRESS, SOL_ASSET_ID, SOL_DECIMAL } from "./utils/constant";
 
 const MIXIN_OAUTH = "oauth";
 const cc = initComputerClient();
+const connection = new Connection(RPC);
 
 export const useStore = defineStore("store", () => {
   const auth = useLocalStorage(MIXIN_OAUTH, "", {
@@ -70,10 +75,8 @@ export const useStore = defineStore("store", () => {
   };
 
   const balances = ref<Record<string, UserAssetBalance>>({});
-  const updateBalances = async () => {
+  const updateBalances = async (das: ComputerAssetResponse[]) => {
     if (!user.value) return;
-    const das = await cc.fetchAssets();
-
     const members = [user.value.user_id];
     let offset = 0;
     let total: SafeUtxoOutput[] = [];
@@ -134,11 +137,94 @@ export const useStore = defineStore("store", () => {
     balances.value = fbm;
   };
 
+  const tokens = ref<Record<string, TokenBalance>>({});
+  const getTokenMeta = async (mints: string[]) => {
+    const metas = await getAssets(mints);
+    return metas.data.result.map((m) => ({
+      mint: m.id,
+      name: m.content.metadata.name,
+      symbol: m.content.metadata.symbol,
+      uri: m.content.links.image,
+    }));
+  };
+  const updateTokens = async (das: ComputerAssetResponse[]) => {
+    if (!user.value?.info) return;
+    let ts: Record<string, TokenBalance> = {};
+    const publicKey = new PublicKey(user.value.info.chain_address);
+
+    const solBalance = await connection.getBalance(publicKey);
+    if (solBalance > 0) {
+      ts[SOL_ADDRESS] = {
+        mint: SOL_ADDRESS,
+        token_account: "",
+        balance: `${solBalance}`,
+        showBalance: formatUnits(solBalance, SOL_DECIMAL).toString(),
+        name: "Solana",
+        symbol: "SOL",
+        icon_url:
+          "https://images.mixin.one/eTzm8_cWke8NqJ3zbQcx7RkvbcTytD_NgBpdwIAgKJRpOoo0S0AQ3IQ-YeBJgUKmpsMPUHcZFzfuWowv3801cF5HXfya5MQ9fTA9HQ=s128",
+        decimal: SOL_DECIMAL,
+      };
+    }
+
+    const tokenAccounts = await connection.getParsedTokenAccountsByOwner(
+      publicKey,
+      {
+        programId: new PublicKey("TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA"),
+      },
+    );
+    tokenAccounts.value.forEach((a) => {
+      const tokenAccount = a.account.data.parsed.info;
+      const mint = tokenAccount.mint;
+      const amount = tokenAccount.tokenAmount.amount;
+      if (amount === "0") return;
+      ts[mint] = {
+        mint,
+        token_account: a.pubkey.toString(),
+        balance: amount,
+        showBalance: formatUnits(
+          amount,
+          tokenAccount.tokenAmount.decimals,
+        ).toString(),
+        decimal: tokenAccount.tokenAmount.decimals,
+        name: "",
+        symbol: "",
+        icon_url: "",
+      };
+    });
+
+    das.forEach((asset) => {
+      if (!ts[asset.address]) return;
+      ts[asset.address].name = asset.name;
+      ts[asset.address].symbol = asset.symbol;
+      ts[asset.address].icon_url = asset.uri;
+      ts[asset.address].asset = asset;
+    });
+    const mints = Object.values(ts)
+      .filter((t) => !t.name)
+      .map((t) => t.mint);
+    if (mints.length) {
+      const metas = await getTokenMeta(mints);
+      metas.forEach((meta) => {
+        ts[meta.mint].name = meta.name;
+        ts[meta.mint].symbol = meta.symbol;
+        ts[meta.mint].icon_url = meta.uri;
+      });
+    }
+    tokens.value = ts;
+  };
+
+  const update = async () => {
+    const das = await cc.fetchAssets();
+    updateBalances(das);
+    updateTokens(das);
+  };
+
   let timer: number | undefined;
   watchEffect(async () => {
-    if (!user.value) return;
-    updateBalances();
-    timer = window.setInterval(updateBalances, 1000 * 30);
+    if (!user.value?.info) return;
+    update();
+    timer = window.setInterval(update, 1000 * 30);
     return () => window.clearInterval(timer);
   });
 
@@ -156,6 +242,7 @@ export const useStore = defineStore("store", () => {
     user,
     profile,
     balances,
+    tokens,
     updateBalances,
 
     computer,

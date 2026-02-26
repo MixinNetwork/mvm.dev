@@ -7,13 +7,13 @@
         <div class="flex justify-between items-center text-base">
           <div class="flex items-center">
             <NAvatar
-              :src="balance.icon_url"
+              :src="balance.asset.icon_url"
               :size="16"
               :circle="true"
             ></NAvatar>
-            <div class="ml-1">{{ balance.name }}</div>
+            <div class="ml-1">{{ balance.asset.name }}</div>
           </div>
-          <div>{{ `${balance.showBalance} ${balance.symbol}` }}</div>
+          <div>{{ `${balance.total_amount} ${balance.asset.symbol}` }}</div>
         </div>
         <input
           :value="amount"
@@ -38,7 +38,6 @@
           type="text"
         ></textarea>
         <div class="mt-1 text-sm">不可转给当前地址</div>
-        <div class="mt-1 text-sm">请勿将非 Solana 资产（如 BTC、XIN 等）转给 Mixin 充值地址</div>
       </div>
 
       <div
@@ -54,6 +53,17 @@
         <div v-else>转账</div>
       </div>
     </div>
+
+    <n-modal :show="deploying.length > 0" :mask-closable="false">
+      <n-card
+        style="width: 300px; height: 80px"
+        :bordered="false"
+        size="huge"
+        aria-modal="true"
+      >
+        资产部署中，请稍后。。。
+      </n-card>
+    </n-modal>
 
     <n-modal :show="!!track" :mask-closable="false">
       <n-card
@@ -124,16 +134,17 @@ import { NAvatar, useNotification, NSpin } from "naive-ui";
 import BigNumber from "bignumber.js";
 import { useStore } from "@/store";
 import { initComputerClient } from "@/utils/api";
-import { RPC, SOL_ADDRESS, XIN_ASSET_ID } from "@/utils/constant";
+import { RPC, SOL_ASSET_ID, XIN_ASSET_ID } from "@/utils/constant";
 
 const notification = useNotification();
 
 const userStore = useStore();
-const { user, tokens, computer, mixinClient } = storeToRefs(userStore);
+const { user, balances, computer, mixinClient } = storeToRefs(userStore);
+const { updateBalances } = userStore;
 
 const route = useRoute();
 const id = computed(() => route.params.id as string);
-const balance = computed(() => tokens.value[id.value]);
+const balance = computed(() => balances.value[id.value]);
 const mix = computed(() =>
   user.value
     ? buildMixAddress({
@@ -153,7 +164,7 @@ const isValidAmount = computed(() => {
     try {
       const amt = BigNumber(amount.value);
       const minimum = BigNumber("0.0001");
-      const maximum = BigNumber(balance.value.showBalance);
+      const maximum = BigNumber(balance.value.total_amount);
       return (
         maximum.isGreaterThanOrEqualTo(amt) && minimum.isLessThanOrEqualTo(amt)
       );
@@ -182,6 +193,7 @@ const useRestrictAmount = (e: Event, oldValue: string) => {
   } else amount.value = target.value;
 };
 
+const deploying = ref("");
 const track = ref<
   | {
       trace: string;
@@ -203,6 +215,12 @@ const useTransfer = async () => {
     return;
   loading.value = true;
 
+  if (!balance.value.address) {
+    deploying.value = balance.value.asset_id;
+    await c.deployAssets([balance.value.asset_id]);
+    return;
+  }
+
   const src = new PublicKey(user.value.info.chain_address);
   const dst = new PublicKey(destination.value);
   const nonce = await c.getNonce(mix.value);
@@ -217,7 +235,7 @@ const useTransfer = async () => {
   );
 
   let extraFee = 0;
-  if (balance.value.mint === SOL_ADDRESS) {
+  if (balance.value.asset_id === SOL_ASSET_ID) {
     tx.add(
       SystemProgram.transfer({
         fromPubkey: src,
@@ -227,9 +245,10 @@ const useTransfer = async () => {
     );
   } else {
     const connection = new Connection(RPC);
-    const mint = new PublicKey(balance.value.mint);
+    const mint = new PublicKey(balance.value.address);
     const acc = await connection.getAccountInfo(mint);
     const owner = acc.owner;
+    const token = await getMint(connection, mint);
 
     const srcAta = getAssociatedTokenAddressSync(mint, src, false, owner);
     const dstAta = getAssociatedTokenAddressSync(mint, dst, false, owner);
@@ -265,8 +284,8 @@ const useTransfer = async () => {
         mint,
         dstAta,
         src,
-        parseUnits(amount.value, balance.value.decimal).toNumber(),
-        balance.value.decimal,
+        parseUnits(amount.value, token.decimals).toNumber(),
+        token.decimals,
         [],
         owner,
       ),
@@ -286,6 +305,15 @@ const useTransfer = async () => {
     computer.value.members.app_id,
     buildComputerExtra(OperationTypeSystemCall, callExtra),
   );
+  const referenceExtra = Buffer.from(
+    encodeMtgExtra(
+      computer.value.members.app_id,
+      buildComputerExtra(
+        OperationTypeUserDeposit,
+        userIdToBytes(user.value.info.id),
+      ),
+    ),
+  );
 
   const r = buildMixAddress({
     version: 2,
@@ -303,6 +331,15 @@ const useTransfer = async () => {
   );
   attachStorageEntry(invoice, v4(), txBuf);
 
+  attachInvoiceEntry(invoice, {
+    trace_id: v4(),
+    asset_id: balance.value.asset_id,
+    amount: amount.value,
+    extra: referenceExtra,
+    index_references: [],
+    hash_references: [],
+  });
+
   let total = BigNumber(computer.value.params.operation.price);
   if (fee) total = total.plus(fee.xin_amount);
   const trace = v4();
@@ -311,7 +348,7 @@ const useTransfer = async () => {
     asset_id: XIN_ASSET_ID,
     amount: total.toFixed(8, BigNumber.ROUND_CEIL),
     extra: Buffer.from(memo),
-    index_references: [0],
+    index_references: [0, 1],
     hash_references: [],
   });
   console.log(invoice);
@@ -327,6 +364,22 @@ const useTransfer = async () => {
     state: "",
   };
 };
+
+watchEffect(() => {
+  if (!deploying.value) return;
+  const timer = window.setInterval(async () => {
+    await updateBalances();
+    if (!balance.value.address) return;
+
+    window.clearInterval(timer);
+    deploying.value = "";
+    loading.value = false;
+    notification["success"]({
+      title: "资产部署成功",
+    });
+  }, 1000 * 5);
+  return () => window.clearInterval(timer);
+});
 
 watchEffect(() => {
   if (!track.value) return;

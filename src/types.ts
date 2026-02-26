@@ -30,6 +30,8 @@ export interface ComputerInfoResponse {
 export interface ComputerAssetResponse {
   asset_id: string;
   address: string;
+  name: string;
+  symbol: string;
   uri: string;
 }
 
@@ -81,4 +83,16 @@ export interface UserAssetBalanceWithoutAsset {
 
 export interface UserAssetBalance extends UserAssetBalanceWithoutAsset {
   asset: Asset;
+}
+
+export interface TokenBalance {
+  mint: string;
+  token_account: string;
+  balance: string;
+  showBalance: string;
+  name: string;
+  symbol: string;
+  decimal: number;
+  icon_url: string;
+  asset?: ComputerAssetResponse;
 }

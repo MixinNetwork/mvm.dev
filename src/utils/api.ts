@@ -8,7 +8,7 @@ import type {
   ComputerSystemCallResponse,
   ComputerUserResponse,
 } from "@/types";
-import { HOST } from "@/utils/constant";
+import { HOST, RPC } from "@/utils/constant";
 
 axios.defaults.headers.post["Content-Type"] = "application/json";
 
@@ -50,4 +50,19 @@ export const initComputerClient = (responseCallback?: (e: any) => void) => {
     getFeeOnXin: (amount: string): Promise<ComputerFeeResponse> =>
       ins.post("/fee", { sol_amount: amount }),
   };
+};
+
+export const getAssets = (ids: string[]) => {
+  const ins = axios.create({
+    baseURL: RPC,
+    timeout: 1000 * 60 * 10,
+  });
+  return ins.post("", {
+    jsonrpc: "2.0",
+    id: 1,
+    method: "getAssets",
+    params: {
+      ids,
+    },
+  });
 };

@@ -8,8 +8,9 @@ import { useStore } from "@/store";
 const route = useRoute();
 const routes = [
   { to: "/demo", text: "注册", name: ["register"] },
-  { to: "/demo/transfer", text: "转账", name: ["balances", "transfer"] },
   { to: "/demo/deposit", text: "充值", name: ["deposit"] },
+  { to: "/demo/withdraw", text: "提现", name: ["balances", "withdraw"] },
+  { to: "/demo/transfer", text: "转账", name: ["tokens", "transfer"] },
 ];
 
 const { profile, fetchComputer } = useStore();

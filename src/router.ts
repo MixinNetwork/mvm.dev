@@ -39,12 +39,27 @@ const router = createRouter({
           component: () => import("@/components/Demo/Deposit.vue"),
         },
         {
-          path: "transfer",
+          path: "withdraw",
           children: [
             {
               path: "",
               name: "balances",
               component: () => import("@/components/Demo/Balances.vue"),
+            },
+            {
+              path: ":id",
+              name: "withdraw",
+              component: () => import("@/components/Demo/Withdraw.vue"),
+            },
+          ],
+        },
+        {
+          path: "transfer",
+          children: [
+            {
+              path: "",
+              name: "tokens",
+              component: () => import("@/components/Demo/Tokens.vue"),
             },
             {
               path: ":id",

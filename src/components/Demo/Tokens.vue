@@ -2,32 +2,26 @@
   <div class="flex justify-center">
     <div v-if="!user || !user.info" class="text-lg">请先登录并完成注册</div>
     <div v-else class="flex flex-col w-1/2">
-      <div class="text-lg">从 Mixin Network 转到 Solana Network</div>
-      <div class="mt-10 text-sm">Mixin 资产列表</div>
+      <div class="text-lg">Solana Network 地址间转账</div>
+      <div class="mt-10 text-sm">Solana 资产列表</div>
       <div class="mt-5 pb-4">
         <RouterLink
-          v-for="(a, id) of balances"
+          v-for="(a, id) of tokens"
           :key="id"
-          :to="`/demo/transfer/${a.asset_id}`"
+          :to="`/demo/transfer/${a.mint}`"
           class="block mb-4 p-2 border border-[#D9D9D9] rounded"
         >
           <div class="flex justify-between">
             <div class="flex items-center">
-              <NAvatar
-                :src="a.asset.icon_url"
-                :size="16"
-                :circle="true"
-              ></NAvatar>
-              <div class="ml-1">{{ a.asset.symbol }}</div>
+              <NAvatar :src="a.icon_url" :size="16" :circle="true"></NAvatar>
+              <div class="ml-1">{{ a.symbol }}</div>
             </div>
-            <div>{{ a.total_amount }}</div>
+            <div>{{ a.showBalance }}</div>
           </div>
           <div class="flex justify-between mt-2">
-            <div>{{ a.asset.name }}</div>
+            <div>{{ a.name }}</div>
             <div>
-              {{
-                a.address && `${a.address.slice(0, 6)}...${a.address.slice(-6)}`
-              }}
+              {{ a.mint && `${a.mint.slice(0, 6)}...${a.mint.slice(-6)}` }}
             </div>
           </div>
         </RouterLink>
@@ -42,5 +36,5 @@ import { NAvatar } from "naive-ui";
 import { useStore } from "@/store";
 
 const userStore = useStore();
-const { user, balances } = storeToRefs(userStore);
+const { user, tokens } = storeToRefs(userStore);
 </script>

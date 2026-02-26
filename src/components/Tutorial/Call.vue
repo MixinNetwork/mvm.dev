@@ -34,12 +34,11 @@
       <div class="my-2 content">
         在与 Solana Program
         交互的过程中，可能会产生一些费用，如创建账号需要的租金，这部分费用需要由用户或应用来承担。在创建交易前，
-        查询与额外需要的 SOL 等值的 XIN 的金额和 fee_id，在支付时与 `computerInfo.params.operation.price`
-        一同转给 Computer。如果 ata 已经存在，则不需要重复支付。
+        查询与额外需要的 SOL 等值的 XIN 的金额和 fee_id，在支付时与
+        `computerInfo.params.operation.price` 一同转给 Computer。如果 ata
+        已经存在，则不需要重复支付。
       </div>
-      <div class="my-2 content">
-        注意：fee_id 具有实效性，须尽快支付。
-      </div>
+      <div class="my-2 content">注意：fee_id 具有实效性，须尽快支付。</div>
       <Code :code="code3" />
     </div>
 
