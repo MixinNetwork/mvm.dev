@@ -40,9 +40,9 @@
 import { storeToRefs } from "pinia";
 import { NAvatar } from "naive-ui";
 import { useStore } from "@/store";
-import { computed, watchEffect } from "vue";
+import { computed } from "vue";
 import { UserAssetBalance } from "@/types";
-import { gt } from "@/utils/number";
+import { gt, mul } from "@/utils/number";
 
 const userStore = useStore();
 const { user, balances } = storeToRefs(userStore);
@@ -50,7 +50,7 @@ const { user, balances } = storeToRefs(userStore);
 const bs = computed(() =>
   (Object.values(balances.value) as UserAssetBalance[]).sort(
     (a: UserAssetBalance, b: UserAssetBalance) =>
-      gt(a.asset.price_usd, b.asset.price_usd) ? -1 : 1,
+      gt(mul(a.asset.price_usd, a.total_amount), mul(b.asset.price_usd, b.total_amount)) ? -1 : 1,
   ),
 );
 </script>
