@@ -37,7 +37,7 @@
           ]"
           type="text"
         ></textarea>
-        <div class="mt-1 text-sm">不可转给当前地址</div>
+        <div class="mt-1 text-sm">不可转给当前地址({{ user.info.chain_address }})</div>
       </div>
 
       <div
@@ -365,10 +365,12 @@ const useTransfer = async () => {
   };
 };
 
+const cc = initComputerClient();
 watchEffect(() => {
   if (!deploying.value) return;
   const timer = window.setInterval(async () => {
-    await updateBalances();
+    const das = await cc.fetchAssets();
+    await updateBalances(das);
     if (!balance.value.address) return;
 
     window.clearInterval(timer);

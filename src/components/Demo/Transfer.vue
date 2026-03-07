@@ -37,10 +37,7 @@
           ]"
           type="text"
         ></textarea>
-        <div class="mt-1 text-sm">不可转给当前地址</div>
-        <div class="mt-1 text-sm">
-          请勿将非 Solana 资产（如 BTC、XIN 等）转给 Mixin 隐私钱包或充值地址
-        </div>
+        <div class="mt-1 text-sm">不可转给当前地址({{ user.info.chain_address }})</div>
       </div>
 
       <div
