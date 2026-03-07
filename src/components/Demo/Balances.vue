@@ -6,9 +6,9 @@
       <div class="mt-10 text-sm">Mixin 资产列表</div>
       <div class="mt-5 pb-4">
         <RouterLink
-          v-for="(a, id) of balances"
-          :key="id"
-          :to="`/demo/transfer/${a.asset_id}`"
+          v-for="a of bs"
+          :key="a.asset_id"
+          :to="`/demo/withdraw/${a.asset_id}`"
           class="block mb-4 p-2 border border-[#D9D9D9] rounded"
         >
           <div class="flex justify-between">
@@ -40,7 +40,17 @@
 import { storeToRefs } from "pinia";
 import { NAvatar } from "naive-ui";
 import { useStore } from "@/store";
+import { computed, watchEffect } from "vue";
+import { UserAssetBalance } from "@/types";
+import { gt } from "@/utils/number";
 
 const userStore = useStore();
 const { user, balances } = storeToRefs(userStore);
+
+const bs = computed(() =>
+  (Object.values(balances.value) as UserAssetBalance[]).sort(
+    (a: UserAssetBalance, b: UserAssetBalance) =>
+      gt(a.asset.price_usd, b.asset.price_usd) ? -1 : 1,
+  ),
+);
 </script>

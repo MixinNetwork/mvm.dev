@@ -8,3 +8,12 @@ export const add = (
   const bb = BigNumber.isBigNumber(b) ? b : BigNumber(b);
   return ba.plus(bb);
 };
+
+export const gt = (
+  a: string | number | BigNumber,
+  b: string | number | BigNumber,
+) => {
+  const ba = BigNumber.isBigNumber(a) ? a : BigNumber(a);
+  const bb = BigNumber.isBigNumber(b) ? b : BigNumber(b);
+  return ba.gt(bb);
+};
