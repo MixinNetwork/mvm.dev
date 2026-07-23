@@ -37,7 +37,9 @@
           ]"
           type="text"
         ></textarea>
-        <div class="mt-1 text-sm">不可转给当前地址({{ user.info.chain_address }})</div>
+        <div class="mt-1 text-sm">
+          不可转给当前地址({{ user.info.chain_address }})
+        </div>
       </div>
 
       <div
@@ -162,7 +164,7 @@ const isValidAmount = computed(() => {
   } else return undefined;
 });
 const isValidAddress = computed(() => {
-  if (!destination.value) return undefined;
+  if (!destination.value || !user.value?.info) return undefined;
   if (destination.value === user.value.info.chain_address) return false;
   try {
     new PublicKey(destination.value);
@@ -195,6 +197,7 @@ const c = initComputerClient();
 const useTransfer = async () => {
   if (
     !user.value ||
+    !user.value.info ||
     !computer.value ||
     !isValidAddress.value ||
     !isValidAddress.value
@@ -228,13 +231,14 @@ const useTransfer = async () => {
     const connection = new Connection(RPC);
     const mint = new PublicKey(balance.value.mint);
     const acc = await connection.getAccountInfo(mint);
+    if (!acc) throw new Error("Mint account not found");
     const owner = acc.owner;
 
     const srcAta = getAssociatedTokenAddressSync(mint, src, false, owner);
     const dstAta = getAssociatedTokenAddressSync(mint, dst, false, owner);
 
     try {
-      await getAccount(connection, dstAta);
+      await getAccount(connection, dstAta, undefined, owner);
     } catch (e) {
       if (
         e instanceof TokenAccountNotFoundError ||

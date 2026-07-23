@@ -37,7 +37,9 @@
           ]"
           type="text"
         ></textarea>
-        <div class="mt-1 text-sm">不可转给当前地址({{ user.info.chain_address }})</div>
+        <div class="mt-1 text-sm">
+          不可转给当前地址({{ user.info.chain_address }})
+        </div>
       </div>
 
       <div
@@ -247,14 +249,15 @@ const useTransfer = async () => {
     const connection = new Connection(RPC);
     const mint = new PublicKey(balance.value.address);
     const acc = await connection.getAccountInfo(mint);
+    if (!acc) throw new Error("Mint account not found");
     const owner = acc.owner;
-    const token = await getMint(connection, mint);
+    const token = await getMint(connection, mint, undefined, owner);
 
     const srcAta = getAssociatedTokenAddressSync(mint, src, false, owner);
     const dstAta = getAssociatedTokenAddressSync(mint, dst, false, owner);
 
     try {
-      await getAccount(connection, dstAta);
+      await getAccount(connection, dstAta, undefined, owner);
     } catch (e) {
       if (
         e instanceof TokenAccountNotFoundError ||
