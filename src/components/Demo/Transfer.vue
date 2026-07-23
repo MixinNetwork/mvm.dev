@@ -115,7 +115,7 @@ import {
   createAssociatedTokenAccountInstruction,
   createTransferCheckedInstruction,
 } from "@solana/spl-token";
-import { computed, ref, watchEffect } from "vue";
+import { computed, ref, watch } from "vue";
 import { storeToRefs } from "pinia";
 import { useRoute } from "vue-router";
 import { NAvatar, useNotification, NSpin } from "naive-ui";
@@ -125,6 +125,9 @@ import { initComputerClient } from "@/utils/api";
 import { RPC, SOL_ADDRESS, XIN_ASSET_ID } from "@/utils/constant";
 
 const notification = useNotification();
+const POLL_INTERVAL = 1000 * 5;
+const SUCCESS_CALL_STATES = ["done"];
+const FINISHED_CALL_STATES = ["done", "failed"];
 
 const userStore = useStore();
 const { user, tokens, computer, mixinClient } = storeToRefs(userStore);
@@ -337,36 +340,62 @@ const useTransfer = async () => {
   };
 };
 
-watchEffect(() => {
-  const currentTrack = track.value;
-  if (!currentTrack) return;
-  const client = mixinClient.value;
-  const timer = window.setInterval(async () => {
-    try {
-      if (!currentTrack.state) {
-        const req = await client.utxo.fetchTransaction(currentTrack.trace);
-        if (req && req.state === "spent") {
-          track.value = { ...currentTrack, state: "spent" };
-        }
-        return;
-      }
+watch(
+  () => track.value?.call,
+  (callId, _, onCleanup) => {
+    if (!callId || !track.value) return;
+    const client = mixinClient.value;
+    let stopped = false;
+    let timer: number | undefined;
 
-      const call = await c.fetchCall(currentTrack.call);
-      if (call && ["done", "failed"].includes(call.state)) {
-        window.clearInterval(timer);
-        track.value = undefined;
-        loading.value = false;
-        if (call.state === "done")
-          notification["success"]({
-            title: "交易成功",
-          });
-        if (call.state === "failed")
-          notification["error"]({
-            title: "交易失败",
-          });
-      }
-    } catch {}
-  }, 1000 * 5);
-  return () => window.clearInterval(timer);
-});
+    const schedule = () => {
+      timer = window.setTimeout(() => {
+        void poll();
+      }, POLL_INTERVAL);
+    };
+
+    const poll = async () => {
+      if (stopped) return;
+      const currentTrack = track.value;
+      if (!currentTrack || currentTrack.call !== callId) return;
+
+      try {
+        if (!currentTrack.state) {
+          const req = await client.utxo.fetchTransaction(currentTrack.trace);
+          if (stopped) return;
+          if (req && req.state === "spent") {
+            track.value = { ...currentTrack, state: "spent" };
+          }
+        } else {
+          const call = await c.fetchCall(currentTrack.call);
+          if (stopped) return;
+          if (call && FINISHED_CALL_STATES.includes(call.state)) {
+            track.value = undefined;
+            loading.value = false;
+            if (SUCCESS_CALL_STATES.includes(call.state)) {
+              notification["success"]({
+                title: "交易成功",
+              });
+            }
+            if (call.state === "failed") {
+              notification["error"]({
+                title: "交易失败",
+              });
+            }
+            return;
+          }
+        }
+      } catch {}
+
+      if (!stopped) schedule();
+    };
+
+    schedule();
+
+    onCleanup(() => {
+      stopped = true;
+      if (timer !== undefined) window.clearTimeout(timer);
+    });
+  },
+);
 </script>
