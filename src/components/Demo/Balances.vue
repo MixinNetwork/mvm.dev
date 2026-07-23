@@ -50,7 +50,12 @@ const { user, balances } = storeToRefs(userStore);
 const bs = computed(() =>
   (Object.values(balances.value) as UserAssetBalance[]).sort(
     (a: UserAssetBalance, b: UserAssetBalance) =>
-      gt(mul(a.asset.price_usd, a.total_amount), mul(b.asset.price_usd, b.total_amount)) ? -1 : 1,
+      gt(
+        mul(a.asset.price_usd, a.total_amount),
+        mul(b.asset.price_usd, b.total_amount),
+      )
+        ? -1
+        : 1,
   ),
 );
 </script>

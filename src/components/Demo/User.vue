@@ -61,7 +61,7 @@
 </template>
 
 <script setup lang="ts">
-import { onUnmounted, ref, watchEffect } from "vue";
+import { computed, onUnmounted, ref, watchEffect } from "vue";
 import {
   AuthorizationResponse,
   base64RawURLEncode,
@@ -86,7 +86,7 @@ const loginCode = ref("");
 const ws = ref<ReconnectingWebSocket | undefined>(undefined);
 
 const { copy, copied } = useClipboard({
-  source: user.value && user.value.info && user.value.info.chain_address,
+  source: computed(() => user.value?.info?.chain_address ?? ""),
 });
 
 const handleLogin = () => (showModal.value = true);
@@ -144,14 +144,14 @@ watchEffect(() => {
     challenge,
     (a: AuthorizationResponse) => {
       if (a && !loginCode.value) loginCode.value = `mixin://codes/${a.code_id}`;
-      if (a.authorization_code.length > 16) {
+      if (a.authorization_code?.length > 16) {
         useLogin(a.authorization_code, verifier);
         return true;
       }
       return false;
     },
   );
-  return () => ws.value.close();
+  return () => ws.value?.close();
 });
 
 onUnmounted(handleClear);

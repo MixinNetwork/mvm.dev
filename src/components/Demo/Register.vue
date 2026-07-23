@@ -42,16 +42,17 @@ import { initComputerClient } from "@/utils/api";
 
 const userStore = useStore();
 const { user, computer } = storeToRefs(userStore);
-const mix = computed(() =>
-  user.value
+const mix = computed(() => {
+  const currentUser = user.value;
+  return currentUser
     ? buildMixAddress({
         version: 2,
-        uuidMembers: [user.value.user_id],
+        uuidMembers: [currentUser.user_id],
         xinMembers: [],
         threshold: 1,
       })
-    : "",
-);
+    : "";
+});
 
 const login = ref({
   show: false,
@@ -59,33 +60,36 @@ const login = ref({
 });
 
 const useRegister = () => {
-  if (!mix.value || !computer.value) return;
+  const currentComputer = computer.value;
+  if (!mix.value || !currentComputer) return;
   const extra = buildComputerExtra(
     OperationTypeAddUser,
     Buffer.from(mix.value),
   );
-  const memo = encodeMtgExtra(computer.value.members.app_id, extra);
+  const memo = encodeMtgExtra(currentComputer.members.app_id, extra);
 
   const destination = buildMixAddress({
     version: 2,
     xinMembers: [],
-    uuidMembers: computer.value.members.members,
-    threshold: computer.value.members.threshold,
+    uuidMembers: currentComputer.members.members,
+    threshold: currentComputer.members.threshold,
   });
   login.value = {
     show: true,
-    code: `https://mixin.one/pay/${destination}?amount=${computer.value.params.operation.price}&asset=${computer.value.params.operation.asset}&memo=${memo}`,
+    code: `https://mixin.one/pay/${destination}?amount=${currentComputer.params.operation.price}&asset=${currentComputer.params.operation.asset}&memo=${memo}`,
   };
 };
 
 const c = initComputerClient();
 watchEffect(() => {
-  if (!login.value.code || !login.value.show) return;
+  const currentMix = mix.value;
+  if (!login.value.code || !login.value.show || !currentMix) return;
   const timer = window.setInterval(async () => {
     try {
-      const u = await c.fetchUser(mix.value);
-      if (u) {
-        user.value.info = u;
+      const u = await c.fetchUser(currentMix);
+      const currentUser = user.value;
+      if (u && currentUser) {
+        user.value = { ...currentUser, info: u };
         window.clearInterval(timer);
         login.value = {
           show: false,

@@ -147,16 +147,17 @@ const { updateBalances } = userStore;
 const route = useRoute();
 const id = computed(() => route.params.id as string);
 const balance = computed(() => balances.value[id.value]);
-const mix = computed(() =>
-  user.value
+const mix = computed(() => {
+  const currentUser = user.value;
+  return currentUser
     ? buildMixAddress({
         version: 2,
-        uuidMembers: [user.value.user_id],
+        uuidMembers: [currentUser.user_id],
         xinMembers: [],
         threshold: 1,
       })
-    : "",
-);
+    : "";
+});
 
 const loading = ref(false);
 const amount = ref("");
@@ -176,8 +177,9 @@ const isValidAmount = computed(() => {
   } else return undefined;
 });
 const isValidAddress = computed(() => {
-  if (!destination.value) return undefined;
-  if (destination.value === user.value.info.chain_address) return false;
+  const currentInfo = user.value?.info;
+  if (!destination.value || !currentInfo) return undefined;
+  if (destination.value === currentInfo.chain_address) return false;
   try {
     new PublicKey(destination.value);
     return true;
@@ -208,36 +210,42 @@ const track = ref<
 
 const c = initComputerClient();
 const useTransfer = async () => {
+  const currentUser = user.value;
+  const currentInfo = currentUser?.info;
+  const currentComputer = computer.value;
+  const currentBalance = balance.value;
   if (
-    !user.value ||
-    !computer.value ||
+    !currentInfo ||
+    !currentComputer ||
+    !currentBalance ||
     !isValidAddress.value ||
-    !isValidAddress.value
+    !isValidAmount.value
   )
     return;
   loading.value = true;
 
-  if (!balance.value.address) {
-    deploying.value = balance.value.asset_id;
-    await c.deployAssets([balance.value.asset_id]);
+  const assetAddress = currentBalance.address;
+  if (!assetAddress) {
+    deploying.value = currentBalance.asset_id;
+    await c.deployAssets([currentBalance.asset_id]);
     return;
   }
 
-  const src = new PublicKey(user.value.info.chain_address);
+  const src = new PublicKey(currentInfo.chain_address);
   const dst = new PublicKey(destination.value);
   const nonce = await c.getNonce(mix.value);
   const tx = new Transaction();
-  tx.feePayer = new PublicKey(computer.value.payer);
+  tx.feePayer = new PublicKey(currentComputer.payer);
   tx.recentBlockhash = nonce.nonce_hash;
   tx.add(
     SystemProgram.nonceAdvance({
-      authorizedPubkey: new PublicKey(computer.value.payer),
+      authorizedPubkey: new PublicKey(currentComputer.payer),
       noncePubkey: new PublicKey(nonce.nonce_address),
     }),
   );
 
   let extraFee = 0;
-  if (balance.value.asset_id === SOL_ASSET_ID) {
+  if (currentBalance.asset_id === SOL_ASSET_ID) {
     tx.add(
       SystemProgram.transfer({
         fromPubkey: src,
@@ -247,7 +255,7 @@ const useTransfer = async () => {
     );
   } else {
     const connection = new Connection(RPC);
-    const mint = new PublicKey(balance.value.address);
+    const mint = new PublicKey(assetAddress);
     const acc = await connection.getAccountInfo(mint);
     if (!acc) throw new Error("Mint account not found");
     const owner = acc.owner;
@@ -299,21 +307,21 @@ const useTransfer = async () => {
     extraFee > 0 ? await c.getFeeOnXin(extraFee.toString()) : undefined;
   const callId = v4();
   const callExtra = buildSystemCallExtra(
-    user.value.info.id,
+    currentInfo.id,
     callId,
     false,
     fee?.fee_id,
   );
   const memo = encodeMtgExtra(
-    computer.value.members.app_id,
+    currentComputer.members.app_id,
     buildComputerExtra(OperationTypeSystemCall, callExtra),
   );
   const referenceExtra = Buffer.from(
     encodeMtgExtra(
-      computer.value.members.app_id,
+      currentComputer.members.app_id,
       buildComputerExtra(
         OperationTypeUserDeposit,
-        userIdToBytes(user.value.info.id),
+        userIdToBytes(currentInfo.id),
       ),
     ),
   );
@@ -321,10 +329,11 @@ const useTransfer = async () => {
   const r = buildMixAddress({
     version: 2,
     xinMembers: [],
-    uuidMembers: computer.value.members.members,
-    threshold: computer.value.members.threshold,
+    uuidMembers: currentComputer.members.members,
+    threshold: currentComputer.members.threshold,
   });
   const invoice = newMixinInvoice(r);
+  if (!invoice) throw new Error("Failed to build invoice");
 
   const txBuf = Buffer.from(
     tx.serialize({
@@ -336,14 +345,14 @@ const useTransfer = async () => {
 
   attachInvoiceEntry(invoice, {
     trace_id: v4(),
-    asset_id: balance.value.asset_id,
+    asset_id: currentBalance.asset_id,
     amount: amount.value,
     extra: referenceExtra,
     index_references: [],
     hash_references: [],
   });
 
-  let total = BigNumber(computer.value.params.operation.price);
+  let total = BigNumber(currentComputer.params.operation.price);
   if (fee) total = total.plus(fee.xin_amount);
   const trace = v4();
   attachInvoiceEntry(invoice, {
@@ -374,7 +383,7 @@ watchEffect(() => {
   const timer = window.setInterval(async () => {
     const das = await cc.fetchAssets();
     await updateBalances(das);
-    if (!balance.value.address) return;
+    if (!balance.value?.address) return;
 
     window.clearInterval(timer);
     deploying.value = "";
@@ -387,17 +396,20 @@ watchEffect(() => {
 });
 
 watchEffect(() => {
-  if (!track.value) return;
+  const currentTrack = track.value;
+  if (!currentTrack) return;
   const client = mixinClient.value;
   const timer = window.setInterval(async () => {
     try {
-      if (!track.value.state) {
-        const req = await client.utxo.fetchTransaction(track.value.trace);
-        if (req && req.state === "spent") track.value.state = "spent";
+      if (!currentTrack.state) {
+        const req = await client.utxo.fetchTransaction(currentTrack.trace);
+        if (req && req.state === "spent") {
+          track.value = { ...currentTrack, state: "spent" };
+        }
         return;
       }
 
-      const call = await c.fetchCall(track.value.call);
+      const call = await c.fetchCall(currentTrack.call);
       if (call && ["done", "failed"].includes(call.state)) {
         window.clearInterval(timer);
         track.value = undefined;

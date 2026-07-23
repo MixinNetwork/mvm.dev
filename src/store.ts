@@ -8,10 +8,11 @@ import {
   type OAuthKeystore,
 } from "@mixin.dev/mixin-node-sdk";
 import { Connection, PublicKey } from "@solana/web3.js";
-import {
+import type {
   ComputerAssetResponse,
   ComputerInfoResponse,
   TokenBalance,
+  TokenMetadataAsset,
   User,
   UserAssetBalance,
   UserAssetBalanceWithoutAsset,
@@ -60,24 +61,25 @@ export const useStore = defineStore("store", () => {
   const user = ref<User | undefined>(undefined);
   const profile = async () => {
     try {
-      user.value = await mixinClient.value.user.profile();
+      const profileUser = await mixinClient.value.user.profile();
       const mix = buildMixAddress({
         version: 2,
-        uuidMembers: [user.value.user_id],
+        uuidMembers: [profileUser.user_id],
         xinMembers: [],
         threshold: 1,
       });
 
       const c = initComputerClient();
       const u = await c.fetchUser(mix);
-      user.value.info = u;
+      user.value = u ? { ...profileUser, info: u } : profileUser;
     } catch (e) {}
   };
 
   const balances = ref<Record<string, UserAssetBalance>>({});
   const updateBalances = async (das: ComputerAssetResponse[]) => {
-    if (!user.value) return;
-    const members = [user.value.user_id];
+    const currentUser = user.value;
+    if (!currentUser) return;
+    const members = [currentUser.user_id];
     let offset = 0;
     let total: SafeUtxoOutput[] = [];
     while (true) {
@@ -92,14 +94,17 @@ export const useStore = defineStore("store", () => {
       if (outputs.length < 500) {
         break;
       }
-      offset = outputs[outputs.length - 1].sequence + 1;
+      const lastOutput = outputs[outputs.length - 1];
+      if (!lastOutput) break;
+      offset = lastOutput.sequence + 1;
     }
     const bm = total.reduce(
       (prev, cur) => {
         const key = cur.asset_id;
-        if (prev[key]) {
-          prev[key].total_amount = add(
-            prev[key].total_amount,
+        const existing = prev[key];
+        if (existing) {
+          existing.total_amount = add(
+            existing.total_amount,
             cur.amount,
           ).toString();
         } else {
@@ -119,6 +124,7 @@ export const useStore = defineStore("store", () => {
     const fbm = assets.reduce(
       (prev, cur) => {
         const b = bm[cur.asset_id];
+        if (!b) return prev;
         const v: UserAssetBalance = {
           ...b,
           asset: {
@@ -140,7 +146,7 @@ export const useStore = defineStore("store", () => {
   const tokens = ref<Record<string, TokenBalance>>({});
   const getTokenMeta = async (mints: string[]) => {
     const metas = await getAssets(mints);
-    return metas.data.result.map((m) => ({
+    return metas.data.result.map((m: TokenMetadataAsset) => ({
       mint: m.id,
       name: m.content.metadata.name,
       symbol: m.content.metadata.symbol,
@@ -148,9 +154,10 @@ export const useStore = defineStore("store", () => {
     }));
   };
   const updateTokens = async (das: ComputerAssetResponse[]) => {
-    if (!user.value?.info) return;
-    let ts: Record<string, TokenBalance> = {};
-    const publicKey = new PublicKey(user.value.info.chain_address);
+    const currentInfo = user.value?.info;
+    if (!currentInfo) return;
+    const ts: Record<string, TokenBalance> = {};
+    const publicKey = new PublicKey(currentInfo.chain_address);
 
     const solBalance = await connection.getBalance(publicKey);
     if (solBalance > 0) {
@@ -194,11 +201,12 @@ export const useStore = defineStore("store", () => {
     });
 
     das.forEach((asset) => {
-      if (!ts[asset.address]) return;
-      ts[asset.address].name = asset.name;
-      ts[asset.address].symbol = asset.symbol;
-      ts[asset.address].icon_url = asset.uri;
-      ts[asset.address].asset = asset;
+      const token = ts[asset.address];
+      if (!token) return;
+      token.name = asset.name;
+      token.symbol = asset.symbol;
+      token.icon_url = asset.uri;
+      token.asset = asset;
     });
     const mints = Object.values(ts)
       .filter((t) => !t.name)
@@ -206,9 +214,11 @@ export const useStore = defineStore("store", () => {
     if (mints.length) {
       const metas = await getTokenMeta(mints);
       metas.forEach((meta) => {
-        ts[meta.mint].name = meta.name;
-        ts[meta.mint].symbol = meta.symbol;
-        ts[meta.mint].icon_url = meta.uri;
+        const token = ts[meta.mint];
+        if (!token) return;
+        token.name = meta.name;
+        token.symbol = meta.symbol;
+        token.icon_url = meta.uri;
       });
     }
     tokens.value = ts;

@@ -132,16 +132,17 @@ const { user, tokens, computer, mixinClient } = storeToRefs(userStore);
 const route = useRoute();
 const id = computed(() => route.params.id as string);
 const balance = computed(() => tokens.value[id.value]);
-const mix = computed(() =>
-  user.value
+const mix = computed(() => {
+  const currentUser = user.value;
+  return currentUser
     ? buildMixAddress({
         version: 2,
-        uuidMembers: [user.value.user_id],
+        uuidMembers: [currentUser.user_id],
         xinMembers: [],
         threshold: 1,
       })
-    : "",
-);
+    : "";
+});
 
 const loading = ref(false);
 const amount = ref("");
@@ -195,31 +196,35 @@ const track = ref<
 
 const c = initComputerClient();
 const useTransfer = async () => {
+  const currentUser = user.value;
+  const currentInfo = currentUser?.info;
+  const currentComputer = computer.value;
+  const currentBalance = balance.value;
   if (
-    !user.value ||
-    !user.value.info ||
-    !computer.value ||
+    !currentInfo ||
+    !currentComputer ||
+    !currentBalance ||
     !isValidAddress.value ||
-    !isValidAddress.value
+    !isValidAmount.value
   )
     return;
   loading.value = true;
 
-  const src = new PublicKey(user.value.info.chain_address);
+  const src = new PublicKey(currentInfo.chain_address);
   const dst = new PublicKey(destination.value);
   const nonce = await c.getNonce(mix.value);
   const tx = new Transaction();
-  tx.feePayer = new PublicKey(computer.value.payer);
+  tx.feePayer = new PublicKey(currentComputer.payer);
   tx.recentBlockhash = nonce.nonce_hash;
   tx.add(
     SystemProgram.nonceAdvance({
-      authorizedPubkey: new PublicKey(computer.value.payer),
+      authorizedPubkey: new PublicKey(currentComputer.payer),
       noncePubkey: new PublicKey(nonce.nonce_address),
     }),
   );
 
   let extraFee = 0;
-  if (balance.value.mint === SOL_ADDRESS) {
+  if (currentBalance.mint === SOL_ADDRESS) {
     tx.add(
       SystemProgram.transfer({
         fromPubkey: src,
@@ -229,7 +234,7 @@ const useTransfer = async () => {
     );
   } else {
     const connection = new Connection(RPC);
-    const mint = new PublicKey(balance.value.mint);
+    const mint = new PublicKey(currentBalance.mint);
     const acc = await connection.getAccountInfo(mint);
     if (!acc) throw new Error("Mint account not found");
     const owner = acc.owner;
@@ -268,8 +273,8 @@ const useTransfer = async () => {
         mint,
         dstAta,
         src,
-        parseUnits(amount.value, balance.value.decimal).toNumber(),
-        balance.value.decimal,
+        parseUnits(amount.value, currentBalance.decimal).toNumber(),
+        currentBalance.decimal,
         [],
         owner,
       ),
@@ -280,23 +285,24 @@ const useTransfer = async () => {
     extraFee > 0 ? await c.getFeeOnXin(extraFee.toString()) : undefined;
   const callId = v4();
   const callExtra = buildSystemCallExtra(
-    user.value.info.id,
+    currentInfo.id,
     callId,
     false,
     fee?.fee_id,
   );
   const memo = encodeMtgExtra(
-    computer.value.members.app_id,
+    currentComputer.members.app_id,
     buildComputerExtra(OperationTypeSystemCall, callExtra),
   );
 
   const r = buildMixAddress({
     version: 2,
     xinMembers: [],
-    uuidMembers: computer.value.members.members,
-    threshold: computer.value.members.threshold,
+    uuidMembers: currentComputer.members.members,
+    threshold: currentComputer.members.threshold,
   });
   const invoice = newMixinInvoice(r);
+  if (!invoice) throw new Error("Failed to build invoice");
 
   const txBuf = Buffer.from(
     tx.serialize({
@@ -306,7 +312,7 @@ const useTransfer = async () => {
   );
   attachStorageEntry(invoice, v4(), txBuf);
 
-  let total = BigNumber(computer.value.params.operation.price);
+  let total = BigNumber(currentComputer.params.operation.price);
   if (fee) total = total.plus(fee.xin_amount);
   const trace = v4();
   attachInvoiceEntry(invoice, {
@@ -332,17 +338,20 @@ const useTransfer = async () => {
 };
 
 watchEffect(() => {
-  if (!track.value) return;
+  const currentTrack = track.value;
+  if (!currentTrack) return;
   const client = mixinClient.value;
   const timer = window.setInterval(async () => {
     try {
-      if (!track.value.state) {
-        const req = await client.utxo.fetchTransaction(track.value.trace);
-        if (req && req.state === "spent") track.value.state = "spent";
+      if (!currentTrack.state) {
+        const req = await client.utxo.fetchTransaction(currentTrack.trace);
+        if (req && req.state === "spent") {
+          track.value = { ...currentTrack, state: "spent" };
+        }
         return;
       }
 
-      const call = await c.fetchCall(track.value.call);
+      const call = await c.fetchCall(currentTrack.call);
       if (call && ["done", "failed"].includes(call.state)) {
         window.clearInterval(timer);
         track.value = undefined;
