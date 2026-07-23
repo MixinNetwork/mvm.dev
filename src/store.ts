@@ -72,7 +72,7 @@ export const useStore = defineStore("store", () => {
       const c = initComputerClient();
       const u = await c.fetchUser(mix);
       user.value = u ? { ...profileUser, info: u } : profileUser;
-    } catch (e) {}
+    } catch {}
   };
 
   const balances = ref<Record<string, UserAssetBalance>>({});

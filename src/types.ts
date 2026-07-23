@@ -1,4 +1,4 @@
-import { SafeUtxoOutput, UserResponse } from "@mixin.dev/mixin-node-sdk";
+import type { UserResponse } from "@mixin.dev/mixin-node-sdk";
 
 export interface ComputerUserResponse {
   id: string;

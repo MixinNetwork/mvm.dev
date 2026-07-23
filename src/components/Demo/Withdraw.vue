@@ -171,7 +171,7 @@ const isValidAmount = computed(() => {
       return (
         maximum.isGreaterThanOrEqualTo(amt) && minimum.isLessThanOrEqualTo(amt)
       );
-    } catch (e) {
+    } catch {
       return false;
     }
   } else return undefined;
