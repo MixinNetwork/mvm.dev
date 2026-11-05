@@ -67,6 +67,7 @@ import {
   base64RawURLEncode,
   getChallenge,
   getED25519KeyPair,
+  OAuthClient,
   OAuthKeystore,
 } from "@mixin.dev/mixin-node-sdk";
 import { storeToRefs } from "pinia";
@@ -78,7 +79,7 @@ import { BOT } from "@/utils/constant";
 import { useClipboard } from "@vueuse/core";
 
 const userStore = useStore();
-const { user, mixinClient } = storeToRefs(userStore);
+const { user } = storeToRefs(userStore);
 const { saveUserAuth, clearUserAuth, profile } = userStore;
 
 const showModal = ref(false);
@@ -100,10 +101,13 @@ const handleClear = () => {
 
 const useLogin = async (code: string, code_verifier: string) => {
   const { seed, publicKey } = getED25519KeyPair();
-  const client = mixinClient.value;
 
   try {
-    const { scope, authorization_id } = await client.oauth.getToken({
+    const client = OAuthClient({
+      keystore: { app_id: BOT, session_private_key: seed.toString("hex") },
+      requestConfig: { timeout: 1000 * 10, retry: 0 },
+    });
+    const { scope, authorization_id } = await client.getToken({
       client_id: BOT,
       code: code,
       ed25519: base64RawURLEncode(publicKey),

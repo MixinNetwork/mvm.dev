@@ -1,4 +1,5 @@
 import { ref, computed, watchEffect } from "vue";
+import { Buffer } from "buffer";
 import { defineStore } from "pinia";
 import {
   buildMixAddress,
@@ -32,9 +33,18 @@ export const useStore = defineStore("store", () => {
   });
   const mixinClient = computed(() => {
     const keystore = readUserAuth();
+    if (!keystore) return undefined;
+    const currentAuth = auth.value;
     return MixinApi({
       requestConfig: {
         timeout: 1000 * 10,
+        errorMap: (error) => {
+          if (error?.response?.status === 401 || error?.status === 401 || error?.code === 401) {
+            if (auth.value === currentAuth) clearUserAuth();
+            // A numeric SDK error code can be mistaken for a retryable network error.
+            throw Object.assign(new Error("Mixin authorization expired"), { status: 401, cause: error });
+          }
+        },
       },
       keystore,
     });
@@ -47,6 +57,7 @@ export const useStore = defineStore("store", () => {
     if (!auth.value) return undefined;
     try {
       const k = JSON.parse(Buffer.from(auth.value, "base64").toString());
+      if (!k?.app_id || !k.authorization_id || !k.session_private_key || !k.scope) return undefined;
       return k as OAuthKeystore;
     } catch {
       return undefined;
@@ -54,14 +65,20 @@ export const useStore = defineStore("store", () => {
   };
   const clearUserAuth = () => {
     user.value = undefined;
+    balances.value = {};
+    tokens.value = {};
     auth.value = "";
     localStorage.removeItem(MIXIN_OAUTH);
   };
 
   const user = ref<User | undefined>(undefined);
   const profile = async () => {
+    const client = mixinClient.value;
+    if (!client) return;
+    const currentAuth = auth.value;
     try {
-      const profileUser = await mixinClient.value.user.profile();
+      const profileUser = await client.user.profile();
+      if (auth.value !== currentAuth) return;
       const mix = buildMixAddress({
         version: 2,
         uuidMembers: [profileUser.user_id],
@@ -71,6 +88,7 @@ export const useStore = defineStore("store", () => {
 
       const c = initComputerClient();
       const u = await c.fetchUser(mix);
+      if (auth.value !== currentAuth) return;
       user.value = u ? { ...profileUser, info: u } : profileUser;
     } catch {}
   };
@@ -78,12 +96,15 @@ export const useStore = defineStore("store", () => {
   const balances = ref<Record<string, UserAssetBalance>>({});
   const updateBalances = async (das: ComputerAssetResponse[]) => {
     const currentUser = user.value;
-    if (!currentUser) return;
+    if (!currentUser || !mixinClient.value) return;
+    const currentAuth = auth.value;
     const members = [currentUser.user_id];
     let offset = 0;
     let total: SafeUtxoOutput[] = [];
     while (true) {
-      const outputs = await mixinClient.value.utxo.safeOutputs({
+      const client = mixinClient.value;
+      if (!client || auth.value !== currentAuth) return;
+      const outputs = await client.utxo.safeOutputs({
         limit: 500,
         members,
         threshold: 1,
@@ -120,7 +141,9 @@ export const useStore = defineStore("store", () => {
       {} as Record<string, UserAssetBalanceWithoutAsset>,
     );
 
-    const assets = await mixinClient.value.safe.fetchAssets(Object.keys(bm));
+    const client = mixinClient.value;
+    if (!client || auth.value !== currentAuth) return;
+    const assets = await client.safe.fetchAssets(Object.keys(bm));
     const fbm = assets.reduce(
       (prev, cur) => {
         const b = bm[cur.asset_id];
@@ -140,7 +163,7 @@ export const useStore = defineStore("store", () => {
       {} as Record<string, UserAssetBalance>,
     );
 
-    balances.value = fbm;
+    if (auth.value === currentAuth) balances.value = fbm;
   };
 
   const tokens = ref<Record<string, TokenBalance>>({});
@@ -221,21 +244,21 @@ export const useStore = defineStore("store", () => {
         token.icon_url = meta.uri;
       });
     }
-    tokens.value = ts;
+    if (user.value?.info === currentInfo && readUserAuth()) tokens.value = ts;
   };
 
   const update = async () => {
-    const das = await cc.fetchAssets();
-    updateBalances(das);
-    updateTokens(das);
+    try {
+      const das = await cc.fetchAssets();
+      await Promise.all([updateBalances(das), updateTokens(das)]);
+    } catch {}
   };
 
-  let timer: number | undefined;
-  watchEffect(async () => {
+  watchEffect((onCleanup) => {
     if (!user.value?.info) return;
-    update();
-    timer = window.setInterval(update, 1000 * 30);
-    return () => window.clearInterval(timer);
+    void update();
+    const timer = window.setInterval(update, 1000 * 30);
+    onCleanup(() => window.clearInterval(timer));
   });
 
   const computer = ref<ComputerInfoResponse | undefined>(undefined);

@@ -3,6 +3,9 @@
   "version": "0.0.0",
   "private": true,
   "type": "module",
+  "engines": {
+    "node": ">=20.19.0"
+  },
   "scripts": {
     "dev": "vite",
     "build": "vite build",
@@ -12,7 +15,7 @@
     "format": "prettier --write src/"
   },
   "dependencies": {
-    "@mixin.dev/mixin-node-sdk": "^7.4.2",
+    "@mixin.dev/mixin-node-sdk": "7.6.2",
     "@solana/spl-token": "^0.4.13",
     "@solana/web3.js": "^1.98.0",
     "@tailwindcss/vite": "^4.1.4",
