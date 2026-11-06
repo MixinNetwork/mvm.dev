@@ -75,7 +75,7 @@ import { NModal, NQrCode, NSkeleton, NCard, NAvatar } from "naive-ui";
 import ReconnectingWebSocket from "reconnecting-websocket";
 import { useStore } from "@/store";
 import { useAuthorization } from "@/utils/login";
-import { BOT, USER_AGENT } from "@/utils/constant";
+import { BOT } from "@/utils/constant";
 import { useClipboard } from "@vueuse/core";
 
 const userStore = useStore();
@@ -105,7 +105,7 @@ const useLogin = async (code: string, code_verifier: string) => {
   try {
     const client = OAuthClient({
       keystore: { app_id: BOT, session_private_key: seed.toString("hex") },
-      requestConfig: { timeout: 1000 * 10, retry: 0, userAgent: USER_AGENT },
+      requestConfig: { timeout: 1000 * 10, retry: 0 },
     });
     const { scope, authorization_id } = await client.getToken({
       client_id: BOT,

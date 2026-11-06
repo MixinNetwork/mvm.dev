@@ -1,5 +1,4 @@
 export const HOST = "https://computer.mixin.one";
-export const USER_AGENT = "mvm dev";
 export const RPC = import.meta.env.VITE_RPC;
 export const BOT = "045d0919-2990-41d6-8176-b7041b6e9ef9";
 export const XIN_ASSET_ID = "c94ac88f-4671-3976-b60a-09064f1811e8";

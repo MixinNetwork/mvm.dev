@@ -21,7 +21,7 @@ import type {
 import { useLocalStorage } from "@vueuse/core";
 import { getAssets, initComputerClient } from "./utils/api";
 import { add } from "./utils/number";
-import { RPC, SOL_ADDRESS, SOL_ASSET_ID, SOL_DECIMAL, USER_AGENT } from "./utils/constant";
+import { RPC, SOL_ADDRESS, SOL_ASSET_ID, SOL_DECIMAL } from "./utils/constant";
 
 const MIXIN_OAUTH = "oauth";
 const cc = initComputerClient();
@@ -37,7 +37,6 @@ export const useStore = defineStore("store", () => {
     const currentAuth = auth.value;
     return MixinApi({
       requestConfig: {
-        userAgent: USER_AGENT,
         timeout: 1000 * 10,
         errorMap: (error) => {
           if (error?.response?.status === 401 || error?.status === 401 || error?.code === 401) {
