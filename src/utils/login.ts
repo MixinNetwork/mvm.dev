@@ -24,8 +24,7 @@ export const useAuthorization = (
     try {
       ws.send(pako.gzip(JSON.stringify(msg)));
     } catch (e) {
-      if (e instanceof DOMException) {
-      } else {
+      if (!(e instanceof DOMException)) {
         console.error(e);
       }
     }

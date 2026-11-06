@@ -7,6 +7,7 @@ import type {
   ComputerNonceResponse,
   ComputerSystemCallResponse,
   ComputerUserResponse,
+  TokenMetadataResponse,
 } from "@/types";
 import { HOST, RPC } from "@/utils/constant";
 
@@ -23,7 +24,7 @@ export const initComputerClient = (responseCallback?: (e: any) => void) => {
   });
 
   ins.interceptors.response.use(undefined, async (e: any) => {
-    if (e.response.status === 404) return undefined;
+    if (e.response?.status === 404) return undefined;
     responseCallback?.(e);
     return Promise.reject(e);
   });
@@ -36,7 +37,7 @@ export const initComputerClient = (responseCallback?: (e: any) => void) => {
 
   return {
     fetchInfo: (): Promise<ComputerInfoResponse> => ins.get("/"),
-    fetchUser: (mix: string): Promise<ComputerUserResponse> =>
+    fetchUser: (mix: string): Promise<ComputerUserResponse | undefined> =>
       ins.get(`/users/${mix}`),
     fetchAssets: (): Promise<ComputerAssetResponse[]> =>
       ins.get("/deployed_assets"),
@@ -57,7 +58,7 @@ export const getAssets = (ids: string[]) => {
     baseURL: RPC,
     timeout: 1000 * 60 * 10,
   });
-  return ins.post("", {
+  return ins.post<TokenMetadataResponse>("", {
     jsonrpc: "2.0",
     id: 1,
     method: "getAssets",
