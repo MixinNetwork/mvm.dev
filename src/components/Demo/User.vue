@@ -61,12 +61,13 @@
 </template>
 
 <script setup lang="ts">
-import { onUnmounted, ref, watchEffect } from "vue";
+import { computed, onUnmounted, ref, watchEffect } from "vue";
 import {
   AuthorizationResponse,
   base64RawURLEncode,
   getChallenge,
   getED25519KeyPair,
+  OAuthClient,
   OAuthKeystore,
 } from "@mixin.dev/mixin-node-sdk";
 import { storeToRefs } from "pinia";
@@ -78,7 +79,7 @@ import { BOT } from "@/utils/constant";
 import { useClipboard } from "@vueuse/core";
 
 const userStore = useStore();
-const { user, mixinClient } = storeToRefs(userStore);
+const { user } = storeToRefs(userStore);
 const { saveUserAuth, clearUserAuth, profile } = userStore;
 
 const showModal = ref(false);
@@ -86,7 +87,7 @@ const loginCode = ref("");
 const ws = ref<ReconnectingWebSocket | undefined>(undefined);
 
 const { copy, copied } = useClipboard({
-  source: user.value && user.value.info && user.value.info.chain_address,
+  source: computed(() => user.value?.info?.chain_address ?? ""),
 });
 
 const handleLogin = () => (showModal.value = true);
@@ -100,10 +101,13 @@ const handleClear = () => {
 
 const useLogin = async (code: string, code_verifier: string) => {
   const { seed, publicKey } = getED25519KeyPair();
-  const client = mixinClient.value;
 
   try {
-    const { scope, authorization_id } = await client.oauth.getToken({
+    const client = OAuthClient({
+      keystore: { app_id: BOT, session_private_key: seed.toString("hex") },
+      requestConfig: { timeout: 1000 * 10, retry: 0 },
+    });
+    const { scope, authorization_id } = await client.getToken({
       client_id: BOT,
       code: code,
       ed25519: base64RawURLEncode(publicKey),
@@ -144,14 +148,14 @@ watchEffect(() => {
     challenge,
     (a: AuthorizationResponse) => {
       if (a && !loginCode.value) loginCode.value = `mixin://codes/${a.code_id}`;
-      if (a.authorization_code.length > 16) {
+      if (a.authorization_code?.length > 16) {
         useLogin(a.authorization_code, verifier);
         return true;
       }
       return false;
     },
   );
-  return () => ws.value.close();
+  return () => ws.value?.close();
 });
 
 onUnmounted(handleClear);
