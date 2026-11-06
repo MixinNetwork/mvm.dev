@@ -13,17 +13,17 @@ See [Vite Configuration Reference](https://vite.dev/config/).
 ## Project Setup
 
 ```sh
-yarn
+pnpm install
 ```
 
 ### Compile and Hot-Reload for Development
 
 ```sh
-yarn dev
+pnpm dev
 ```
 
 ### Compile and Minify for Production
 
 ```sh
-yarn build
+pnpm build
 ```
