@@ -1,4 +1,4 @@
-import { SafeUtxoOutput, UserResponse } from "@mixin.dev/mixin-node-sdk";
+import type { UserResponse } from "@mixin.dev/mixin-node-sdk";
 
 export interface ComputerUserResponse {
   id: string;
@@ -95,4 +95,21 @@ export interface TokenBalance {
   decimal: number;
   icon_url: string;
   asset?: ComputerAssetResponse;
+}
+
+export interface TokenMetadataAsset {
+  id: string;
+  content: {
+    metadata: {
+      name: string;
+      symbol: string;
+    };
+    links: {
+      image: string;
+    };
+  };
+}
+
+export interface TokenMetadataResponse {
+  result: TokenMetadataAsset[];
 }

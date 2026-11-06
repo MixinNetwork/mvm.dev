@@ -29,6 +29,7 @@
 </template>
 
 <script setup lang="ts">
+import { computed } from "vue";
 import { storeToRefs } from "pinia";
 import { useStore } from "@/store";
 import { useClipboard } from "@vueuse/core";
@@ -37,6 +38,6 @@ const userStore = useStore();
 const { user } = storeToRefs(userStore);
 
 const { copy, copied } = useClipboard({
-  source: user.value && user.value.info && user.value.info.chain_address,
+  source: computed(() => user.value?.info?.chain_address ?? ""),
 });
 </script>
