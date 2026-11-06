@@ -9,7 +9,10 @@ export const add = (
   return ba.plus(bb);
 };
 
-export const mul = (a: string | number | BigNumber, b: string | number | BigNumber) => {
+export const mul = (
+  a: string | number | BigNumber,
+  b: string | number | BigNumber,
+) => {
   const ba = BigNumber.isBigNumber(a) ? a : BigNumber(a);
   const bb = BigNumber.isBigNumber(b) ? b : BigNumber(b);
   return ba.multipliedBy(bb);

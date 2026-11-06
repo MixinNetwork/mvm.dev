@@ -1,4 +1,5 @@
 import { ref, computed, watchEffect } from "vue";
+import { Buffer } from "buffer";
 import { defineStore } from "pinia";
 import {
   buildMixAddress,
@@ -8,10 +9,11 @@ import {
   type OAuthKeystore,
 } from "@mixin.dev/mixin-node-sdk";
 import { Connection, PublicKey } from "@solana/web3.js";
-import {
+import type {
   ComputerAssetResponse,
   ComputerInfoResponse,
   TokenBalance,
+  TokenMetadataAsset,
   User,
   UserAssetBalance,
   UserAssetBalanceWithoutAsset,
@@ -31,9 +33,18 @@ export const useStore = defineStore("store", () => {
   });
   const mixinClient = computed(() => {
     const keystore = readUserAuth();
+    if (!keystore) return undefined;
+    const currentAuth = auth.value;
     return MixinApi({
       requestConfig: {
         timeout: 1000 * 10,
+        errorMap: (error) => {
+          if (error?.response?.status === 401 || error?.status === 401 || error?.code === 401) {
+            if (auth.value === currentAuth) clearUserAuth();
+            // A numeric SDK error code can be mistaken for a retryable network error.
+            throw Object.assign(new Error("Mixin authorization expired"), { status: 401, cause: error });
+          }
+        },
       },
       keystore,
     });
@@ -46,6 +57,7 @@ export const useStore = defineStore("store", () => {
     if (!auth.value) return undefined;
     try {
       const k = JSON.parse(Buffer.from(auth.value, "base64").toString());
+      if (!k?.app_id || !k.authorization_id || !k.session_private_key || !k.scope) return undefined;
       return k as OAuthKeystore;
     } catch {
       return undefined;
@@ -53,35 +65,46 @@ export const useStore = defineStore("store", () => {
   };
   const clearUserAuth = () => {
     user.value = undefined;
+    balances.value = {};
+    tokens.value = {};
     auth.value = "";
     localStorage.removeItem(MIXIN_OAUTH);
   };
 
   const user = ref<User | undefined>(undefined);
   const profile = async () => {
+    const client = mixinClient.value;
+    if (!client) return;
+    const currentAuth = auth.value;
     try {
-      user.value = await mixinClient.value.user.profile();
+      const profileUser = await client.user.profile();
+      if (auth.value !== currentAuth) return;
       const mix = buildMixAddress({
         version: 2,
-        uuidMembers: [user.value.user_id],
+        uuidMembers: [profileUser.user_id],
         xinMembers: [],
         threshold: 1,
       });
 
       const c = initComputerClient();
       const u = await c.fetchUser(mix);
-      user.value.info = u;
-    } catch (e) {}
+      if (auth.value !== currentAuth) return;
+      user.value = u ? { ...profileUser, info: u } : profileUser;
+    } catch {}
   };
 
   const balances = ref<Record<string, UserAssetBalance>>({});
   const updateBalances = async (das: ComputerAssetResponse[]) => {
-    if (!user.value) return;
-    const members = [user.value.user_id];
+    const currentUser = user.value;
+    if (!currentUser || !mixinClient.value) return;
+    const currentAuth = auth.value;
+    const members = [currentUser.user_id];
     let offset = 0;
     let total: SafeUtxoOutput[] = [];
     while (true) {
-      const outputs = await mixinClient.value.utxo.safeOutputs({
+      const client = mixinClient.value;
+      if (!client || auth.value !== currentAuth) return;
+      const outputs = await client.utxo.safeOutputs({
         limit: 500,
         members,
         threshold: 1,
@@ -92,14 +115,17 @@ export const useStore = defineStore("store", () => {
       if (outputs.length < 500) {
         break;
       }
-      offset = outputs[outputs.length - 1].sequence + 1;
+      const lastOutput = outputs[outputs.length - 1];
+      if (!lastOutput) break;
+      offset = lastOutput.sequence + 1;
     }
     const bm = total.reduce(
       (prev, cur) => {
         const key = cur.asset_id;
-        if (prev[key]) {
-          prev[key].total_amount = add(
-            prev[key].total_amount,
+        const existing = prev[key];
+        if (existing) {
+          existing.total_amount = add(
+            existing.total_amount,
             cur.amount,
           ).toString();
         } else {
@@ -115,10 +141,13 @@ export const useStore = defineStore("store", () => {
       {} as Record<string, UserAssetBalanceWithoutAsset>,
     );
 
-    const assets = await mixinClient.value.safe.fetchAssets(Object.keys(bm));
+    const client = mixinClient.value;
+    if (!client || auth.value !== currentAuth) return;
+    const assets = await client.safe.fetchAssets(Object.keys(bm));
     const fbm = assets.reduce(
       (prev, cur) => {
         const b = bm[cur.asset_id];
+        if (!b) return prev;
         const v: UserAssetBalance = {
           ...b,
           asset: {
@@ -134,13 +163,13 @@ export const useStore = defineStore("store", () => {
       {} as Record<string, UserAssetBalance>,
     );
 
-    balances.value = fbm;
+    if (auth.value === currentAuth) balances.value = fbm;
   };
 
   const tokens = ref<Record<string, TokenBalance>>({});
   const getTokenMeta = async (mints: string[]) => {
     const metas = await getAssets(mints);
-    return metas.data.result.map((m) => ({
+    return metas.data.result.map((m: TokenMetadataAsset) => ({
       mint: m.id,
       name: m.content.metadata.name,
       symbol: m.content.metadata.symbol,
@@ -148,9 +177,10 @@ export const useStore = defineStore("store", () => {
     }));
   };
   const updateTokens = async (das: ComputerAssetResponse[]) => {
-    if (!user.value?.info) return;
-    let ts: Record<string, TokenBalance> = {};
-    const publicKey = new PublicKey(user.value.info.chain_address);
+    const currentInfo = user.value?.info;
+    if (!currentInfo) return;
+    const ts: Record<string, TokenBalance> = {};
+    const publicKey = new PublicKey(currentInfo.chain_address);
 
     const solBalance = await connection.getBalance(publicKey);
     if (solBalance > 0) {
@@ -194,11 +224,12 @@ export const useStore = defineStore("store", () => {
     });
 
     das.forEach((asset) => {
-      if (!ts[asset.address]) return;
-      ts[asset.address].name = asset.name;
-      ts[asset.address].symbol = asset.symbol;
-      ts[asset.address].icon_url = asset.uri;
-      ts[asset.address].asset = asset;
+      const token = ts[asset.address];
+      if (!token) return;
+      token.name = asset.name;
+      token.symbol = asset.symbol;
+      token.icon_url = asset.uri;
+      token.asset = asset;
     });
     const mints = Object.values(ts)
       .filter((t) => !t.name)
@@ -206,26 +237,28 @@ export const useStore = defineStore("store", () => {
     if (mints.length) {
       const metas = await getTokenMeta(mints);
       metas.forEach((meta) => {
-        ts[meta.mint].name = meta.name;
-        ts[meta.mint].symbol = meta.symbol;
-        ts[meta.mint].icon_url = meta.uri;
+        const token = ts[meta.mint];
+        if (!token) return;
+        token.name = meta.name;
+        token.symbol = meta.symbol;
+        token.icon_url = meta.uri;
       });
     }
-    tokens.value = ts;
+    if (user.value?.info === currentInfo && readUserAuth()) tokens.value = ts;
   };
 
   const update = async () => {
-    const das = await cc.fetchAssets();
-    updateBalances(das);
-    updateTokens(das);
+    try {
+      const das = await cc.fetchAssets();
+      await Promise.all([updateBalances(das), updateTokens(das)]);
+    } catch {}
   };
 
-  let timer: number | undefined;
-  watchEffect(async () => {
+  watchEffect((onCleanup) => {
     if (!user.value?.info) return;
-    update();
-    timer = window.setInterval(update, 1000 * 30);
-    return () => window.clearInterval(timer);
+    void update();
+    const timer = window.setInterval(update, 1000 * 30);
+    onCleanup(() => window.clearInterval(timer));
   });
 
   const computer = ref<ComputerInfoResponse | undefined>(undefined);

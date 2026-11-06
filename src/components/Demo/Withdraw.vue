@@ -37,7 +37,9 @@
           ]"
           type="text"
         ></textarea>
-        <div class="mt-1 text-sm">不可转给当前地址({{ user.info.chain_address }})</div>
+        <div class="mt-1 text-sm">
+          不可转给当前地址({{ user.info.chain_address }})
+        </div>
       </div>
 
       <div
@@ -127,7 +129,7 @@ import {
   createAssociatedTokenAccountInstruction,
   createTransferCheckedInstruction,
 } from "@solana/spl-token";
-import { computed, ref, watchEffect } from "vue";
+import { computed, ref, watch, watchEffect } from "vue";
 import { storeToRefs } from "pinia";
 import { useRoute } from "vue-router";
 import { NAvatar, useNotification, NSpin } from "naive-ui";
@@ -137,6 +139,9 @@ import { initComputerClient } from "@/utils/api";
 import { RPC, SOL_ASSET_ID, XIN_ASSET_ID } from "@/utils/constant";
 
 const notification = useNotification();
+const POLL_INTERVAL = 1000 * 5;
+const SUCCESS_CALL_STATES = ["done"];
+const FINISHED_CALL_STATES = ["done", "failed"];
 
 const userStore = useStore();
 const { user, balances, computer, mixinClient } = storeToRefs(userStore);
@@ -145,16 +150,17 @@ const { updateBalances } = userStore;
 const route = useRoute();
 const id = computed(() => route.params.id as string);
 const balance = computed(() => balances.value[id.value]);
-const mix = computed(() =>
-  user.value
+const mix = computed(() => {
+  const currentUser = user.value;
+  return currentUser
     ? buildMixAddress({
         version: 2,
-        uuidMembers: [user.value.user_id],
+        uuidMembers: [currentUser.user_id],
         xinMembers: [],
         threshold: 1,
       })
-    : "",
-);
+    : "";
+});
 
 const loading = ref(false);
 const amount = ref("");
@@ -168,14 +174,15 @@ const isValidAmount = computed(() => {
       return (
         maximum.isGreaterThanOrEqualTo(amt) && minimum.isLessThanOrEqualTo(amt)
       );
-    } catch (e) {
+    } catch {
       return false;
     }
   } else return undefined;
 });
 const isValidAddress = computed(() => {
-  if (!destination.value) return undefined;
-  if (destination.value === user.value.info.chain_address) return false;
+  const currentInfo = user.value?.info;
+  if (!destination.value || !currentInfo) return undefined;
+  if (destination.value === currentInfo.chain_address) return false;
   try {
     new PublicKey(destination.value);
     return true;
@@ -206,36 +213,42 @@ const track = ref<
 
 const c = initComputerClient();
 const useTransfer = async () => {
+  const currentUser = user.value;
+  const currentInfo = currentUser?.info;
+  const currentComputer = computer.value;
+  const currentBalance = balance.value;
   if (
-    !user.value ||
-    !computer.value ||
+    !currentInfo ||
+    !currentComputer ||
+    !currentBalance ||
     !isValidAddress.value ||
-    !isValidAddress.value
+    !isValidAmount.value
   )
     return;
   loading.value = true;
 
-  if (!balance.value.address) {
-    deploying.value = balance.value.asset_id;
-    await c.deployAssets([balance.value.asset_id]);
+  const assetAddress = currentBalance.address;
+  if (!assetAddress) {
+    deploying.value = currentBalance.asset_id;
+    await c.deployAssets([currentBalance.asset_id]);
     return;
   }
 
-  const src = new PublicKey(user.value.info.chain_address);
+  const src = new PublicKey(currentInfo.chain_address);
   const dst = new PublicKey(destination.value);
   const nonce = await c.getNonce(mix.value);
   const tx = new Transaction();
-  tx.feePayer = new PublicKey(computer.value.payer);
+  tx.feePayer = new PublicKey(currentComputer.payer);
   tx.recentBlockhash = nonce.nonce_hash;
   tx.add(
     SystemProgram.nonceAdvance({
-      authorizedPubkey: new PublicKey(computer.value.payer),
+      authorizedPubkey: new PublicKey(currentComputer.payer),
       noncePubkey: new PublicKey(nonce.nonce_address),
     }),
   );
 
   let extraFee = 0;
-  if (balance.value.asset_id === SOL_ASSET_ID) {
+  if (currentBalance.asset_id === SOL_ASSET_ID) {
     tx.add(
       SystemProgram.transfer({
         fromPubkey: src,
@@ -245,16 +258,17 @@ const useTransfer = async () => {
     );
   } else {
     const connection = new Connection(RPC);
-    const mint = new PublicKey(balance.value.address);
+    const mint = new PublicKey(assetAddress);
     const acc = await connection.getAccountInfo(mint);
+    if (!acc) throw new Error("Mint account not found");
     const owner = acc.owner;
-    const token = await getMint(connection, mint);
+    const token = await getMint(connection, mint, undefined, owner);
 
     const srcAta = getAssociatedTokenAddressSync(mint, src, false, owner);
     const dstAta = getAssociatedTokenAddressSync(mint, dst, false, owner);
 
     try {
-      await getAccount(connection, dstAta);
+      await getAccount(connection, dstAta, undefined, owner);
     } catch (e) {
       if (
         e instanceof TokenAccountNotFoundError ||
@@ -296,21 +310,21 @@ const useTransfer = async () => {
     extraFee > 0 ? await c.getFeeOnXin(extraFee.toString()) : undefined;
   const callId = v4();
   const callExtra = buildSystemCallExtra(
-    user.value.info.id,
+    currentInfo.id,
     callId,
     false,
     fee?.fee_id,
   );
   const memo = encodeMtgExtra(
-    computer.value.members.app_id,
+    currentComputer.members.app_id,
     buildComputerExtra(OperationTypeSystemCall, callExtra),
   );
   const referenceExtra = Buffer.from(
     encodeMtgExtra(
-      computer.value.members.app_id,
+      currentComputer.members.app_id,
       buildComputerExtra(
         OperationTypeUserDeposit,
-        userIdToBytes(user.value.info.id),
+        userIdToBytes(currentInfo.id),
       ),
     ),
   );
@@ -318,10 +332,11 @@ const useTransfer = async () => {
   const r = buildMixAddress({
     version: 2,
     xinMembers: [],
-    uuidMembers: computer.value.members.members,
-    threshold: computer.value.members.threshold,
+    uuidMembers: currentComputer.members.members,
+    threshold: currentComputer.members.threshold,
   });
   const invoice = newMixinInvoice(r);
+  if (!invoice) throw new Error("Failed to build invoice");
 
   const txBuf = Buffer.from(
     tx.serialize({
@@ -333,14 +348,14 @@ const useTransfer = async () => {
 
   attachInvoiceEntry(invoice, {
     trace_id: v4(),
-    asset_id: balance.value.asset_id,
+    asset_id: currentBalance.asset_id,
     amount: amount.value,
     extra: referenceExtra,
     index_references: [],
     hash_references: [],
   });
 
-  let total = BigNumber(computer.value.params.operation.price);
+  let total = BigNumber(currentComputer.params.operation.price);
   if (fee) total = total.plus(fee.xin_amount);
   const trace = v4();
   attachInvoiceEntry(invoice, {
@@ -354,7 +369,12 @@ const useTransfer = async () => {
   console.log(invoice);
 
   const invoiceStr = `https://mixin.one/pay/${getInvoiceString(invoice)}`;
-  const code = await mixinClient.value.code.schemes(invoiceStr);
+  const client = mixinClient.value;
+  if (!client) {
+    loading.value = false;
+    return;
+  }
+  const code = await client.code.schemes(invoiceStr);
   const scheme = `https://mixin.one/schemes/${code.scheme_id}`;
 
   track.value = {
@@ -371,7 +391,7 @@ watchEffect(() => {
   const timer = window.setInterval(async () => {
     const das = await cc.fetchAssets();
     await updateBalances(das);
-    if (!balance.value.address) return;
+    if (!balance.value?.address) return;
 
     window.clearInterval(timer);
     deploying.value = "";
@@ -383,33 +403,61 @@ watchEffect(() => {
   return () => window.clearInterval(timer);
 });
 
-watchEffect(() => {
-  if (!track.value) return;
-  const client = mixinClient.value;
-  const timer = window.setInterval(async () => {
-    try {
-      if (!track.value.state) {
-        const req = await client.utxo.fetchTransaction(track.value.trace);
-        if (req && req.state === "spent") track.value.state = "spent";
-        return;
-      }
+watch(
+  () => [track.value?.call, mixinClient.value] as const,
+  ([callId, client], _, onCleanup) => {
+    if (!callId || !track.value || !client) return;
+    let stopped = false;
+    let timer: number | undefined;
 
-      const call = await c.fetchCall(track.value.call);
-      if (call && ["done", "failed"].includes(call.state)) {
-        window.clearInterval(timer);
-        track.value = undefined;
-        loading.value = false;
-        if (call.state === "done")
-          notification["success"]({
-            title: "交易成功",
-          });
-        if (call.state === "failed")
-          notification["error"]({
-            title: "交易失败",
-          });
-      }
-    } catch {}
-  }, 1000 * 5);
-  return () => window.clearInterval(timer);
-});
+    const schedule = () => {
+      timer = window.setTimeout(() => {
+        void poll();
+      }, POLL_INTERVAL);
+    };
+
+    const poll = async () => {
+      if (stopped || mixinClient.value !== client) return;
+      const currentTrack = track.value;
+      if (!currentTrack || currentTrack.call !== callId) return;
+
+      try {
+        if (!currentTrack.state) {
+          const req = await client.utxo.fetchTransaction(currentTrack.trace);
+          if (stopped || mixinClient.value !== client) return;
+          if (req && req.state === "spent") {
+            track.value = { ...currentTrack, state: "spent" };
+          }
+        } else {
+          const call = await c.fetchCall(currentTrack.call);
+          if (stopped || mixinClient.value !== client) return;
+          if (call && FINISHED_CALL_STATES.includes(call.state)) {
+            track.value = undefined;
+            loading.value = false;
+            if (SUCCESS_CALL_STATES.includes(call.state)) {
+              notification["success"]({
+                title: "交易成功",
+              });
+            }
+            if (call.state === "failed") {
+              notification["error"]({
+                title: "交易失败",
+              });
+            }
+            return;
+          }
+        }
+      } catch {}
+
+      if (!stopped) schedule();
+    };
+
+    schedule();
+
+    onCleanup(() => {
+      stopped = true;
+      if (timer !== undefined) window.clearTimeout(timer);
+    });
+  },
+);
 </script>
