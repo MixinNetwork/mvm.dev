@@ -1,0 +1,10 @@
+overrides:
+  jayson: 5.0.0
+
+onlyBuiltDependencies:
+  - esbuild
+
+ignoredBuiltDependencies:
+  - bigint-buffer
+  - bufferutil
+  - utf-8-validate
