@@ -329,7 +329,12 @@ const useTransfer = async () => {
   console.log(invoice);
 
   const invoiceStr = `https://mixin.one/pay/${getInvoiceString(invoice)}`;
-  const code = await mixinClient.value.code.schemes(invoiceStr);
+  const client = mixinClient.value;
+  if (!client) {
+    loading.value = false;
+    return;
+  }
+  const code = await client.code.schemes(invoiceStr);
   const scheme = `https://mixin.one/schemes/${code.scheme_id}`;
 
   track.value = {
@@ -341,10 +346,9 @@ const useTransfer = async () => {
 };
 
 watch(
-  () => track.value?.call,
-  (callId, _, onCleanup) => {
-    if (!callId || !track.value) return;
-    const client = mixinClient.value;
+  () => [track.value?.call, mixinClient.value] as const,
+  ([callId, client], _, onCleanup) => {
+    if (!callId || !track.value || !client) return;
     let stopped = false;
     let timer: number | undefined;
 
@@ -355,20 +359,20 @@ watch(
     };
 
     const poll = async () => {
-      if (stopped) return;
+      if (stopped || mixinClient.value !== client) return;
       const currentTrack = track.value;
       if (!currentTrack || currentTrack.call !== callId) return;
 
       try {
         if (!currentTrack.state) {
           const req = await client.utxo.fetchTransaction(currentTrack.trace);
-          if (stopped) return;
+          if (stopped || mixinClient.value !== client) return;
           if (req && req.state === "spent") {
             track.value = { ...currentTrack, state: "spent" };
           }
         } else {
           const call = await c.fetchCall(currentTrack.call);
-          if (stopped) return;
+          if (stopped || mixinClient.value !== client) return;
           if (call && FINISHED_CALL_STATES.includes(call.state)) {
             track.value = undefined;
             loading.value = false;
